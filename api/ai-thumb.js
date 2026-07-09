@@ -264,92 +264,71 @@ function isConcurrencyError(msg = '') {
 
 async function generateImage({ prompt, model, baseUrl, apiKey, size = '1024x1024' }) {
   const url = `${String(baseUrl).replace(/\/$/, '')}/images/generations`;
-  // MAX 2 attempts total. Concurrency limit IAMHC ~10 — jangan spam retry.
-  const attempts = [
-    { model, prompt, n: 1, size: '1024x1024', response_format: 'b64_json' },
-    { model, prompt, n: 1, size: '1024x1024' },
-  ];
+  // PENTING: HANYA 1 request. Retry/attempt ke-2 bikin concurrency 11/10.
+  const r = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model,
+      prompt,
+      n: 1,
+      size: size || '1024x1024',
+    }),
+  });
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) {
+    const msg =
+      data?.error?.message || data?.error || data?.message || `Image HTTP ${r.status}`;
+    const err = new Error(String(msg));
+    err.concurrency = isConcurrencyError(msg);
+    throw err;
+  }
 
-  let lastErr = null;
-  for (let i = 0; i < attempts.length; i++) {
-    const body = attempts[i];
-    if (i > 0) await sleep(2500);
+  const item = data?.data?.[0] || data?.images?.[0] || data?.result?.[0] || data;
+  let b64 =
+    item?.b64_json ||
+    item?.base64 ||
+    item?.image_base64 ||
+    (typeof item?.image === 'string' &&
+    item.image.length > 200 &&
+    !item.image.startsWith('http')
+      ? item.image
+      : null);
+  let mime = 'image/png';
+  const imageUrl =
+    item?.url ||
+    item?.image_url ||
+    data?.url ||
+    (typeof item?.image === 'string' && item.image.startsWith('http')
+      ? item.image
+      : null);
+
+  if (!b64 && imageUrl) {
     try {
-      const r = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify(body),
-      });
-      const data = await r.json().catch(() => ({}));
-      if (!r.ok) {
-        const msg =
-          data?.error?.message || data?.error || data?.message || `Image HTTP ${r.status}`;
-        lastErr = new Error(String(msg));
-        if (isConcurrencyError(msg)) {
-          // one long wait then single retry only
-          await sleep(12000);
-          continue;
-        }
-        // non-concurrency: don't thrash
-        if (i === 0) continue;
-        break;
-      }
-
-      const item = data?.data?.[0] || data?.images?.[0] || data?.result?.[0] || data;
-      let b64 =
-        item?.b64_json ||
-        item?.base64 ||
-        item?.image_base64 ||
-        (typeof item?.image === 'string' &&
-        item.image.length > 200 &&
-        !item.image.startsWith('http')
-          ? item.image
-          : null);
-      let mime = 'image/png';
-      const imageUrl =
-        item?.url ||
-        item?.image_url ||
-        data?.url ||
-        (typeof item?.image === 'string' && item.image.startsWith('http')
-          ? item.image
-          : null);
-
-      // Convert remote URL -> base64 on server (fixes browser CORS/403)
-      if (!b64 && imageUrl) {
-        try {
-          const got = await fetchUrlAsBase64(imageUrl, apiKey);
-          b64 = got.b64;
-          mime = got.mime || mime;
-        } catch (e) {
-          // last resort: return url (client may still fail)
-          lastErr = e;
-          return {
-            type: 'url',
-            value: imageUrl,
-            mime,
-            raw: data,
-            model,
-            warning:
-              'Image URL tidak bisa di-proxy ke base64. Browser mungkin gagal load (CORS/403).',
-          };
-        }
-      }
-
-      if (b64) {
-        // strip data-url prefix if present
-        const clean = String(b64).replace(/^data:image\/\w+;base64,/, '');
-        return { type: 'b64', value: clean, mime, raw: data, model, source_url: imageUrl || null };
-      }
-
-      lastErr = new Error('Image API merespons tapi tidak ada url/base64');
+      const got = await fetchUrlAsBase64(imageUrl, apiKey);
+      b64 = got.b64;
+      mime = got.mime || mime;
     } catch (e) {
-      lastErr = e;
+      return {
+        type: 'url',
+        value: imageUrl,
+        mime,
+        raw: data,
+        model,
+        warning:
+          'Image URL tidak bisa di-proxy ke base64. Browser mungkin gagal load (CORS/403).',
+      };
     }
   }
-  throw lastErr || new Error('Gagal generate image');
+
+  if (b64) {
+    const clean = String(b64).replace(/^data:image\/\w+;base64,/, '');
+    return { type: 'b64', value: clean, mime, raw: data, model, source_url: imageUrl || null };
+  }
+  throw new Error('Image API merespons tapi tidak ada url/base64');
 }
 
 module.exports = async function handler(req, res) {
@@ -460,7 +439,7 @@ module.exports = async function handler(req, res) {
       model: imageModel,
       baseUrl: cfg.baseUrl,
       apiKey: cfg.apiKey,
-      size: body.size || '1792x1024',
+      size: '1024x1024',
     });
 
     return res.status(200).json({
