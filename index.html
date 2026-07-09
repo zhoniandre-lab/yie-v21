@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>YouTube Intelligence Engine v21.12 — Copy Fix + 1-Shot Image</title>
+<title>YouTube Intelligence Engine v21.14 — Auto-Queue Thumbnail</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Black+Ops+One&family=Bungee&family=Russo+One&family=Bangers&family=Rubik:wght@700;900&family=Montserrat:wght@700;900&family=Raleway:wght@700;900&family=Oswald:wght@700&family=Orbitron:wght@700;900&family=Cinzel:wght@700;900&family=Cinzel+Decorative:wght@700;900&family=Playfair+Display:wght@700;900&family=Great+Vibes&family=Italianno&family=Pacifico&family=Special+Elite&family=Abril+Fatface&family=Permanent+Marker&family=Creepster&family=Nosifer&family=Alfa+Slab+One&family=Teko:wght@600;700&display=swap" rel="stylesheet">
@@ -19,7 +19,7 @@
 <body>
 <div class="wrap">
   <section class="hero">
-    <span class="badge">🧠 v21.12 Copy Fix + 1-Shot Image</span>
+    <span class="badge">🧠 v21.14 Auto-Queue Thumbnail</span>
     <h1>Mesin tetap data-based. AI Strategy membaca hasil engine, mengkritik strategi, lalu memberi verdict, alternatif judul, thumbnail strategy, dan rencana 24 jam.</h1>
     <p class="muted">Alur v21.3: 1) Keyword Lab (seperti penonton search YouTube) → 2) Pilih keyword → 3) Engine judul/kompetitor → 4) AI Strategy/Thumb. AI bukan otak utama.</p>
     <div class="warn"><b>Catatan kuota:</b> Mode ini meriset beberapa angle. Mulai dari 3-5 angle dulu agar kuota YouTube API aman.</div>
@@ -448,7 +448,11 @@ function engineDataFacts(a,best){
   };
 }
 
-function renderAll(){let best=RECS[0]||{},m=A.metrics,decision=scoreOpportunity(A),status=decision>=75?'GO / EKSEKUSI':decision>=58?'TEST DULU':decision>=42?'CARI ANGLE':'HOLD';$('decisionBox').innerHTML=`<div class="scoreHero"><div class="circle" style="--p:${decision}"><span>${decision}</span></div><div><h3>Keputusan: <span style="color:#70f0c5">${status}</span></h3><p class="muted">${(function(){let adv=freshAngleAdvice(A,best); return `<span class="tag ${adv.s.level==='JENUH'?'r':adv.s.level==='PADAT'?'y':'g'}">Pasar ${adv.s.level} ${adv.s.sat}</span> Mesin memilih angle: <b>${esc(A.keyword)}</b> dari seed <b>${esc(A.seed||A.keyword)}</b>. Niche: <b>${A.niche.label}</b> (${A.niche.confidence}/100). ${A.format&&A.format.id&&A.format.id!=='auto'?`Arah channel: <b>${esc(A.format.label)}</b>. `:''}Dibandingkan ${ANGLES.length} angle.`;})()}</p><div><span class="tag g">Search ${best.search||0}</span><span class="tag b">Browse ${best.browse||0}</span><span class="tag p">Pattern ${best.patternBorn||0}</span><span class="tag y">Hook ${best.hookScore||0}</span><span class="tag b">Algorithm ${best.algo||0}</span></div></div></div><div class="finalBox"><h3>Bro, ambil ini:</h3><div class="winnerTitle">${esc(best.title||'-')}</div><ul class="reason">${(best.reasons||[]).map(x=>`<li class="${x.c}">${esc(x.t)}</li>`).join('')}</ul>${buildFinalExplanation(best,A)}<button class="small" onclick="copyText(RECS[0].title,this)">Copy Judul</button><button class="small" onclick="copyBestPack()">Copy Paket</button><button class="small green" onclick="aiStrategyReview(this)">🧠 AI Strategy Review</button></div><div id="aiStrategyBox"></div><div class="kpis"><div class="kpi"><div class="num">${m.demand}</div><div class="lab">Demand</div></div><div class="kpi"><div class="num">${m.low}</div><div class="lab">Low Competition</div></div><div class="kpi"><div class="num">${m.gap}</div><div class="lab">Pattern Gap</div></div><div class="kpi"><div class="num">${m.fresh}</div><div class="lab">Freshness</div></div><div class="kpi"><div class="num">${fmt(m.attentionLow)}-${fmt(m.attentionHigh)}</div><div class="lab">Attention Proxy</div></div><div class="kpi"><div class="num">${m.reality||0}</div><div class="lab">Reality Filter</div></div></div>`;renderPack();renderThumb();renderDetail()}function scoreOpportunity(a){let m=a.metrics;return clamp(m.demand*.28+m.low*.20+m.smallProof*.14+m.gap*.14+m.fresh*.10+m.confidence*.09+m.specificity*.05)}function renderPack(){let best=RECS[0]||{};$('packBox').innerHTML=`<div><h3>${esc(best.title||'-')}</h3><button class="small" onclick="copyText(RECS[0].title,this)">Copy Judul</button><button class="small" onclick="copyText(RECS[0].desc,this)">Copy Deskripsi</button><button class="small" onclick="copyText(RECS[0].tags,this)">Copy Tags</button><button class="small secondary" onclick="copyBestPack()">Copy Semua</button><button class="small green" onclick="aiPolishPack(this)">✨ AI Polish Pack</button></div><div class="pack"><div class="copybox"><label>Deskripsi YouTube</label><textarea readonly class="${A.lang==='ar'?'rtl':''}">${esc(best.desc||'')}</textarea></div><div class="copybox"><label>Tags</label><textarea readonly>${esc(best.tags||'')}</textarea></div></div><div id="aiAssistBox"></div>`}function renderThumb(){
+function renderAll(){let best=RECS[0]||{},m=A.metrics,decision=scoreOpportunity(A),status=decision>=75?'GO / EKSEKUSI':decision>=58?'TEST DULU':decision>=42?'CARI ANGLE':'HOLD';$('decisionBox').innerHTML=`<div class="scoreHero"><div class="circle" style="--p:${decision}"><span>${decision}</span></div><div><h3>Keputusan: <span style="color:#70f0c5">${status}</span></h3><p class="muted">${(function(){let adv=freshAngleAdvice(A,best); return `<span class="tag ${adv.s.level==='JENUH'?'r':adv.s.level==='PADAT'?'y':'g'}">Pasar ${adv.s.level} ${adv.s.sat}</span> Mesin memilih angle: <b>${esc(A.keyword)}</b> dari seed <b>${esc(A.seed||A.keyword)}</b>. Niche: <b>${A.niche.label}</b> (${A.niche.confidence}/100). ${A.format&&A.format.id&&A.format.id!=='auto'?`Arah channel: <b>${esc(A.format.label)}</b>. `:''}Dibandingkan ${ANGLES.length} angle.`;})()}</p><div><span class="tag g">Search ${best.search||0}</span><span class="tag b">Browse ${best.browse||0}</span><span class="tag p">Pattern ${best.patternBorn||0}</span><span class="tag y">Hook ${best.hookScore||0}</span><span class="tag b">Algorithm ${best.algo||0}</span></div></div></div><div class="finalBox"><h3>Bro, ambil ini:</h3><div class="winnerTitle">${esc(best.title||'-')}</div>
+<div style="margin-top:10px">
+<b style="font-size:12px">3 rekomendasi terhitung (bukan random AI):</b>
+${RECS.slice(0,3).map((r,i)=>`<div class="battleItem" style="margin-top:6px"><span class="badge2 ${i===0?'vwin':'vtest'}">#${i+1}</span><div><b>${esc(r.title)}</b><br><small>Score ${r.score} · Search ${r.search} · Browse ${r.browse} · Unique ${r.unique||0} · Pattern ${r.patternBorn||0}</small></div><button type="button" class="small" onclick="copyText(RECS[${i}].title,this)">Copy</button></div>`).join('')}
+</div><ul class="reason">${(best.reasons||[]).map(x=>`<li class="${x.c}">${esc(x.t)}</li>`).join('')}</ul>${buildFinalExplanation(best,A)}<button class="small" onclick="copyText(RECS[0].title,this)">Copy Judul</button><button class="small" onclick="copyBestPack()">Copy Paket</button><button class="small green" onclick="aiStrategyReview(this)">🧠 AI Strategy Review</button></div><div id="aiStrategyBox"></div><div class="kpis"><div class="kpi"><div class="num">${m.demand}</div><div class="lab">Demand</div></div><div class="kpi"><div class="num">${m.low}</div><div class="lab">Low Competition</div></div><div class="kpi"><div class="num">${m.gap}</div><div class="lab">Pattern Gap</div></div><div class="kpi"><div class="num">${m.fresh}</div><div class="lab">Freshness</div></div><div class="kpi"><div class="num">${fmt(m.attentionLow)}-${fmt(m.attentionHigh)}</div><div class="lab">Attention Proxy</div></div><div class="kpi"><div class="num">${m.reality||0}</div><div class="lab">Reality Filter</div></div></div>`;renderPack();renderThumb();renderDetail()}function scoreOpportunity(a){let m=a.metrics;return clamp(m.demand*.28+m.low*.20+m.smallProof*.14+m.gap*.14+m.fresh*.10+m.confidence*.09+m.specificity*.05)}function renderPack(){let best=RECS[0]||{};$('packBox').innerHTML=`<div><h3>${esc(best.title||'-')}</h3><button class="small" onclick="copyText(RECS[0].title,this)">Copy Judul</button><button class="small" onclick="copyText(RECS[0].desc,this)">Copy Deskripsi</button><button class="small" onclick="copyText(RECS[0].tags,this)">Copy Tags</button><button class="small secondary" onclick="copyBestPack()">Copy Semua</button><button class="small green" onclick="aiPolishPack(this)">✨ AI Polish Pack</button></div><div class="pack"><div class="copybox"><label>Deskripsi YouTube</label><textarea readonly class="${A.lang==='ar'?'rtl':''}">${esc(best.desc||'')}</textarea></div><div class="copybox"><label>Tags</label><textarea readonly>${esc(best.tags||'')}</textarea></div></div><div id="aiAssistBox"></div>`}function renderThumb(){
   if(!RECS[0]){ $('thumbBox').innerHTML='<p class="muted">Jalankan engine judul dulu.</p>'; return; }
   let defaultHook=(RECS[0]&&RECS[0].hook)|| (typeof pickBestHook==='function'?pickBestHook(A,RECS[0].title):'HOOK') ||'HOOK';
   if(/^(MAAF IBU|RINDU IBU|BIG HOOK)$/i.test(defaultHook)) {
@@ -546,7 +550,7 @@ function renderAll(){let best=RECS[0]||{},m=A.metrics,decision=scoreOpportunity(
     </div>
     <div class="canvasbox">
       <canvas id="cv" width="1280" height="720"></canvas>
-      <p class="muted" style="margin-top:8px">Preview live. Prompt di kiri → Generate Gambar → atur hook/font → Download.</p>
+      <p class="muted" style="margin-top:8px">Preview live. Klik Generate sekali — app auto-antre jika slot image penuh (tidak perlu ke ChatGPT).</p>
     </div>
   </div>`;
   try{
@@ -565,7 +569,22 @@ function renderAll(){let best=RECS[0]||{},m=A.metrics,decision=scoreOpportunity(
   try{ syncThumbPromptFromEngine(); }catch(e){}
 }function renderDetail(){let angles=ANGLES.map((r,i)=>`<div class="battleItem"><span class="badge2 ${i===0?'vwin':r.score>=60?'vtest':'vlose'}">${i===0?'ANGLE':'TEST'}</span><div><b>${esc(r.keyword)}</b><br><small>${r.reasons.map(x=>x.t).join(' ')}</small></div><b>${r.score}</b></div>`).join('');let titles=RECS.slice(0,5).map((r,i)=>`<div class="battleItem"><span class="badge2 ${i===0?'vwin':r.score>=60?'vtest':'vlose'}">${i===0?'WINNER':'TEST'}</span><div><b>${esc(r.title)}</b><br><small>Search ${r.search}, Browse ${r.browse}, Pattern ${r.patternBorn||0}, Hook ${r.hookScore||0}, Quality ${r.quality}</small></div><b>${r.score}</b></div>`).join('');$('detailBox').innerHTML=`<details open><summary>Angle Ranking</summary>${angles}</details><details><summary>Candidate Title Battle</summary>${titles}</details><details open><summary>Title Patterns Mined</summary>${(A.patterns.titlePatterns||[]).slice(0,8).map(p=>`<div class="battleItem"><span class="badge2 vtest">PATTERN</span><div><b>${esc(p.label)}</b><br><small>Muncul ${p.count}x, weight ${Math.round(p.weight)}. Contoh: ${esc((p.examples||[])[0]||'-')}</small></div><b>${Math.round(p.weight)}</b></div>`).join('')}</details><details><summary>Winning Words & Patterns</summary>${A.patterns.topWords.slice(0,24).map(([w,c])=>`<span class="tag b">${esc(w)} ${c}x</span>`).join('')}</details><details open><summary>Reality Filter: Dipakai vs Dibuang</summary><div><b>Query diuji:</b> ${((A.queryVariants||[]).map(q=>`<span class="tag b">${esc(q)}</span>`).join(''))}</div><h3 style="margin-top:10px">Kompetitor dipakai</h3>${A.qualified.slice(0,10).map(v=>`<div class="battleItem"><span class="badge2 vwin">${v.relevance}</span><div><b>${esc(v.title)}</b><br><small>Query: ${esc(v._query||'-')} | Channel: ${esc(v.channelTitle||'-')}</small></div><b>${fmt(v.views)}</b></div>`).join('')}<h3 style="margin-top:10px">Kompetitor dibuang</h3>${A.rejected.slice(0,10).map(v=>`<div class="battleItem"><span class="badge2 vlose">${v.relevance}</span><div><b>${esc(v.title)}</b><br><small>Alasan: relevance rendah untuk intent/niche ini. Query: ${esc(v._query||'-')}</small></div><b>${fmt(v.views)}</b></div>`).join('')}</details><details><summary>Data Kompetitor Angle Terpilih</summary><div class="tablebox"><table class="table"><tr><th>#</th><th>Judul</th><th>Views</th><th>Age</th><th>VPD</th><th>VPM</th><th>Subs</th></tr>${A.videos.slice(0,25).map((v,i)=>`<tr><td>${i+1}</td><td><a href="${esc(v.url||'#')}" target="_blank">${esc(v.title)}</a><br><span class="muted">${esc(v.channelTitle||'')}</span></td><td>${fmt(v.views)}</td><td>${v.age}d</td><td>${fmt(v.vpd)}</td><td>${fmt(v.vpm)}</td><td>${fmt(v.subs)}</td></tr>`).join('')}</table></div></details>`}
 function levelLabel(v){return v>=80?'kuat':v>=65?'cukup kuat':v>=50?'sedang':'lemah'}
-function buildFinalExplanation(best,a){let m=a.metrics,comp=(a.qualified||a.videos||[]).slice(0,4),patterns=(a.patterns.titlePatterns||[]).slice(0,3),risk=finalRisk(best,a),adv=freshAngleAdvice(a,best),gaps=gapWords(a);return`<div class="finalBox" style="background:rgba(7,11,20,.55);border-color:#26324d"><h3>Diagnosa pasar & angle</h3><ul class="reason">${adv.lines.map(t=>`<li class="info">${t}</li>`).join('')}<li class="yellow"><b>Gap words (jarang di judul kompetitor):</b> ${gaps.length?gaps.map(g=>`<span class="tag b">${esc(g)}</span>`).join(' '):'Belum ketemu gap kuat — perketat angle.'}</li></ul><h3 style="margin-top:12px">Kenapa mesin memilih judul ini?</h3><ul class="reason"><li class="${best.search>=70?'good':'yellow'}"><b>Search Potential ${best.search}/100 (${levelLabel(best.search)}).</b> Judul masih dekat dengan angle <b>${esc(a.keyword)}</b> dan keyword utama, jadi layak mengejar pencarian YouTube.</li><li class="${best.browse>=70?'good':'yellow'}"><b>Browse/Rekomendasi ${best.browse}/100 (${levelLabel(best.browse)}).</b> Judul punya creator hook: <b>${esc(best.strategy||'-')}</b>, cocok dipasangkan dengan thumbnail hook <b>${esc(best.hook||'-')}</b>.</li><li class="${best.patternBorn>=70?'good':'yellow'}"><b>Pattern-Born ${best.patternBorn}/100.</b> Kandidat ini mengikuti pola yang dibaca dari kompetitor relevan, bukan template kosong.</li><li class="info"><b>Demand Proxy ${m.demand}/100.</b> Estimated attention ${fmt(m.attentionLow)}-${fmt(m.attentionHigh)}/bulan dari kompetitor relevan. Ini bukan search volume resmi, tapi sinyal perhatian pasar.</li><li class="${risk.c}"><b>Risk:</b> ${esc(risk.t)}</li></ul><details><summary>Bukti kompetitor yang dipakai</summary>${comp.map(v=>`<div class="battleItem"><span class="badge2 vwin">${v.relevance||''}</span><div><b>${esc(v.title)}</b><br><small>Channel: ${esc(v.channelTitle||'-')} • Views: ${fmt(v.views||0)} • Query: ${esc(v._query||'-')}</small></div><b>${fmt(v.vpm||0)}</b></div>`).join('')||'<p class="muted">Belum ada kompetitor relevan cukup kuat.</p>'}</details><details><summary>Pola kompetitor yang mempengaruhi judul</summary>${patterns.map(p=>`<div class="battleItem"><span class="badge2 vtest">PATTERN</span><div><b>${esc(p.label)}</b><br><small>Muncul ${p.count}x. Contoh: ${esc((p.examples||[])[0]||'-')}</small></div><b>${Math.round(p.weight||0)}</b></div>`).join('')||'<p class="muted">Pola belum cukup kuat.</p>'}</details><h3 style="margin-top:12px">Saran eksekusi</h3><ul class="reason"><li class="good">Pakai judul ini sebagai <b>${esc(best.strategy||'hybrid')}</b>. Jangan ubah terlalu jauh dari angle yang menang.</li><li class="info">Thumbnail harus menonjolkan hook pendek: <b>${esc(best.hook||'-')}</b>. Jangan pakai teks terlalu panjang.</li><li class="yellow">Pantau 24-48 jam pertama: CTR, retention awal, dan impressions. Kalau impressions tinggi tapi CTR rendah, ganti thumbnail dulu sebelum ganti judul.</li></ul></div>`}
+function buildFinalExplanation(best,a){let m=a.metrics,comp=(a.qualified||a.videos||[]).slice(0,4),patterns=(a.patterns.titlePatterns||[]).slice(0,3),risk=finalRisk(best,a),adv=freshAngleAdvice(a,best),gaps=gapWords(a);return`<div class="finalBox" style="background:rgba(7,11,20,.55);border-color:#26324d"><h3>Diagnosa pasar & angle</h3><ul class="reason">${adv.lines.map(t=>`<li class="info">${t}</li>`).join('')}<li class="yellow"><b>Gap words (jarang di judul kompetitor):</b> ${gaps.length?gaps.map(g=>`<span class="tag b">${esc(g)}</span>`).join(' '):'Belum ketemu gap kuat — perketat angle.'}</li></ul><h3 style="margin-top:12px">Battle vs kompetitor (bukan chatbot)</h3>
+<ul class="reason">
+<li class="info"><b>Sample kompetitor dipakai:</b> ${(a.qualified||[]).length} video lolos Reality Filter (bukan tebak AI).</li>
+${(a.qualified||[]).slice(0,5).map((v,i)=>`<li class="${i===0?'yellow':'info'}"><b>#${i+1}</b> ${esc(v.title)} · ${fmt(v.views||0)} views · rel ${v.relevance||'-'}</li>`).join('')||'<li class="yellow">Kompetitor relevan masih tipis — skor diturunkan otomatis.</li>'}
+<li class="good"><b>Judul kita vs mereka:</b> uniqueness ${best.unique||0}/100 · pattern-born ${best.patternBorn||0}/100 · intent ${best.intentFit||0}/100. ${ (best.unique||0)>=60 ? 'Cukup beda dari top SERP.' : 'Masih mirip SERP — pertimbangkan kandidat #2/#3 di Detail.'}</li>
+<li class="yellow"><b>Jujur:</b> skor tinggi ≠ view meledak dalam 30 menit. View butuh upload health, history channel, CTR real, retention, dan distribusi YouTube.</li>
+</ul>
+<h3 style="margin-top:12px">Kenapa mesin memilih judul ini?</h3><ul class="reason"><li class="${best.search>=70?'good':'yellow'}"><b>Search Potential ${best.search}/100 (${levelLabel(best.search)}).</b> Judul masih dekat dengan angle <b>${esc(a.keyword)}</b> dan keyword utama, jadi layak mengejar pencarian YouTube.</li><li class="${best.browse>=70?'good':'yellow'}"><b>Browse/Rekomendasi ${best.browse}/100 (${levelLabel(best.browse)}).</b> Judul punya creator hook: <b>${esc(best.strategy||'-')}</b>, cocok dipasangkan dengan thumbnail hook <b>${esc(best.hook||'-')}</b>.</li><li class="${best.patternBorn>=70?'good':'yellow'}"><b>Pattern-Born ${best.patternBorn}/100.</b> Kandidat ini mengikuti pola yang dibaca dari kompetitor relevan, bukan template kosong.</li><li class="info"><b>Demand Proxy ${m.demand}/100.</b> Estimated attention ${fmt(m.attentionLow)}-${fmt(m.attentionHigh)}/bulan dari kompetitor relevan. Ini bukan search volume resmi, tapi sinyal perhatian pasar.</li><li class="${risk.c}"><b>Risk:</b> ${esc(risk.t)}</li></ul><details><summary>Bukti kompetitor yang dipakai</summary>${comp.map(v=>`<div class="battleItem"><span class="badge2 vwin">${v.relevance||''}</span><div><b>${esc(v.title)}</b><br><small>Channel: ${esc(v.channelTitle||'-')} • Views: ${fmt(v.views||0)} • Query: ${esc(v._query||'-')}</small></div><b>${fmt(v.vpm||0)}</b></div>`).join('')||'<p class="muted">Belum ada kompetitor relevan cukup kuat.</p>'}</details><details><summary>Pola kompetitor yang mempengaruhi judul</summary>${patterns.map(p=>`<div class="battleItem"><span class="badge2 vtest">PATTERN</span><div><b>${esc(p.label)}</b><br><small>Muncul ${p.count}x. Contoh: ${esc((p.examples||[])[0]||'-')}</small></div><b>${Math.round(p.weight||0)}</b></div>`).join('')||'<p class="muted">Pola belum cukup kuat.</p>'}</details><h3 style="margin-top:12px">Saran eksekusi</h3><ul class="reason"><li class="good">Pakai judul ini sebagai <b>${esc(best.strategy||'hybrid')}</b>. Jangan ubah terlalu jauh dari angle yang menang.</li><li class="info">Thumbnail harus menonjolkan hook pendek: <b>${esc(best.hook||'-')}</b>. Jangan pakai teks terlalu panjang.</li><li class="yellow">Pantau 24-48 jam pertama: CTR, retention awal, dan impressions. Kalau impressions tinggi tapi CTR rendah, ganti thumbnail dulu sebelum ganti judul.</li></ul>
+<h3 style="margin-top:12px">Checklist 24 jam (biar fair uji judul)</h3>
+<ul class="reason">
+<li class="info">Judul + thumb harus <b>match isi 3 detik pertama</b> (kalau tidak, retention jatuh meski CTR oke).</li>
+<li class="info">0 view di 30 menit pertama <b>sering normal</b> di channel kecil/baru — YouTube belum tentu push impressions.</li>
+<li class="good">Kalau ada impressions tapi CTR &lt; 2–4% (search) / rendah di browse: perbaiki <b>thumb+hook</b> dulu.</li>
+<li class="good">Kalau CTR oke tapi viewers keluar cepat: masalah <b>konten/opening</b>, bukan generator judul.</li>
+<li class="yellow">Software ini optimasi <b>peluang CTR/search fit berbasis data kompetitor</b>, bukan tombol “wajib meledak”.</li>
+</ul></div>`}
 function finalRisk(best,a){if((a.qualified||[]).length<3)return{c:'yellow',t:'Data kompetitor relevan masih sedikit. Layak test kecil, jangan dianggap pasti menang.'};if(best.search<55&&best.browse<65)return{c:'bad',t:'Search dan Browse belum kuat. Perlu angle atau thumbnail lebih tajam.'};if(best.search>=70&&best.browse>=70)return{c:'good',t:'Risiko relatif rendah untuk diuji karena Search dan Browse sama-sama kuat.'};if(best.search>=70&&best.browse<65)return{c:'yellow',t:'Bagus untuk Search, tapi thumbnail/hook harus diperkuat agar Browse tidak lemah.'};if(best.browse>=70&&best.search<60)return{c:'yellow',t:'Bagus untuk rekomendasi/Browse, tapi keyword di deskripsi dan tags harus rapat agar Search terbantu.'};return{c:'info',t:'Risiko sedang. Cocok untuk test dengan eksekusi thumbnail yang kuat.'}}
 async function aiStrategyReview(btn){if(!A||!RECS[0])return alert('Jalankan riset dulu bro.');let old=btn?btn.textContent:'';if(btn){btn.textContent='⏳ AI Strategy...';btn.disabled=true}let box=$('aiStrategyBox');if(box)box.innerHTML='<div class="finalBox" style="background:rgba(16,24,39,.75);border-color:#344665"><b>AI Strategy sedang membaca hasil engine...</b><p class="muted">AI tidak mengganti data. AI hanya mereview strategi berdasarkan evidence yang sudah dikumpulkan engine.</p></div>';try{let best=RECS[0];let payload={keyword:A.seed,seed:A.seed,angle:A.keyword,niche:A.niche&&A.niche.label,language:A.lang,region:A.region,finalTitle:best.title,title:best.title,description:best.desc,tags:best.tags,thumbnailHook:best.hook,finalDecision:{title:best.title,score:best.score,search:best.search,browse:best.browse,algo:best.algo,strategy:best.strategy,hook:best.hook,angle:A.keyword,opportunity:scoreOpportunity(A),patternBorn:best.patternBorn,creatorHook:best.hookScore,quality:best.quality,languageFit:best.langFit,intentFit:best.intentFit},scores:{final:best.score,search:best.search,browse:best.browse,algorithm:best.algo,patternBorn:best.patternBorn,creatorHook:best.hookScore,quality:best.quality,languageFit:best.langFit,intentFit:best.intentFit,opportunity:scoreOpportunity(A)},metrics:A.metrics,qualifiedCompetitors:(A.qualified||[]).slice(0,10).map(v=>({title:v.title,channel:v.channelTitle,views:v.views,vpm:Math.round(v.vpm||0),relevance:v.relevance,query:v._query})),rejectedCompetitors:(A.rejected||[]).slice(0,8).map(v=>({title:v.title,channel:v.channelTitle,views:v.views,relevance:v.relevance,query:v._query})),patterns:(A.patterns&&A.patterns.titlePatterns||[]).slice(0,8).map(p=>({label:p.label,count:p.count,weight:Math.round(p.weight||0),example:(p.examples||[])[0]})),candidateTitles:RECS.slice(0,8).map(r=>({title:r.title,score:r.score,search:r.search,browse:r.browse,patternBorn:r.patternBorn,hook:r.hookScore,quality:r.quality,intent:r.intentFit})),manualCalibration:(A.manualTitles||[]),engineFacts:engineDataFacts(A,best), notes:'Review taat data engineFacts. Jika pasar JENUH, sarankan angle long-tail & diferensiasi, jangan mengulang judul generik. Jangan klaim pasti viral. Data gaps hanya yang benar-benar tidak tersedia (AVD/demografi/CTR kompetitor), jangan bilang kosong jika top_competitors/gap_words sudah ada.'};let r=await fetch('/api/ai-strategy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});let data=await r.json();if(!r.ok||!data.ok)throw Error((data&&data.error)||'AI strategy gagal');renderAIStrategyResult(data.result||{},data.raw||'')}catch(e){if(box)box.innerHTML=`<div class="finalBox" style="background:rgba(53,16,27,.45);border-color:#733044"><b>AI Strategy gagal</b><p class="muted">${esc(e.message||String(e))}</p></div>`}finally{if(btn){btn.textContent=old;btn.disabled=false}}}
 function normalizeAIStrategyResult(x){
@@ -881,86 +900,122 @@ async function generateAIThumb(btn){
   const st=$('thumbAIStatus');
   if(typeof THUMB_BUSY==='undefined') THUMB_BUSY=false;
   if(typeof THUMB_COOLDOWN_UNTIL==='undefined') THUMB_COOLDOWN_UNTIL=0;
-  const now=Date.now();
   if(THUMB_BUSY){
-    if(st) st.innerHTML='<b style="color:#ffe19a">Masih generate...</b> Tunggu selesai.';
+    if(st) st.innerHTML='<b style="color:#ffe19a">Masih mengantri/generate...</b> Satu proses saja.';
     return;
   }
-  if(now<THUMB_COOLDOWN_UNTIL){
-    const s=Math.ceil((THUMB_COOLDOWN_UNTIL-now)/1000);
-    if(st) st.innerHTML=`<b style="color:#ffe19a">Cooldownooldown ${s}s</b> — antrian image. Prompt di kotak tetap bisa di-copy.`;
-    return;
+
+  let promptText=( $('thumbPrompt') && $('thumbPrompt').value || '').trim();
+  if(!promptText){
+    try{ promptText=buildLocalThumbPrompt(); setThumbPrompt(promptText); }catch(e){ promptText=''; }
   }
-  // ensure prompt box filled
-  let promptText=(getThumbPromptBox()&&getThumbPromptBox().value||'').trim();
-  if(!promptText){ promptText=buildLocalThumbPrompt(); setThumbPrompt(promptText); }
+  if(!promptText){ alert('Isi prompt dulu (Prompt dari Engine / Poles Prompt AI).'); return; }
   LAST_THUMB_PROMPT=promptText;
 
   THUMB_BUSY=true;
   const old=btn?btn.textContent:'';
-  if(btn){btn.disabled=true;btn.textContent='⏳ Generate dari prompt...';}
-  if(st) st.innerHTML='<b>1 request image dari kotak prompt...</b> Jangan klik berulang.';
+  if(btn){ btn.disabled=true; }
+
+  const maxTries=10;          // auto antre sampai dapat slot
+  const waitBetween=18000;    // 18 detik antar percobaan saat concurrency
+  let lastMsg='';
+
+  const sleepLocal=(ms)=>new Promise(r=>setTimeout(r,ms));
+
   try{
-    const i=+(($('thumbTitle')&&$('thumbTitle').value)||0);
-    const r=RECS[i]||RECS[0];
-    const hook=($('hook')&&$('hook').value)||r.hook||'';
-    const payload={
-      title:r.title,
-      hook,
-      seed:A.seed,
-      keyword:A.seed,
-      niche:(A.format&&A.format.label)||(A.niche&&A.niche.label)||'',
-      nicheNote:A.nicheInput|| (typeof nicheNoteRaw==='function'?nicheNoteRaw():''),
-      contentFormat:(A.format&&A.format.id)||(CONTENT_FORMAT&&CONTENT_FORMAT.id)||'auto',
-      angle:A.keyword,
-      language:A.lang,
-      prompt: promptText,
-      skipRewrite:true,
-      scores:{final:r.score,search:r.search,browse:r.browse,algorithm:r.algo,patternBorn:r.patternBorn,creatorHook:r.hookScore},
-      metrics:A.metrics||{},
-      qualifiedCompetitors:(A.qualified||[]).slice(0,8).map(v=>({title:v.title,channel:v.channelTitle,views:v.views,relevance:v.relevance,query:v._query})),
-      competitorTitles:(A.qualified||[]).slice(0,8).map(v=>v.title).filter(Boolean),
-      patterns:(A.patterns&&A.patterns.titlePatterns||[]).slice(0,6).map(p=>({label:p.label,count:p.count,weight:Math.round(p.weight||0),example:(p.examples||[])[0]}))
-    };
-    const res=await fetch('/api/ai-thumb',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-    let data={};
-    try{ data=await res.json(); }catch(_){ data={ok:false,error:'Response bukan JSON'}; }
-    if(!res.ok || !data.ok){
-      const err=(data&&data.error)||('HTTP '+res.status);
-      const conc=/concurrency|rate limit|limit:\s*\d+/i.test(String(err));
-      throw Object.assign(new Error(err), {conc:!!conc || data.code==='CONCURRENCY'});
+    for(let tryNo=1; tryNo<=maxTries; tryNo++){
+      if(btn) btn.textContent = tryNo===1 ? '⏳ Generate...' : `⏳ Antri slot ${tryNo}/${maxTries}`;
+      if(st) st.innerHTML = tryNo===1
+        ? '<b>Mengirim request gambar...</b> Jangan tutup halaman.'
+        : `<b>Antrian image penuh — auto coba lagi ${tryNo}/${maxTries}</b><br><span class="muted">Menunggu slot IAMHC. Tetap di halaman ini. Tidak perlu ke ChatGPT.</span>`;
+
+      const i=+(($('thumbTitle')&&$('thumbTitle').value)||0);
+      const r=RECS[i]||RECS[0];
+      const hook=($('hook')&&$('hook').value)||r.hook||'';
+      const payload={
+        title:r.title,
+        hook,
+        seed:A.seed,
+        keyword:A.seed,
+        niche:(A.format&&A.format.label)||(A.niche&&A.niche.label)||'',
+        nicheNote:A.nicheInput|| (typeof nicheNoteRaw==='function'?nicheNoteRaw():''),
+        contentFormat:(A.format&&A.format.id)||(typeof CONTENT_FORMAT!=='undefined'&&CONTENT_FORMAT&&CONTENT_FORMAT.id)||'auto',
+        angle:A.keyword,
+        language:A.lang,
+        prompt: promptText,
+        skipRewrite:true,
+        scores:{final:r.score,search:r.search,browse:r.browse,algorithm:r.algo,patternBorn:r.patternBorn,creatorHook:r.hookScore},
+        metrics:A.metrics||{},
+        qualifiedCompetitors:(A.qualified||[]).slice(0,8).map(v=>({title:v.title,channel:v.channelTitle,views:v.views,relevance:v.relevance,query:v._query})),
+        competitorTitles:(A.qualified||[]).slice(0,8).map(v=>v.title).filter(Boolean),
+        patterns:(A.patterns&&A.patterns.titlePatterns||[]).slice(0,6).map(p=>({label:p.label,count:p.count,weight:Math.round(p.weight||0),example:(p.examples||[])[0]}))
+      };
+
+      let res, data={};
+      try{
+        res=await fetch('/api/ai-thumb',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+        data=await res.json().catch(()=>({}));
+      }catch(netErr){
+        lastMsg=netErr.message||String(netErr);
+        if(tryNo<maxTries){
+          // network blip — short wait
+          for(let s=Math.ceil(8); s>0; s--){
+            if(btn) btn.textContent=`⏳ Jaringan, ulang ${s}s`;
+            await sleepLocal(1000);
+          }
+          continue;
+        }
+        throw netErr;
+      }
+
+      if(res.ok && data.ok && data.result){
+        const result=data.result||{};
+        if(result.prompt_used){
+          try{ setThumbPrompt(result.prompt_used); }catch(e){}
+          window.__LAST_API_PROMPT=result.prompt_used;
+        }
+        await applyAIThumbImage(result);
+        if(st) st.innerHTML=`<span class="tag g">Gambar berhasil</span> <span class="tag b">${esc(data.model_image||'image')}</span>
+          <span class="muted">Percobaan ke-${tryNo}. Atur hook/font lalu Download PNG.</span>`;
+        THUMB_COOLDOWN_UNTIL=Date.now()+5000;
+        return;
+      }
+
+      const errMsg=(data&&data.error)||('HTTP '+(res&&res.status));
+      lastMsg=errMsg;
+      const conc = (data&&data.code==='CONCURRENCY') || /concurrency|rate limit|limit:\s*\d+/i.test(String(errMsg));
+
+      if(conc && tryNo<maxTries){
+        // Auto wait with visible countdown — user stays here, no ChatGPT needed
+        const waitMs = (data&&data.retryAfterSec)? data.retryAfterSec*1000 : waitBetween;
+        const total=Math.ceil(waitMs/1000);
+        for(let s=total; s>0; s--){
+          if(btn) btn.textContent=`⏳ Slot penuh, antre ${s}s (${tryNo}/${maxTries})`;
+          if(st) st.innerHTML=`<b style="color:#ffe19a">Antrian image IAMHC penuh — auto antre</b><br>
+            <span class="muted">Coba lagi otomatis dalam <b>${s}</b> detik (percobaan ${tryNo}/${maxTries}). Jangan klik berulang. Jangan pindah ke ChatGPT.</span>`;
+          await sleepLocal(1000);
+        }
+        continue;
+      }
+
+      // non-concurrency hard fail
+      throw new Error(errMsg);
     }
-    const result=data.result||{};
-    if(result.prompt_used){ setThumbPrompt(result.prompt_used); window.__LAST_API_PROMPT=result.prompt_used; }
-    await applyAIThumbImage(result);
-    THUMB_COOLDOWN_UNTIL=Date.now()+15000;
-    if(st) st.innerHTML=`<span class="tag g">Gambar OK</span> <span class="tag b">${esc(data.model_image||'image')}</span>
-      <p class="muted" style="margin-top:6px">Gambar dari prompt di kotak. Edit hook/font/style lalu Download PNG.</p>`;
+    throw new Error(lastMsg||'Gagal dapat slot image setelah antre otomatis');
   }catch(e){
     const msg=e.message||String(e);
-    const conc=e.conc || /concurrency|rate limit|limit:\s*\d+/i.test(msg);
-    THUMB_COOLDOWN_UNTIL=Date.now()+(conc?35000:12000);
     if(st) st.innerHTML=`<b style="color:#ff9eb2">Gagal gambar:</b> ${esc(msg)}<br>
-      <span class="muted">${conc?'Antrian IAMHC penuh. Tunggu tombol selesai countdown, lalu 1x saja.':'Coba lagi nanti. Prompt di kotak tetap aman.'}</span>`;
+      <span class="muted">Sudah diantre otomatis. Coba lagi 2–5 menit, atau pastikan IAMHC_IMAGE_MODEL=step-image-edit-2 dan tidak ada generate massal di tab lain.</span>
+      <button type="button" class="small" style="margin-top:8px" onclick="copyThumbPrompt(this)">📋 Copy Prompt (backup)</button>`;
   }finally{
     THUMB_BUSY=false;
     if(btn){
-      const left=Math.max(0, THUMB_COOLDOWN_UNTIL-Date.now());
-      if(left>500){
-        btn.disabled=true;
-        const tick=()=>{
-          const s=Math.ceil((THUMB_COOLDOWN_UNTIL-Date.now())/1000);
-          if(s<=0){ btn.disabled=false; btn.textContent=old||'🎨 Generate Gambar dari Prompt'; return; }
-          btn.textContent=`⏳ Tunggu ${s}s`;
-          setTimeout(tick, 500);
-        };
-        tick();
-      } else {
-        btn.disabled=false; btn.textContent=old||'🎨 Generate Gambar dari Prompt';
-      }
+      btn.disabled=false;
+      btn.textContent=old||'🎨 Generate Gambar';
     }
   }
 }
+
 
 function applyAIThumbImage(result){
   return new Promise((resolve,reject)=>{
