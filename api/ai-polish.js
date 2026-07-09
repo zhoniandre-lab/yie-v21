@@ -1,15 +1,16 @@
 /**
  * POST /api/ai-polish
  * Polish upload pack only. Never replace engine decision / invent metrics.
+ * Multi-provider router: IAMHC → Groq → Gemini → OpenRouter
  */
 
+const { setCors, readJson } = require('./_lib/iamhc');
 const {
-  callWithFallback,
+  callLLM,
   envConfig,
-  setCors,
-  readJson,
+  anyProviderConfigured,
   extractJsonObject,
-} = require('./_lib/iamhc');
+} = require('./_lib/llm-router');
 
 module.exports = async function handler(req, res) {
   setCors(res);
@@ -25,9 +26,13 @@ module.exports = async function handler(req, res) {
       return res.status(400).json({ ok: false, error: 'Title wajib diisi.' });
     }
 
-    const cfg = envConfig();
-    if (!cfg.apiKey) {
-      return res.status(500).json({ ok: false, error: 'IAMHC_API_KEY belum diset.' });
+    if (!anyProviderConfigured()) {
+      return res.status(500).json({
+        ok: false,
+        error:
+          'Tidak ada provider AI. Set IAMHC_API_KEY atau GROQ_API_KEY / GEMINI_API_KEY / OPENROUTER_API_KEY',
+        providers: envConfig().providers,
+      });
     }
 
     const lang = body.language || 'id';
@@ -52,7 +57,7 @@ Schema:
   "polished_description":"...",
   "clean_tags":"tag1, tag2",
   "thumbnail_hook":"HOOK PENDEK",
-  "thumbnail_prompt":"prompt gambar",
+  "thumbnail_prompt":"prompt gambar English detail visual only",
   "opening_hook":"...",
   "script_outline":["..."],
   "upload_time_advice":"...",
@@ -64,14 +69,13 @@ Rules:
 - Jangan ganti niche/angle.
 - Jangan mengarang angka.
 - Jangan bilang pasti viral.
-- Bahasa: ${lang === 'en' ? 'English' : 'Bahasa Indonesia'}.`;
+- Bahasa field teks user-facing: ${lang === 'en' ? 'English' : 'Bahasa Indonesia'}.
+- thumbnail_prompt tetap English untuk image model.`;
 
-    const out = await callWithFallback({
-      models: [cfg.polishModel, cfg.fallbackModel, cfg.strategyModel],
-      baseUrl: cfg.baseUrl,
-      apiKey: cfg.apiKey,
+    const out = await callLLM({
+      role: 'polish',
       temperature: 0.5,
-      timeoutMs: 90000,
+      timeoutMs: 70000,
       messages: [
         {
           role: 'system',
@@ -86,7 +90,8 @@ Rules:
     const result = {
       status_label: parsed.status_label || 'Layak Test',
       polished_title: parsed.polished_title || title,
-      polished_description: parsed.polished_description || body.description || '',
+      polished_description:
+        parsed.polished_description || body.description || '',
       clean_tags: parsed.clean_tags || body.tags || '',
       thumbnail_hook: parsed.thumbnail_hook || '',
       thumbnail_prompt: parsed.thumbnail_prompt || '',
@@ -108,18 +113,27 @@ Rules:
         ok: false,
         error: 'AI tidak mengembalikan teks polish yang bisa dipakai.',
         model: out.model,
+        provider: out.provider,
         raw: String(out.text).slice(0, 1000),
+        tried: out.tried || [],
       });
     }
 
     return res.status(200).json({
       ok: true,
       model: out.model,
+      provider: out.provider,
       result,
       raw: out.text,
       usage: out.usage,
+      tried: out.tried || [],
     });
   } catch (e) {
-    return res.status(500).json({ ok: false, error: e.message || String(e) });
+    return res.status(500).json({
+      ok: false,
+      error: e.message || String(e),
+      tried: e.tried || [],
+      providers: envConfig().providers,
+    });
   }
 };
