@@ -262,74 +262,105 @@ function isConcurrencyError(msg = '') {
   return /concurrency|rate limit|too many|limit:\s*\d+/i.test(String(msg));
 }
 
+
 async function generateImage({ prompt, model, baseUrl, apiKey, size = '1024x1024' }) {
   const url = `${String(baseUrl).replace(/\/$/, '')}/images/generations`;
-  // PENTING: HANYA 1 request. Retry/attempt ke-2 bikin concurrency 11/10.
-  const r = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({
-      model,
-      prompt,
-      n: 1,
-      size: size || '1024x1024',
-    }),
-  });
-  const data = await r.json().catch(() => ({}));
-  if (!r.ok) {
-    const msg =
-      data?.error?.message || data?.error || data?.message || `Image HTTP ${r.status}`;
-    const err = new Error(String(msg));
-    err.concurrency = isConcurrencyError(msg);
-    throw err;
-  }
+  // Satu request per attempt. Kalau concurrency: tunggu lalu coba lagi (serial, tidak parallel).
+  const maxAttempts = Math.max(1, Math.min(8, parseInt(process.env.IAMHC_IMAGE_MAX_ATTEMPTS || '6', 10) || 6));
+  const waitSec = Math.max(5, Math.min(25, parseInt(process.env.IAMHC_IMAGE_WAIT_SEC || '12', 10) || 12));
+  let lastErr = null;
 
-  const item = data?.data?.[0] || data?.images?.[0] || data?.result?.[0] || data;
-  let b64 =
-    item?.b64_json ||
-    item?.base64 ||
-    item?.image_base64 ||
-    (typeof item?.image === 'string' &&
-    item.image.length > 200 &&
-    !item.image.startsWith('http')
-      ? item.image
-      : null);
-  let mime = 'image/png';
-  const imageUrl =
-    item?.url ||
-    item?.image_url ||
-    data?.url ||
-    (typeof item?.image === 'string' && item.image.startsWith('http')
-      ? item.image
-      : null);
-
-  if (!b64 && imageUrl) {
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
-      const got = await fetchUrlAsBase64(imageUrl, apiKey);
-      b64 = got.b64;
-      mime = got.mime || mime;
+      const r = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model,
+          prompt,
+          n: 1,
+          size: size || '1024x1024',
+        }),
+      });
+      const data = await r.json().catch(() => ({}));
+      if (!r.ok) {
+        const msg =
+          data?.error?.message || data?.error || data?.message || `Image HTTP ${r.status}`;
+        lastErr = new Error(String(msg));
+        lastErr.concurrency = isConcurrencyError(msg);
+        if (lastErr.concurrency && attempt < maxAttempts) {
+          await sleep(waitSec * 1000);
+          continue;
+        }
+        throw lastErr;
+      }
+
+      const item = data?.data?.[0] || data?.images?.[0] || data?.result?.[0] || data;
+      let b64 =
+        item?.b64_json ||
+        item?.base64 ||
+        item?.image_base64 ||
+        (typeof item?.image === 'string' &&
+        item.image.length > 200 &&
+        !item.image.startsWith('http')
+          ? item.image
+          : null);
+      let mime = 'image/png';
+      const imageUrl =
+        item?.url ||
+        item?.image_url ||
+        data?.url ||
+        (typeof item?.image === 'string' && item.image.startsWith('http')
+          ? item.image
+          : null);
+
+      if (!b64 && imageUrl) {
+        try {
+          const got = await fetchUrlAsBase64(imageUrl, apiKey);
+          b64 = got.b64;
+          mime = got.mime || mime;
+        } catch (e) {
+          return {
+            type: 'url',
+            value: imageUrl,
+            mime,
+            raw: data,
+            model,
+            attempts: attempt,
+            warning:
+              'Image URL tidak bisa di-proxy ke base64. Browser mungkin gagal load (CORS/403).',
+          };
+        }
+      }
+
+      if (b64) {
+        const clean = String(b64).replace(/^data:image\/\w+;base64,/, '');
+        return {
+          type: 'b64',
+          value: clean,
+          mime,
+          raw: data,
+          model,
+          source_url: imageUrl || null,
+          attempts: attempt,
+        };
+      }
+      throw new Error('Image API merespons tapi tidak ada url/base64');
     } catch (e) {
-      return {
-        type: 'url',
-        value: imageUrl,
-        mime,
-        raw: data,
-        model,
-        warning:
-          'Image URL tidak bisa di-proxy ke base64. Browser mungkin gagal load (CORS/403).',
-      };
+      lastErr = e;
+      if (e && e.concurrency && attempt < maxAttempts) {
+        await sleep(waitSec * 1000);
+        continue;
+      }
+      throw e;
     }
   }
-
-  if (b64) {
-    const clean = String(b64).replace(/^data:image\/\w+;base64,/, '');
-    return { type: 'b64', value: clean, mime, raw: data, model, source_url: imageUrl || null };
-  }
-  throw new Error('Image API merespons tapi tidak ada url/base64');
+  throw lastErr || new Error('Gagal generate image setelah antre');
 }
+
 
 module.exports = async function handler(req, res) {
   setCors(res);
@@ -469,10 +500,12 @@ module.exports = async function handler(req, res) {
       ok: false,
       error: msg,
       code: concurrency ? 'CONCURRENCY' : 'IMAGE_FAIL',
-      retryAfterSec: concurrency ? 25 : 0,
+      retryAfterSec: concurrency ? 15 : 0,
       hint: concurrency
-        ? 'Antrian image IAMHC penuh (limit ~10). JANGAN spam. Tunggu ±25 detik lalu Generate 1x.'
+        ? 'Antrian image IAMHC penuh. App akan auto-antre di client. Jangan buka banyak tab generate.'
         : 'Set IAMHC_IMAGE_MODEL=step-image-edit-2.',
     });
   }
 };
+
+module.exports.config = { maxDuration: 60 };
