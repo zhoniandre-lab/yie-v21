@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>YouTube Intelligence Engine v21.8 — CapCut-like Font Pack</title>
+<title>YouTube Intelligence Engine v21.9 — Niche Lock + Safe Thumb Queue</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Black+Ops+One&family=Bungee&family=Russo+One&family=Bangers&family=Rubik:wght@700;900&family=Montserrat:wght@700;900&family=Raleway:wght@700;900&family=Oswald:wght@700&family=Orbitron:wght@700;900&family=Cinzel:wght@700;900&family=Cinzel+Decorative:wght@700;900&family=Playfair+Display:wght@700;900&family=Great+Vibes&family=Italianno&family=Pacifico&family=Special+Elite&family=Abril+Fatface&family=Permanent+Marker&family=Creepster&family=Nosifer&family=Alfa+Slab+One&family=Teko:wght@600;700&display=swap" rel="stylesheet">
@@ -19,7 +19,7 @@
 <body>
 <div class="wrap">
   <section class="hero">
-    <span class="badge">🧠 v21.8 CapCut-like Font Pack</span>
+    <span class="badge">🧠 v21.9 Niche Lock + Safe Thumb</span>
     <h1>Mesin tetap data-based. AI Strategy membaca hasil engine, mengkritik strategi, lalu memberi verdict, alternatif judul, thumbnail strategy, dan rencana 24 jam.</h1>
     <p class="muted">Alur v21.3: 1) Keyword Lab (seperti penonton search YouTube) → 2) Pilih keyword → 3) Engine judul/kompetitor → 4) AI Strategy/Thumb. AI bukan otak utama.</p>
     <div class="warn"><b>Catatan kuota:</b> Mode ini meriset beberapa angle. Mulai dari 3-5 angle dulu agar kuota YouTube API aman.</div>
@@ -164,25 +164,103 @@ function mergeVideos(videos){let seen={},out=[];videos.forEach(v=>{let id=v.id||
 function buildRealityQueries(seed,angle){let s=norm(seed+' '+angle),q=[angle,seed];if(isFamilyIntentText(s)){if(/sebelum aku lahir|sebelum lahir|mati sebelum|meninggal sebelum|wafat sebelum|lahir tanpa/.test(s))q.push('ibu maafkan aku lagu sedih','maafkan aku sebelum aku mati lagu','lagu sedih ibu meninggal','cerita jadi lagu ibu');else if(/terbaik|terima kasih/.test(s))q.push('ibu engkau yang terbaik lagu','terima kasih ibu lagu','lagu untuk ibu terbaik','doa ibu lagu sedih');else if(/maaf|menyesal|terlambat/.test(s))q.push('maaf ibu lagu sedih','ibu maafkan aku lagu','lagu sedih ibu maafkan aku');else q.push('lagu sedih ibu','cerita jadi lagu ibu','kisah ibu jadi lagu')}
 else if(isExplicitDJText(s))q.push(`${seed} full bass`,`${seed} viral tiktok`,`${seed} nonstop`);
 else if(isHorrorText(s))q.push(`${seed} rumah kosong`,`${seed} tengah malam`,`${seed} suara misterius`);
-else q.push(`${seed} terbaru`,`${seed} 2026`);return uniq(q.map(x=>x.replace(/\|/g,' ').trim()).filter(Boolean))}
+else q.push(`${seed} terbaru`,`${seed} 2026`);q=applyFormatToQueries(q,seed,angle);return uniq(q.map(x=>x.replace(/\|/g,' ').trim()).filter(Boolean))}
 function localAngles(seed){let k=norm(seed);if(/dj|remix|bass|jedag|tiktok/.test(k))return[`${seed} full bass`,`${seed} viral tiktok`,`${seed} nonstop`,`${seed} jedag jedug`,`${seed} remix terbaru`];if(/hantu|horor|horror|ghost|haunted|رعب|arvoh/.test(k))return[`${seed} rumah kosong`,`${seed} rumah angker`,`${seed} tengah malam`,`${seed} suara misterius`,`${seed} pintu terbuka`];return[`${seed} terbaru`,`${seed} 2026`,`${seed} viral`,`${seed} kisah nyata`,`${seed} tutorial`]}
 function previewAngles(){let seed=$('kw').value.trim();let arr=localAngles(seed);$('results').style.display='block';$('decisionBox').innerHTML=`<div class="finalBox"><h3>Preview angle lokal</h3>${arr.map(x=>`<span class="tag b">${esc(x)}</span>`).join('')}<p class="muted">Untuk angle asli dari YouTube Suggest, klik Jalankan.</p></div>`;$('packBox').innerHTML='';$('thumbBox').innerHTML='';$('detailBox').innerHTML=''}
 function analyzeAngle(keyword,raw,seed){let rawVideos=(raw.videos||[]).map(v=>{let age=days(v.publishedAt),views=+v.viewCount||0,subs=+(v.channel&&v.channel.subscriberCount||0),vpd=views/age,vpm=vpd*30,tokens=tok(v.title),phr=[...ng(tokens,2),...ng(tokens,3)];return{...v,age,views,subs,vpd,vpm,tokens,phr,normTitle:norm(v.title)}}).sort((a,b)=>b.vpd-a.vpd);
-let preliminaryNiche=detectNiche(seed+' '+keyword,rawVideos),manual=getManualTitles();let scored=rawVideos.map(v=>({...v,relevance:competitorRelevance(v,seed,keyword,preliminaryNiche,manual)})).sort((a,b)=>b.relevance-a.relevance||b.vpd-a.vpd);let threshold=55;let qualified=scored.filter(v=>v.relevance>=threshold);let fallbackUsed=false;if(qualified.length<3){qualified=scored.slice(0,Math.min(5,scored.length));fallbackUsed=true}let rejected=scored.filter(v=>!qualified.some(q=>(q.id||q.title)===(v.id||v.title))).slice(0,20);let manualVideos=manual.map((t,i)=>({id:'manual-'+i,title:t,channelTitle:'Manual YouTube Search',url:'#',publishedAt:new Date().toISOString(),views:0,subs:0,vpd:0,vpm:0,tokens:tok(t),phr:[...ng(tok(t),2),...ng(tok(t),3)],normTitle:norm(t),manual:true,relevance:100}));let patternVideos=[...qualified,...manualVideos];let videos=qualified,total=Math.max(1,videos.length),all=patternVideos.flatMap(v=>[...v.tokens,...v.phr]),freq=cnt(all),top=ent(freq),topVideos=videos.slice(0,Math.min(10,total)),sumVpm=topVideos.reduce((a,v)=>a+v.vpm,0),demand=clamp(slog(sumVpm,14)*.75+slog(med(topVideos.map(v=>v.vpm)),18)*.25),medSubs=med(videos.map(v=>v.subs).filter(Boolean)),exact=keywordExactRate(videos,keyword),saturated=top.filter(([t,c])=>c/Math.max(1,patternVideos.length)>=.25).slice(0,25),competition=clamp(slog(medSubs,15)+saturated.length*3+exact*25),low=100-competition,small=videos.filter(v=>v.subs>0&&v.subs<100000&&v.views>v.subs*1.2).length,smallProof=clamp(small*14),fresh=clamp(videos.filter(v=>v.age<=120).length/total*100),niche=detectNiche(seed+' '+keyword,patternVideos),patterns=extractPatterns(keyword,patternVideos,niche),gap=gapScore(freq,total,patterns,niche),confidence=clamp(Math.min(55,total*8)+Math.min(20,top.length*.4)+25-(fallbackUsed?20:0)),specificity=clamp((tok(keyword).length-tok(seed).length+2)*18),reality=clamp(avg(qualified.map(v=>v.relevance))),score=clamp(demand*.24+low*.16+smallProof*.12+gap*.14+fresh*.08+confidence*.08+specificity*.04+reality*.14);return{keyword,seed,lang:$('lang').value,region:$('region').value,nicheInput:$('niche').value,niche,profile:PROFILES[niche.id]||PROFILES.general,videos,total,rawVideos:scored,qualified,rejected,manualTitles:manual,queryVariants:raw.queryVariants||[keyword],top,freq,patterns,saturated,score,metrics:{sumVpm,demand,medSubs,exact,competition,low,smallProof,fresh,gap,confidence,specificity,reality,attentionLow:sumVpm*.1,attentionHigh:sumVpm*.35},reasons:angleReasons(keyword,score,{demand,low,smallProof,fresh,gap,confidence,specificity,reality},niche,fallbackUsed,qualified.length,rejected.length)}}
+let preliminaryNiche=detectNiche(seed+' '+keyword,rawVideos),manual=getManualTitles();let scored=rawVideos.map(v=>({...v,relevance:competitorRelevance(v,seed,keyword,preliminaryNiche,manual)})).sort((a,b)=>b.relevance-a.relevance||b.vpd-a.vpd);let threshold=55;let qualified=scored.filter(v=>v.relevance>=threshold);let fallbackUsed=false;if(qualified.length<3){qualified=scored.slice(0,Math.min(5,scored.length));fallbackUsed=true}let rejected=scored.filter(v=>!qualified.some(q=>(q.id||q.title)===(v.id||v.title))).slice(0,20);let manualVideos=manual.map((t,i)=>({id:'manual-'+i,title:t,channelTitle:'Manual YouTube Search',url:'#',publishedAt:new Date().toISOString(),views:0,subs:0,vpd:0,vpm:0,tokens:tok(t),phr:[...ng(tok(t),2),...ng(tok(t),3)],normTitle:norm(t),manual:true,relevance:100}));let patternVideos=[...qualified,...manualVideos];let videos=qualified,total=Math.max(1,videos.length),all=patternVideos.flatMap(v=>[...v.tokens,...v.phr]),freq=cnt(all),top=ent(freq),topVideos=videos.slice(0,Math.min(10,total)),sumVpm=topVideos.reduce((a,v)=>a+v.vpm,0),demand=clamp(slog(sumVpm,14)*.75+slog(med(topVideos.map(v=>v.vpm)),18)*.25),medSubs=med(videos.map(v=>v.subs).filter(Boolean)),exact=keywordExactRate(videos,keyword),saturated=top.filter(([t,c])=>c/Math.max(1,patternVideos.length)>=.25).slice(0,25),competition=clamp(slog(medSubs,15)+saturated.length*3+exact*25),low=100-competition,small=videos.filter(v=>v.subs>0&&v.subs<100000&&v.views>v.subs*1.2).length,smallProof=clamp(small*14),fresh=clamp(videos.filter(v=>v.age<=120).length/total*100),niche=detectNiche(seed+' '+keyword,patternVideos),patterns=extractPatterns(keyword,patternVideos,niche),gap=gapScore(freq,total,patterns,niche),confidence=clamp(Math.min(55,total*8)+Math.min(20,top.length*.4)+25-(fallbackUsed?20:0)),specificity=clamp((tok(keyword).length-tok(seed).length+2)*18),reality=clamp(avg(qualified.map(v=>v.relevance))),score=clamp(demand*.24+low*.16+smallProof*.12+gap*.14+fresh*.08+confidence*.08+specificity*.04+reality*.14);return{keyword,seed,lang:$('lang').value,region:$('region').value,nicheInput:nicheNoteRaw(),format:(CONTENT_FORMAT||detectContentFormat(seed,nicheNoteRaw())),niche,profile:PROFILES[niche.id]||PROFILES.general,videos,total,rawVideos:scored,qualified,rejected,manualTitles:manual,queryVariants:raw.queryVariants||[keyword],top,freq,patterns,saturated,score,metrics:{sumVpm,demand,medSubs,exact,competition,low,smallProof,fresh,gap,confidence,specificity,reality,attentionLow:sumVpm*.1,attentionHigh:sumVpm*.35},reasons:angleReasons(keyword,score,{demand,low,smallProof,fresh,gap,confidence,specificity,reality},niche,fallbackUsed,qualified.length,rejected.length)}}
 function competitorRelevance(v,seed,angle,niche,manual){let t=v.normTitle||norm(v.title),seedTok=tok(seed),angleTok=tok(angle),score=20;angleTok.forEach(x=>{if(t.includes(x))score+=7});seedTok.forEach(x=>{if(t.includes(x))score+=4});let id=niche.id;if(id==='family'){if(/ibu|ayah|mama|bunda|papa|orang tua|mother|father|mom|dad|maaf|mati|meninggal|wafat|sedih|doa|anak|pesan|titip/.test(t))score+=35;if(/virgoun|official mv|ost|galau|cinta|pacar/.test(t)&&!/ibu|ayah|maaf|mati|meninggal|anak|doa/.test(t))score-=28;if(keywordIntent({seed,keyword:angle}).deathBeforeBirth&&/ibu|lahir|mati|meninggal|maaf|anak/.test(t))score+=18;if(keywordIntent({seed,keyword:angle}).bestMother&&/ibu|terima kasih|terbaik|doa/.test(t))score+=18}
 else if(id==='dj'){if(/dj|remix|bass|tiktok|jedag|nonstop/.test(t))score+=45;else score-=30}
 else if(id==='horror'){if(/hantu|horor|seram|mistis|angker|rumah|suara|pintu|sosok|malam|ghost|haunted/.test(t))score+=40;else score-=18}
 else if(id==='street'){if(/anak jalanan|jalanan|pengamen|perjuangan/.test(t))score+=40}
 manual.forEach(m=>{let mt=norm(m),mTok=tok(mt),hit=mTok.filter(x=>t.includes(x)).length;if(hit>=2)score+=18;if(mt&&t.includes(mt.slice(0,18)))score+=25});return clamp(score)}
-function keywordExactRate(videos,kw){let k=tok(kw);if(!k.length)return 0;return videos.filter(v=>k.every(x=>v.normTitle.includes(x))).length/Math.max(1,videos.length)}function angleReasons(keyword,score,m,niche,fallbackUsed,used,rejected){let guard=niche.guardrail&&niche.guardrail!=='score_based'?` Guardrail aktif: ${niche.guardrail}.`:'';return[{c:score>=70?'good':'yellow',t:`Angle "${keyword}" mendapat skor ${score}/100.`},{c:'info',t:`Niche terdeteksi: ${niche.label} (${niche.confidence}/100).${guard}`},{c:m.reality>=65?'good':'yellow',t:`Reality relevance ${m.reality||0}/100. Kompetitor dipakai ${used||0}, dibuang ${rejected||0}.`},{c:m.demand>=65?'good':'yellow',t:`Demand proxy ${m.demand}/100 dan Low Competition ${m.low}/100.`},{c:fallbackUsed?'yellow':'good',t:fallbackUsed?'Data relevan sedikit, mesin memakai fallback top relevance.':'Data kompetitor cukup relevan untuk dihitung.'}]}function detectNiche(textSeed,videos){let seedOnly=norm(textSeed||''),nicheNote=norm($('niche').value||''),text=seedOnly+' '+nicheNote;
-// HARD GUARDRAILS: jangan biarkan data/suggest/niche lama menyeret keyword emosional ke DJ.
-if(isFamilyIntentText(seedOnly))return{id:'family',label:PROFILES.family.label,confidence:100,guardrail:'family_intent'};
-if(isExplicitDJText(seedOnly))return{id:'dj',label:PROFILES.dj.label,confidence:100,guardrail:'explicit_dj'};
-if(isHorrorText(seedOnly))return{id:'horror',label:PROFILES.horror.label,confidence:100,guardrail:'horror_intent'};
-if(isStreetText(seedOnly))return{id:'street',label:PROFILES.street.label,confidence:95,guardrail:'street_intent'};
+function keywordExactRate(videos,kw){let k=tok(kw);if(!k.length)return 0;return videos.filter(v=>k.every(x=>v.normTitle.includes(x))).length/Math.max(1,videos.length)}function angleReasons(keyword,score,m,niche,fallbackUsed,used,rejected){let guard=niche.guardrail&&niche.guardrail!=='score_based'?` Guardrail aktif: ${niche.guardrail}.`:'';return[{c:score>=70?'good':'yellow',t:`Angle "${keyword}" mendapat skor ${score}/100.`},{c:'info',t:`Niche terdeteksi: ${niche.label} (${niche.confidence}/100).${guard}`},{c:m.reality>=65?'good':'yellow',t:`Reality relevance ${m.reality||0}/100. Kompetitor dipakai ${used||0}, dibuang ${rejected||0}.`},{c:m.demand>=65?'good':'yellow',t:`Demand proxy ${m.demand}/100 dan Low Competition ${m.low}/100.`},{c:fallbackUsed?'yellow':'good',t:fallbackUsed?'Data relevan sedikit, mesin memakai fallback top relevance.':'Data kompetitor cukup relevan untuk dihitung.'}]}
+function nicheNoteRaw(){return ($('niche')&&$('niche').value||'').trim()}
+function detectContentFormat(seed, note){
+  // What the creator WANTS to make — locks research direction
+  let t=norm((note||'')+' '+(seed||''));
+  let fmt={id:'auto', label:'Auto', queryBoost:[], titleBias:[], thumbBias:'', forceFamily:false};
+  if(/cerita jadi lagu|kisah jadi lagu|story to song|jadi lagu|lagu cerita|lagu sedih|musik sedih|lirik sedih|cover lagu|lagu untuk ibu|lagu ibu/.test(t) || (/lagu|song|lirik/.test(norm(note||'')) && !/dj|remix|bass|jedag/.test(t))){
+    fmt={id:'story_song', label:'Cerita jadi lagu / lagu sedih',
+      queryBoost:['lagu sedih','cerita jadi lagu','lagu untuk ibu','lirik sedih','musik sedih','lagu viral sedih'],
+      titleBias:['lagu','lirik','cerita jadi lagu','untuk ibu'],
+      thumbBias:'emotional song cover art mood, not horror, not DJ club',
+      forceFamily:true};
+  } else if(/cerita horor|cerita hantu|horror story|kisah mistis|true horror/.test(t) || (/horor|hantu|horror|mistis/.test(norm(note||'')))){
+    fmt={id:'horror_story', label:'Cerita horor',
+      queryBoost:['cerita horor','cerita hantu','kisah mistis','rumah angker'],
+      titleBias:['cerita','hantu','horor','malam'],
+      thumbBias:'cinematic horror story thumbnail',
+      forceFamily:false};
+  } else if(/tutorial|cara |how to|tips |belajar /.test(t) && !/lagu|hantu|dj/.test(norm(note||''))){
+    fmt={id:'tutorial', label:'Tutorial / edukasi',
+      queryBoost:['tutorial','cara','tips','pemula'],
+      titleBias:['cara','tutorial','tips'],
+      thumbBias:'clear tutorial thumbnail',
+      forceFamily:false};
+  } else if(/podcast|bicara|curhat channel|vlog /.test(t)){
+    fmt={id:'talk', label:'Podcast / curhat',
+      queryBoost:['podcast','curhat','bicara'],
+      titleBias:['curhat','podcast'],
+      thumbBias:'talking head emotional podcast',
+      forceFamily:false};
+  } else if(/dj|remix|full bass|jedag/.test(norm(note||''))){
+    fmt={id:'dj', label:'DJ / Remix',
+      queryBoost:['dj remix','full bass','viral tiktok'],
+      titleBias:['dj','remix','bass'],
+      thumbBias:'neon dj remix',
+      forceFamily:false};
+  } else if(/cerita|kisah|story/.test(norm(note||''))){
+    fmt={id:'story', label:'Cerita / kisah',
+      queryBoost:['cerita','kisah nyata','kisah sedih'],
+      titleBias:['cerita','kisah'],
+      thumbBias:'cinematic storytelling',
+      forceFamily:true};
+  }
+  CONTENT_FORMAT=fmt;
+  return fmt;
+}
+function applyFormatToQueries(queries, seed, angle){
+  let note=nicheNoteRaw();
+  let fmt=detectContentFormat(seed, note);
+  let out=[...queries];
+  if(fmt.id==='story_song'){
+    out = [
+      `${angle} lagu sedih`,
+      `${seed} lagu`,
+      `${angle} cerita jadi lagu`,
+      `${seed} lirik sedih`,
+      ...(fmt.queryBoost||[]).map(b=>`${seed} ${b}`)
+    ];
+  } else if(fmt.id!=='auto' && fmt.queryBoost && fmt.queryBoost.length){
+    out = uniq([
+      ...fmt.queryBoost.map(b=>`${angle} ${b}`),
+      ...fmt.queryBoost.map(b=>`${seed} ${b}`),
+      ...queries
+    ]);
+  }
+  // always keep angle/seed first-ish
+  return uniq([angle, seed, ...out]).filter(Boolean).slice(0,6);
+}
+
+function detectNiche(textSeed,videos){let seedOnly=norm(textSeed||''),nicheNote=norm($('niche').value||''),text=seedOnly+' '+nicheNote;
+let fmt=detectContentFormat(textSeed, $('niche')&&$('niche').value);
+// LOCK from catatan/arah channel (prioritas tertinggi setelah explicit DJ)
+if(fmt.id==='story_song')return{id:'family',label:PROFILES.family.label+' · Cerita jadi lagu',confidence:100,guardrail:'format_story_song',format:fmt};
+if(fmt.id==='horror_story')return{id:'horror',label:PROFILES.horror.label,confidence:100,guardrail:'format_horror_story',format:fmt};
+if(fmt.id==='dj')return{id:'dj',label:PROFILES.dj.label,confidence:100,guardrail:'format_dj',format:fmt};
+if(fmt.id==='tutorial')return{id:'general',label:'Tutorial / edukasi',confidence:90,guardrail:'format_tutorial',format:fmt};
+if(fmt.id==='talk')return{id:'general',label:'Podcast / curhat',confidence:85,guardrail:'format_talk',format:fmt};
+// HARD GUARDRAILS seed
+if(isFamilyIntentText(seedOnly))return{id:'family',label:PROFILES.family.label,confidence:100,guardrail:'family_intent',format:fmt};
+if(isExplicitDJText(seedOnly)&&fmt.id==='auto')return{id:'dj',label:PROFILES.dj.label,confidence:100,guardrail:'explicit_dj',format:fmt};
+if(isHorrorText(seedOnly)&&fmt.id==='auto')return{id:'horror',label:PROFILES.horror.label,confidence:100,guardrail:'horror_intent',format:fmt};
+if(isStreetText(seedOnly))return{id:'street',label:PROFILES.street.label,confidence:95,guardrail:'street_intent',format:fmt};
 let scores={};Object.keys(PROFILES).forEach(id=>scores[id]=0);Object.entries(PROFILES).forEach(([id,p])=>p.keys.forEach(k=>{if(text.includes(norm(k)))scores[id]+=id==='dj'?18:24}));videos.slice(0,12).forEach((v,i)=>{let w=1+(12-i)/12;Object.entries(PROFILES).forEach(([id,p])=>p.keys.forEach(k=>{if(v.normTitle.includes(norm(k)))scores[id]+=w*(id==='dj'?3:5)}))});
 // Extra protection: kata "lagu" / "music" sendiri tidak boleh mengubah family/story menjadi DJ.
-if(/lagu|song|music|musik|أغنية|qoshiq|qo‘shiq/.test(seedOnly)&&!isExplicitDJText(seedOnly)){scores.dj=Math.min(scores.dj,20)}
+if((/lagu|song|music|musik|أغنية|qoshiq|qo‘shiq/.test(text))&&!isExplicitDJText(text)){scores.dj=Math.min(scores.dj||0,10); scores.family=(scores.family||0)+18}
+if(fmt.id==='story_song'){scores.family=(scores.family||0)+40; scores.dj=Math.min(scores.dj||0,5)}
+if(fmt.id==='horror_story'){scores.horror=(scores.horror||0)+40}
 let sorted=Object.entries(scores).sort((a,b)=>b[1]-a[1]),best=sorted[0]||['general',0],second=sorted[1]||['general',0],conf=clamp(best[1]*2+(best[1]-second[1])*2);if(best[1]<12)return{id:'general',label:PROFILES.general.label,confidence:45};return{id:best[0],label:PROFILES[best[0]].label,confidence:Math.max(55,conf),guardrail:'score_based'}}
 function isExplicitDJText(t){return /(^|\s)dj(\s|$)|remix|full bass|jedag|jedug|tik ?tok|nonstop|dugem|club mix|party mix|bass mantap/.test(t)}
 function isFamilyIntentText(t){return /ibu|mama|bunda|ayah|papa|orang tua|mother|father|mom|dad|أمي|امي|أب|اب|ona|ota|sebelum aku lahir|sebelum lahir|mati sebelum|meninggal sebelum|wafat sebelum|pergi sebelum aku lahir|lahir tanpa|engkau mati sebelum|engkau yang terbaik|kau yang terbaik|terima kasih ibu|maaf ibu|rindu ibu/.test(t)}
@@ -222,6 +300,26 @@ function gapWords(a){
 function buildGapCandidates(a){
   // Build titles around underserved search phrases (on-intent), not random templates
   let lang=a.lang||'id', kw=a.keyword, gaps=gapWords(a), phrases=suggestPhrases(a);
+  let fmt=a.format||CONTENT_FORMAT||detectContentFormat(a.seed, a.nicheInput||nicheNoteRaw());
+  if(fmt.id==='story_song'){
+    let out=[];
+    let cores=uniq([kw, a.seed, ...phrases.slice(0,6)]).filter(Boolean);
+    cores.forEach(b=>{
+      out.push(`${cap(b)} (Cerita Jadi Lagu)`);
+      out.push(`Lagu Sedih: ${cap(b)}`);
+      out.push(`${cap(b)} — Lirik yang Menyentuh`);
+      out.push(`Cerita Jadi Lagu: ${cap(b)}`);
+      if(/maaf/.test(norm(b))) out.push(`Maaf Ibu (Lagu Sedih)`);
+      if(/rindu/.test(norm(b))) out.push(`Rindu Ibu (Lagu)`);
+    });
+    let comps=competitorTitleSet(a);
+    return uniq(out).filter(t=>{
+      if(comps.has(norm(t))) return false;
+      for(let c of (a.qualified||[]).slice(0,12)){ if(sim(t,c.title)>=0.72) return false; }
+      return t.length>=12 && t.length<=90;
+    }).slice(0,16);
+  }
+
   let base=uniq([kw, a.seed, ...phrases.filter(p=>sim(p,kw)>0.15 || norm(p).includes(norm(kw).split(' ')[0]||'x'))]).filter(Boolean).slice(0,8);
   let out=[];
   base.forEach(b=>{
@@ -288,12 +386,12 @@ function generateTitles(a){
 }
 
 function buildCandidates(a){let id=a.niche.id,lang=a.lang,kw=a.keyword,y=yearOf(kw)||new Date().getFullYear(),out=[];if(id==='dj'){out=lang==='en'?[`Latest DJ Remix ${y} Full Bass`,`Viral DJ Remix ${y} For Party`,`Full Bass DJ Remix ${y} Nonstop`,`TikTok Viral DJ Remix ${y}`]:lang==='ar'?[`دي جي جديد ${y} فل باس`,`ريمكس دي جي ${y} ترند`,`دي جي تيك توك ${y} فل باس`,`ريمكس دي جي متواصل ${y}`]:lang==='uz'?[`Eng yangi DJ ${y} Full Bass`,`DJ Remix ${y} Viral TikTok`,`DJ Jedag Jedug ${y} Nonstop`,`DJ Full Bass ${y} Eng Zo‘r`]:[`DJ Terbaru ${y} Full Bass Viral`,`DJ Remix ${y} Paling Enak Buat Diputar`,`DJ Viral TikTok ${y} Full Bass`,`DJ Jedag Jedug ${y} Nonstop Full Bass`,`DJ Remix Terbaru ${y} Bass Mantap`,`DJ Full Bass ${y} Buat Santai dan Party`]}else if(id==='horror'){if(lang==='en')out=[`The Sound Came From The Empty House`,`I Thought It Was The Wind, Until It Followed Me`,`Do Not Open The Door After Midnight`,`There Was Someone Standing At The End Of The Hall`,`The Light Went Out, Then The Voice Came Back`];else if(lang==='ar')out=[`الصوت الذي خرج من البيت المهجور`,`ظننته ريحا حتى بدأ يقترب`,`لا تفتح الباب بعد منتصف الليل`,`كان هناك شيء يقف في آخر الممر`,`انطفأ الضوء ثم عاد الصوت`,`لم أكن وحدي في تلك الغرفة`];else if(lang==='uz')out=[`Tashlandiq uydan kelgan ovoz`,`Men buni shamol deb o‘ylagandim`,`Yarim tundan keyin eshikni ochmang`,`Yo‘lak oxirida kimdir turardi`,`Chiroq o‘chdi, keyin ovoz qaytdi`,`Men u xonada yolg‘iz emas edim`];else out=[`Suara Itu Datang dari Rumah Kosong`,`Aku Kira Itu Angin, Ternyata Ada yang Mengikuti`,`Jangan Buka Pintu Setelah Tengah Malam`,`Ada Sosok di Ujung Lorong Malam Itu`,`Lampu Padam, Lalu Suara Itu Muncul Lagi`,`Rumah Itu Kosong Bukan Tanpa Alasan`]}else if(id==='family'){out=titleBankFamilyIntent(a)}else if(id==='street'){out=lang==='en'?[`The Street Kid Who Never Gave Up`,`A Voice From The Street That Stopped People`,`From The Street To A Song`,`A Smile That Hid A Hard Life`]:lang==='ar'?[`الطفل الذي لم يستسلم في الشارع`,`صوت من الشارع جعل الناس يتوقفون`,`من الشارع إلى أغنية`,`ابتسامة تخفي حياة صعبة`]:lang==='uz'?[`Ko‘chadagi bola taslim bo‘lmadi`,`Ko‘chadan chiqqan ovoz odamlarni to‘xtatdi`,`Ko‘chadan qo‘shiqqa aylangan hikoya`,`Qiyin hayotni yashirgan tabassum`]:[`Kisah Anak Jalanan yang Tak Pernah Menyerah`,`Suara dari Jalanan yang Membuat Orang Terdiam`,`Dari Jalanan ke Lagu: Perjalanan yang Menyentuh`]}else out=lang==='en'?[`The Story People Rarely Talk About`,`The Hidden Side That Started To Appear`,`A Small Detail That Changed Everything`,`Why This Topic Is Being Searched`]:lang==='ar'?[`القصة التي نادرا ما يتحدث عنها الناس`,`الجانب الخفي الذي بدأ يظهر`,`تفصيل صغير غير كل شيء`,`لماذا يبحث الناس عن هذا الموضوع`]:lang==='uz'?[`Odamlar kam gapiradigan hikoya`,`Yashirin tomoni ko‘rina boshladi`,`Kichik detal hammasini o‘zgartirdi`,`Nega bu mavzu ko‘p izlanmoqda`]:[`Kisah yang Jarang Orang Ceritakan`,`Sisi Tersembunyi yang Mulai Terlihat`,`Satu Detail Kecil yang Mengubah Cerita Ini`,`Kenapa Topik Ini Banyak Dicari?`];return out.concat(keywordBasedVariants(kw,id,lang,y,a))}
-function keywordIntent(a){let x=norm((a.seed||'')+' '+(a.keyword||''));return{deathBeforeBirth:/sebelum aku lahir|sebelum lahir|mati sebelum|meninggal sebelum|wafat sebelum|pergi sebelum aku lahir|lahir tanpa/.test(x),bestMother:/ibu.*terbaik|engkau yang terbaik|kau yang terbaik|mama terbaik|terima kasih ibu|ibu hebat|ibu tersayang/.test(x),apology:/maaf|ampuni|menyesal|terlambat/.test(x),longing:/rindu|kangen|merindukan|ingin bertemu/.test(x),song:/jadi lagu|cerita jadi lagu|lagu/.test(x),prayer:/doa|mendoakan/.test(x)}}
+function keywordIntent(a){let x=norm((a.seed||'')+' '+(a.keyword||'')+' '+(a.nicheInput||nicheNoteRaw()||''));let fmt=a.format||CONTENT_FORMAT||detectContentFormat(a.seed, nicheNoteRaw());return{deathBeforeBirth:/sebelum aku lahir|sebelum lahir|mati sebelum|meninggal sebelum|wafat sebelum|pergi sebelum aku lahir|lahir tanpa/.test(x),bestMother:/ibu.*terbaik|engkau yang terbaik|kau yang terbaik|mama terbaik|terima kasih ibu|ibu hebat|ibu tersayang/.test(x),apology:/maaf|ampuni|menyesal|terlambat/.test(x),longing:/rindu|kangen|merindukan|ingin bertemu/.test(x),song:fmt.id==='story_song' || /jadi lagu|cerita jadi lagu|lagu sedih|lirik/.test(x),prayer:/doa|mendoakan/.test(x),format:fmt.id}}
 function titleBankFamilyIntent(a){let lang=a.lang,it=keywordIntent(a);if(lang==='en'){if(it.deathBeforeBirth)return[`Mother, You Left Before I Was Born`,`I Was Born Without Ever Knowing My Mother`,`A Song For The Mother I Never Met`,`Before I Could Call Her Mom, She Was Gone`,`The Child Who Never Got To Hug His Mother`];if(it.bestMother)return[`Mom, You Are The Best Gift In My Life`,`Thank You Mom, You Are The Best`,`A Song For The Best Mother In The World`,`Your Prayers Always Protect Me, Mom`,`Mom, You Are My Home`];if(it.apology)return[`Sorry Mom, I Understood Too Late`,`I Regret Not Listening To You, Mom`,`Forgive Me Mom, I Was Too Late`];return[`The Last Message That Was Never Read`,`I Understood Everything Too Late`,`The Secret Behind That Quiet Smile`,`Before It Was Too Late, A Message Was Left`]}if(lang==='ar'){if(it.deathBeforeBirth)return[`أمي رحلت قبل أن أولد`,`ولدت ولم أعرف أمي أبدا`,`أغنية للأم التي لم ألتق بها`,`قبل أن أناديها أمي كانت قد رحلت`];if(it.bestMother)return[`أمي أنت أفضل نعمة في حياتي`,`شكرا أمي أنت الأفضل`,`أغنية لأفضل أم في العالم`,`دعاؤك يحميني يا أمي`];if(it.apology)return[`سامحيني يا أمي فهمت بعد فوات الأوان`,`ندمت لأني لم أسمع كلامك يا أمي`,`أمي أعتذر لأنني تأخرت`];return[`الرسالة الأخيرة التي لم تقرأ`,`فهمت كل شيء بعد فوات الأوان`,`السر خلف تلك الابتسامة الهادئة`,`قبل فوات الأوان ترك رسالة`]}if(lang==='uz'){if(it.deathBeforeBirth)return[`Onam men tug‘ilmasimdan ketgan`,`Men onamni tanimasdan tug‘ildim`,`Men hech qachon ko‘rmagan ona uchun qo‘shiq`,`Ona deb chaqirishimdan oldin u ketgan`];if(it.bestMother)return[`Ona, siz hayotimdagi eng yaxshi inson`,`Rahmat ona, siz eng yaxshisiz`,`Dunyodagi eng yaxshi ona uchun qo‘shiq`,`Onamning duosi meni asraydi`];if(it.apology)return[`Kechiring ona, men juda kech tushundim`,`Onam, sizni tinglamaganimdan afsusdaman`,`Ona, kech qolganim uchun uzr`];return[`O‘qilmagan oxirgi xabar`,`Men hammasini juda kech tushundim`,`Sokin tabassum ortidagi sir`,`Kech bo‘lmasidan qoldirilgan xabar`]}
 if(it.deathBeforeBirth)return[`Ibu, Engkau Pergi Sebelum Aku Lahir`,`Aku Lahir Tanpa Sempat Mengenal Ibu`,`Lagu untuk Ibu yang Tak Pernah Sempat Kupeluk`,`Sebelum Aku Lahir, Ibu Sudah Pergi`,`Doa Anak untuk Ibu yang Tak Pernah Ia Kenal`,`Cerita Jadi Lagu: Ibu yang Pergi Sebelum Aku Lahir`];if(it.bestMother)return[`Ibu, Engkau yang Terbaik`,`Terima Kasih Ibu, Engkau yang Terbaik`,`Lagu untuk Ibu Terbaik dalam Hidupku`,`Ibu Terbaik, Doamu Selalu Menjagaku`,`Cerita Jadi Lagu: Ibu, Engkau yang Terbaik`,`Untuk Ibu yang Selalu Menjadi Rumah`];if(it.apology)return[`Maaf Ibu, Aku Terlambat Mengerti`,`Ibu, Maafkan Aku yang Pernah Menyakitimu`,`Aku Menyesal Setelah Mengerti Cinta Ibu`,`Maaf Ibu, Doamu Baru Aku Sadari`];if(it.longing)return[`Ibu, Aku Rindu Suaramu`,`Rindu Ibu yang Tak Pernah Hilang`,`Lagu Rindu untuk Ibu`,`Aku Ingin Sekali Bertemu Ibu`];return[`Pesan Terakhir yang Tak Pernah Terbaca`,`Aku Baru Mengerti Setelah Terlambat`,`Rahasia di Balik Senyum yang Selalu Kuat`,`Sebelum Terlambat, Pesan Ini Ditinggalkan`]}
 function keywordBasedVariants(kw,id,lang,y,a){let it=a?keywordIntent(a):{};if(id==='family'&&it.deathBeforeBirth)return lang==='id'?[`Ibu Pergi Sebelum Aku Lahir`,`Aku Tak Pernah Sempat Memanggilmu Ibu`,`Lagu Anak yang Tak Pernah Mengenal Ibunya`]:[];if(id==='family'&&it.bestMother)return lang==='id'?[`Ibu Engkau yang Terbaik`,`Terima Kasih Untuk Ibu Terbaik`,`Lagu Untuk Ibu Terbaik`]:[];if(id==='dj')return lang==='ar'?[`دي جي ${y} فل باس`,`ريمكس ${y} ترند`,`دي جي تيك توك ${y}`]:lang==='uz'?[`DJ ${y} Full Bass`,`DJ Remix ${y} Viral`,`DJ TikTok ${y}`]:lang==='en'?[`DJ ${y} Full Bass`,`DJ Remix ${y} Viral`,`TikTok DJ ${y}`]:[`DJ ${y} Full Bass`,`DJ ${y} Nonstop`,`DJ ${y} Viral TikTok`];if(id==='horror')return lang==='ar'?[`قصة رعب في بيت مهجور`,`صوت غريب بعد منتصف الليل`,`لا تفتح الباب ليلا`]:lang==='uz'?[`Tashlandiq uy voqeasi`,`Yarim tundan keyingi ovoz`,`Kechasi eshikni ochmang`]:lang==='en'?[`Haunted House Story`,`The Sound After Midnight`,`Do Not Open The Door At Night`]:[`Cerita Hantu Rumah Kosong`,`Suara Misterius Tengah Malam`,`Jangan Buka Pintu Malam Hari`];return[]}
 function languageFit(title,lang){let t=String(title||''),n=norm(t);let arab=/[\u0600-\u06FF]/.test(t);let indo=/\b(cerita|kisah|hantu|suara|pintu|rumah|malam|aku|itu|yang|dari|jangan|terbaru|paling|enak|buat|diputar|ibu|engkau|terima kasih|lahir)\b/.test(n);if(lang==='ar')return arab?100:15;if(lang==='uz'){if(arab)return 5;if(indo)return 18;if(/\b(uy|ovoz|eshik|yarim|tun|hikoya|qorq|arvoh|remix|full bass|viral|yolg|chiroq|xona|ona|tug|ketgan|qoshiq|qo‘shiq)\b/.test(n))return 100;return 65}if(lang==='en'){if(arab)return 5;if(indo)return 20;if(/\b(the|sound|door|house|story|wind|midnight|latest|viral|remix|bass|mother|mom|born)\b/.test(n))return 100;return 70}if(lang==='id'){if(arab)return 8;return indo||/[a-z]/.test(n)?100:65}return 80}
-function scoreTitle(title,a,mem){let nt=norm(title),kwTok=tok(a.keyword),terms=tok(title),cover=kwTok.length?kwTok.filter(k=>terms.some(t=>t.includes(k)||k.includes(t))).length/kwTok.length:.4,quality=titleQuality(title),langFit=languageFit(title,a.lang),intentFit=intentFitScore(title,a),nicheFit=nicheTitleFit(title,a),patternFit=patternFitScore(title,a),patternBorn=patternBornFit(title,a),ctr=ctrScore(title,a),hookScore=creatorHookScore(title,a),unique=clamp(95-Math.max(0,...(a.qualified||a.videos||[]).map(v=>sim(title,v.title)))*70),gapBoost=(function(){let g=gapWords(a);let n=nt;let hits=g.filter(w=>n.includes(w)).length;return clamp(hits*12);})(),memoryPenalty=mem.some(m=>norm(m.title)===nt)?14:0,languagePenalty=langFit<50?38:0,search=clamp(cover*36+nicheFit*.18+langFit*.08+intentFit*.18+patternBorn*.08+hookScore*.05+gapBoost*.07),browse=clamp(ctr*.28+hookScore*.20+unique*.18+patternFit*.10+patternBorn*.10+quality*.05+intentFit*.05+gapBoost*.04),algo=clamp(search*.22+browse*.32+a.metrics.demand*.15+a.metrics.low*.12+a.metrics.fresh*.07+patternBorn*.06+hookScore*.04+unique*.02),score=clamp(search*.14+browse*.18+algo*.16+quality*.08+unique*.12+a.metrics.demand*.07+langFit*.04+intentFit*.09+patternBorn*.10+hookScore*.08+gapBoost*.08-memoryPenalty-languagePenalty);let pack=makePack(title,a);return{title,score,search,browse,algo,quality,langFit,intentFit,patternBorn,hookScore,strategy:titleStrategy(search,browse,hookScore,a),unique,ctr,patternFit,memoryPenalty,desc:pack.desc,tags:pack.tags,hook:pack.hook,reasons:reasonTitle(title,a,score,search,browse,quality,memoryPenalty,langFit,intentFit,patternBorn,hookScore)}}function intentFitScore(title,a){let it=keywordIntent(a),n=norm(title);if(a.niche.id!=='family')return 65;if(it.deathBeforeBirth)return /sebelum aku lahir|lahir tanpa|tak pernah mengenal|tak pernah sempat|pergi sebelum|tug‘ilmasimdan|tanimasdan|قبل أن أولد|قبل ان اولد/.test(n)?100:25;if(it.bestMother)return /terbaik|terima kasih|doa|rumah|engkau yang terbaik|eng yaxsh|rahmat ona|أفضل|شكرا/.test(n)?100:30;if(it.apology)return /maaf|ampuni|menyesal|terlambat|sorry|forgive|سامح|uzr|kechiring/.test(n)?100:35;if(it.longing)return /rindu|kangen|miss|sog‘indim|اشتاق/.test(n)?100:40;return 65}
+function scoreTitle(title,a,mem){let nt=norm(title),kwTok=tok(a.keyword),terms=tok(title),cover=kwTok.length?kwTok.filter(k=>terms.some(t=>t.includes(k)||k.includes(t))).length/kwTok.length:.4,quality=titleQuality(title),langFit=languageFit(title,a.lang),intentFit=intentFitScore(title,a),nicheFit=nicheTitleFit(title,a),patternFit=patternFitScore(title,a),patternBorn=patternBornFit(title,a),ctr=ctrScore(title,a),hookScore=creatorHookScore(title,a),unique=clamp(95-Math.max(0,...(a.qualified||a.videos||[]).map(v=>sim(title,v.title)))*70),gapBoost=(function(){let g=gapWords(a);let n=nt;let hits=g.filter(w=>n.includes(w)).length;return clamp(hits*12);})(),formatBoost=(function(){let fmt=a.format||CONTENT_FORMAT; if(!fmt||fmt.id==='auto')return 0; let n=nt; if(fmt.id==='story_song'){let ok=/lagu|lirik|cerita jadi lagu|musik/.test(n); let bad=/dj|remix|bass|jedag|hantu|horor/.test(n); return ok?16: bad?-20: -6;} if(fmt.id==='horror_story'){return /hantu|horor|seram|mistis/.test(n)?14: (/lagu|dj/.test(n)?-12:0)} return 0;})(),memoryPenalty=mem.some(m=>norm(m.title)===nt)?14:0,languagePenalty=langFit<50?38:0,search=clamp(cover*36+nicheFit*.18+langFit*.08+intentFit*.18+patternBorn*.08+hookScore*.05+gapBoost*.07),browse=clamp(ctr*.28+hookScore*.20+unique*.18+patternFit*.10+patternBorn*.10+quality*.05+intentFit*.05+gapBoost*.04),algo=clamp(search*.22+browse*.32+a.metrics.demand*.15+a.metrics.low*.12+a.metrics.fresh*.07+patternBorn*.06+hookScore*.04+unique*.02),score=clamp(search*.14+browse*.18+algo*.16+quality*.08+unique*.12+a.metrics.demand*.07+langFit*.04+intentFit*.09+patternBorn*.10+hookScore*.08+gapBoost*.08+formatBoost-memoryPenalty-languagePenalty);let pack=makePack(title,a);return{title,score,search,browse,algo,quality,langFit,intentFit,patternBorn,hookScore,strategy:titleStrategy(search,browse,hookScore,a),unique,ctr,patternFit,memoryPenalty,desc:pack.desc,tags:pack.tags,hook:pack.hook,reasons:reasonTitle(title,a,score,search,browse,quality,memoryPenalty,langFit,intentFit,patternBorn,hookScore)}}function intentFitScore(title,a){let it=keywordIntent(a),n=norm(title);if(a.niche.id!=='family')return 65;if(it.deathBeforeBirth)return /sebelum aku lahir|lahir tanpa|tak pernah mengenal|tak pernah sempat|pergi sebelum|tug‘ilmasimdan|tanimasdan|قبل أن أولد|قبل ان اولد/.test(n)?100:25;if(it.bestMother)return /terbaik|terima kasih|doa|rumah|engkau yang terbaik|eng yaxsh|rahmat ona|أفضل|شكرا/.test(n)?100:30;if(it.apology)return /maaf|ampuni|menyesal|terlambat|sorry|forgive|سامح|uzr|kechiring/.test(n)?100:35;if(it.longing)return /rindu|kangen|miss|sog‘indim|اشتاق/.test(n)?100:40;return 65}
 function creatorHookScore(title,a){let n=norm(title),id=a.niche.id,it=keywordIntent(a),score=48;if(title.length>=32&&title.length<=82)score+=12;if(/[?؟]/.test(title))score+=6;if(id==='dj'){if(/full bass|bass/.test(n))score+=22;if(/viral|tiktok/.test(n))score+=18;if(/nonstop|jedag|jedug|remix/.test(n))score+=14}if(id==='horror'){if(/suara|sound|صوت|ovoz/.test(n))score+=22;if(/pintu|door|باب|eshik/.test(n))score+=18;if(/malam|midnight|منتصف|yarim tun|rumah|house|بيت|uy/.test(n))score+=18;if(/jangan|do not|لا تفتح|ochmang/.test(n))score+=14}if(id==='family'){if(it.deathBeforeBirth&&/lahir|born|أولد|tug|mengenal|tanimas/.test(n))score+=26;if(it.bestMother&&/terbaik|best|أفضل|eng yaxsh|terima kasih|rahmat|شكرا/.test(n))score+=24;if(it.apology&&/maaf|sorry|سامح|kechiring|uzr|menyesal/.test(n))score+=24;if(it.longing&&/rindu|miss|sog/.test(n))score+=20;if(/ibu|mother|mom|أمي|ona/.test(n))score+=12}if(/kisah|cerita|story|histoire|hikoya|قصة/.test(n))score+=7;if(/yang jarang|rahasia di balik|hidden side/.test(n))score-=8;return clamp(score)}
 function titleStrategy(search,browse,hook,a){let base=search>=browse+10?'Search-led':browse>=search+10?'Browse-led':'Search + Browse Hybrid';if(a.niche.id==='horror')base+=' / Curiosity Hook';if(a.niche.id==='family')base+=' / Emotional Storytelling';if(a.niche.id==='dj')base+=' / Trend Search Hook';return base}
 function titleQuality(t){let n=norm(t),w=n.split(' '),score=100,seen={};w.forEach(x=>{seen[x]=(seen[x]||0)+1;if(seen[x]>1&&x.length>3)score-=25});if(/hantu hantu|dj dj|story story|ini ini/.test(n))score-=70;if(t.length<18)score-=8;if(t.length>105)score-=20;return clamp(score)}function nicheTitleFit(t,a){let n=norm(t),id=a.niche.id;if(id==='dj')return /dj|remix|bass|tiktok|jedag|nonstop/.test(n)?95:25;if(id==='horror')return /hantu|horor|suara|pintu|rumah|sosok|malam|ghost|horror|door|sound|رعب|صوت|باب|منتصف|بيت|arvoh|uy|ovoz|eshik|tun/.test(n)?92:35;if(id==='family')return /pesan|doa|maaf|terakhir|ibu|ayah|family/.test(n)?88:40;if(id==='street')return /jalanan|street|perjuangan|suara/.test(n)?88:40;return 65}function patternFitScore(t,a){let n=norm(t),hit=0;a.patterns.signals.slice(0,18).forEach(x=>{if(n.includes(x))hit++});return clamp(hit*12+45)}function patternBornFit(t,a){let n=norm(t),best=35;(a.patterns.titlePatterns||[]).slice(0,5).forEach((p,i)=>{let b=45+(5-i)*7;if(p.id==='DJ_YEAR_FEATURE'&&/dj|remix/.test(n)&&/bass/.test(n))best=Math.max(best,b+20);if(p.id==='DJ_VIRAL_TIKTOK'&&/dj|remix/.test(n)&&/viral|tiktok/.test(n))best=Math.max(best,b+20);if(p.id==='DJ_NONSTOP'&&/nonstop|jedag|jedug/.test(n))best=Math.max(best,b+18);if(p.id==='WARNING_ACTION_TIME'&&/jangan|do not|لا تفتح|ochmang|pintu|door|باب|eshik/.test(n))best=Math.max(best,b+20);if(p.id==='SOUND_PLACE'&&/suara|sound|صوت|ovoz/.test(n))best=Math.max(best,b+20);if(p.id==='FIRST_PERSON_TWIST'&&/aku kira|i thought|ظننته|men buni/.test(n))best=Math.max(best,b+18);if(p.id==='PLACE_MYSTERY'&&/rumah|house|بيت|uy|misteri|secret|سر|sir/.test(n))best=Math.max(best,b+15);if(p.id==='LOSS_BEFORE_BIRTH'&&/lahir|born|أولد|tug/.test(n))best=Math.max(best,b+20);if(p.id==='THANKS_TARGET'&&/terima kasih|thank|شكرا|rahmat|terbaik|best/.test(n))best=Math.max(best,b+20);if(p.id==='APOLOGY_TARGET'&&/maaf|sorry|سامح|kechiring|uzr/.test(n))best=Math.max(best,b+20);if(p.id==='MESSAGE_TARGET'&&/pesan|message|رسالة|xabar/.test(n))best=Math.max(best,b+15)});return clamp(best)}function ctrScore(t,a){let n=norm(t),id=a.niche.id,s=45;if(/[?؟]/.test(t))s+=7;if(id==='dj'&&/full bass|viral|tiktok|nonstop|jedag|remix/.test(n))s+=35;if(id==='horror'&&/suara|pintu|malam|sendiri|sosok|rumah|door|midnight|sound|صوت|باب|منتصف|بيت|ovoz|eshik|yarim|tun|uy/.test(n))s+=35;if(id==='family'&&/terakhir|maaf|doa|rahasia/.test(n))s+=25;return clamp(s)}function sim(a,b){let A=new Set(tok(a)),B=new Set(tok(b));if(!A.size||!B.size)return 0;let i=0;A.forEach(x=>B.has(x)&&i++);return i/new Set([...A,...B]).size}function reasonTitle(t,a,score,search,browse,q,pen,langFit,intentFit,patternBorn,hookScore){let topPat=(a.patterns.titlePatterns&&a.patterns.titlePatterns[0])?a.patterns.titlePatterns[0].label:'pola kompetitor';let r=[{c:'good',t:`Judul lahir dari Pattern Mining. Pola terkuat yang dibaca: ${topPat}.`},{c:'info',t:`Score ${score}/100. Search ${search}, Browse ${browse}, Pattern-Born ${patternBorn}, Creator Hook ${hookScore}, Quality ${q}, Language ${langFit}, Intent ${intentFit}.`}];if(hookScore>=75)r.push({c:'good',t:'Hook judul kuat untuk kreator: jelas, emosional/penasaran, dan cocok dipasangkan dengan thumbnail.'});if(langFit<50)r.push({c:'bad',t:'Judul ini tidak sesuai bahasa target, jadi diberi penalti besar.'});if(intentFit<45)r.push({c:'yellow',t:'Judul kurang sesuai maksud emosional keyword, jadi skornya diturunkan.'});if(pen)r.push({c:'yellow',t:'Judul mirip rekomendasi sebelumnya, jadi diberi penalti memory.'});return r}
@@ -350,7 +448,7 @@ function engineDataFacts(a,best){
   };
 }
 
-function renderAll(){let best=RECS[0]||{},m=A.metrics,decision=scoreOpportunity(A),status=decision>=75?'GO / EKSEKUSI':decision>=58?'TEST DULU':decision>=42?'CARI ANGLE':'HOLD';$('decisionBox').innerHTML=`<div class="scoreHero"><div class="circle" style="--p:${decision}"><span>${decision}</span></div><div><h3>Keputusan: <span style="color:#70f0c5">${status}</span></h3><p class="muted">${(function(){let adv=freshAngleAdvice(A,best); return `<span class="tag ${adv.s.level==='JENUH'?'r':adv.s.level==='PADAT'?'y':'g'}">Pasar ${adv.s.level} ${adv.s.sat}</span> Mesin memilih angle: <b>${esc(A.keyword)}</b> dari seed <b>${esc(A.seed||A.keyword)}</b>. Niche: <b>${A.niche.label}</b> (${A.niche.confidence}/100). Dibandingkan ${ANGLES.length} angle.`;})()}</p><div><span class="tag g">Search ${best.search||0}</span><span class="tag b">Browse ${best.browse||0}</span><span class="tag p">Pattern ${best.patternBorn||0}</span><span class="tag y">Hook ${best.hookScore||0}</span><span class="tag b">Algorithm ${best.algo||0}</span></div></div></div><div class="finalBox"><h3>Bro, ambil ini:</h3><div class="winnerTitle">${esc(best.title||'-')}</div><ul class="reason">${(best.reasons||[]).map(x=>`<li class="${x.c}">${esc(x.t)}</li>`).join('')}</ul>${buildFinalExplanation(best,A)}<button class="small" onclick="copyText(RECS[0].title,this)">Copy Judul</button><button class="small" onclick="copyBestPack()">Copy Paket</button><button class="small green" onclick="aiStrategyReview(this)">🧠 AI Strategy Review</button></div><div id="aiStrategyBox"></div><div class="kpis"><div class="kpi"><div class="num">${m.demand}</div><div class="lab">Demand</div></div><div class="kpi"><div class="num">${m.low}</div><div class="lab">Low Competition</div></div><div class="kpi"><div class="num">${m.gap}</div><div class="lab">Pattern Gap</div></div><div class="kpi"><div class="num">${m.fresh}</div><div class="lab">Freshness</div></div><div class="kpi"><div class="num">${fmt(m.attentionLow)}-${fmt(m.attentionHigh)}</div><div class="lab">Attention Proxy</div></div><div class="kpi"><div class="num">${m.reality||0}</div><div class="lab">Reality Filter</div></div></div>`;renderPack();renderThumb();renderDetail()}function scoreOpportunity(a){let m=a.metrics;return clamp(m.demand*.28+m.low*.20+m.smallProof*.14+m.gap*.14+m.fresh*.10+m.confidence*.09+m.specificity*.05)}function renderPack(){let best=RECS[0]||{};$('packBox').innerHTML=`<div><h3>${esc(best.title||'-')}</h3><button class="small" onclick="copyText(RECS[0].title,this)">Copy Judul</button><button class="small" onclick="copyText(RECS[0].desc,this)">Copy Deskripsi</button><button class="small" onclick="copyText(RECS[0].tags,this)">Copy Tags</button><button class="small secondary" onclick="copyBestPack()">Copy Semua</button><button class="small green" onclick="aiPolishPack(this)">✨ AI Polish Pack</button></div><div class="pack"><div class="copybox"><label>Deskripsi YouTube</label><textarea readonly class="${A.lang==='ar'?'rtl':''}">${esc(best.desc||'')}</textarea></div><div class="copybox"><label>Tags</label><textarea readonly>${esc(best.tags||'')}</textarea></div></div><div id="aiAssistBox"></div>`}function renderThumb(){
+function renderAll(){let best=RECS[0]||{},m=A.metrics,decision=scoreOpportunity(A),status=decision>=75?'GO / EKSEKUSI':decision>=58?'TEST DULU':decision>=42?'CARI ANGLE':'HOLD';$('decisionBox').innerHTML=`<div class="scoreHero"><div class="circle" style="--p:${decision}"><span>${decision}</span></div><div><h3>Keputusan: <span style="color:#70f0c5">${status}</span></h3><p class="muted">${(function(){let adv=freshAngleAdvice(A,best); return `<span class="tag ${adv.s.level==='JENUH'?'r':adv.s.level==='PADAT'?'y':'g'}">Pasar ${adv.s.level} ${adv.s.sat}</span> Mesin memilih angle: <b>${esc(A.keyword)}</b> dari seed <b>${esc(A.seed||A.keyword)}</b>. Niche: <b>${A.niche.label}</b> (${A.niche.confidence}/100). ${A.format&&A.format.id&&A.format.id!=='auto'?`Arah channel: <b>${esc(A.format.label)}</b>. `:''}Dibandingkan ${ANGLES.length} angle.`;})()}</p><div><span class="tag g">Search ${best.search||0}</span><span class="tag b">Browse ${best.browse||0}</span><span class="tag p">Pattern ${best.patternBorn||0}</span><span class="tag y">Hook ${best.hookScore||0}</span><span class="tag b">Algorithm ${best.algo||0}</span></div></div></div><div class="finalBox"><h3>Bro, ambil ini:</h3><div class="winnerTitle">${esc(best.title||'-')}</div><ul class="reason">${(best.reasons||[]).map(x=>`<li class="${x.c}">${esc(x.t)}</li>`).join('')}</ul>${buildFinalExplanation(best,A)}<button class="small" onclick="copyText(RECS[0].title,this)">Copy Judul</button><button class="small" onclick="copyBestPack()">Copy Paket</button><button class="small green" onclick="aiStrategyReview(this)">🧠 AI Strategy Review</button></div><div id="aiStrategyBox"></div><div class="kpis"><div class="kpi"><div class="num">${m.demand}</div><div class="lab">Demand</div></div><div class="kpi"><div class="num">${m.low}</div><div class="lab">Low Competition</div></div><div class="kpi"><div class="num">${m.gap}</div><div class="lab">Pattern Gap</div></div><div class="kpi"><div class="num">${m.fresh}</div><div class="lab">Freshness</div></div><div class="kpi"><div class="num">${fmt(m.attentionLow)}-${fmt(m.attentionHigh)}</div><div class="lab">Attention Proxy</div></div><div class="kpi"><div class="num">${m.reality||0}</div><div class="lab">Reality Filter</div></div></div>`;renderPack();renderThumb();renderDetail()}function scoreOpportunity(a){let m=a.metrics;return clamp(m.demand*.28+m.low*.20+m.smallProof*.14+m.gap*.14+m.fresh*.10+m.confidence*.09+m.specificity*.05)}function renderPack(){let best=RECS[0]||{};$('packBox').innerHTML=`<div><h3>${esc(best.title||'-')}</h3><button class="small" onclick="copyText(RECS[0].title,this)">Copy Judul</button><button class="small" onclick="copyText(RECS[0].desc,this)">Copy Deskripsi</button><button class="small" onclick="copyText(RECS[0].tags,this)">Copy Tags</button><button class="small secondary" onclick="copyBestPack()">Copy Semua</button><button class="small green" onclick="aiPolishPack(this)">✨ AI Polish Pack</button></div><div class="pack"><div class="copybox"><label>Deskripsi YouTube</label><textarea readonly class="${A.lang==='ar'?'rtl':''}">${esc(best.desc||'')}</textarea></div><div class="copybox"><label>Tags</label><textarea readonly>${esc(best.tags||'')}</textarea></div></div><div id="aiAssistBox"></div>`}function renderThumb(){
   let defaultHook=(RECS[0]&&RECS[0].hook)||pickBestHook(A,RECS[0]&&RECS[0].title)||'HOOK';
   // upgrade weak generics immediately
   if(/^(MAAF IBU|RINDU IBU|BIG HOOK)$/i.test(defaultHook)) defaultHook=pickBestHook(A,RECS[0]&&RECS[0].title)||defaultHook;
@@ -525,10 +623,21 @@ function copyText(t,b){if(navigator.clipboard)navigator.clipboard.writeText(t);e
 
 async function generateAIThumb(btn){
   if(!A||!RECS[0]) return alert('Jalankan riset dulu bro.');
-  const old = btn ? btn.textContent : '';
   const status = $('thumbAIStatus');
-  if(btn){btn.disabled=true;btn.textContent='⏳ Generate gambar...';}
-  if(status) status.innerHTML = '<b>AI Thumbnail membaca intent + kompetitor + keyword terpilih...</b> Full-bleed image + hook overlay. Bukan asal indah.';
+  const now=Date.now();
+  if(THUMB_BUSY){
+    if(status) status.innerHTML='<b style="color:#ffe19a">Masih proses generate...</b> Jangan klik berulang.';
+    return;
+  }
+  if(now < THUMB_COOLDOWN_UNTIL){
+    const s=Math.ceil((THUMB_COOLDOWN_UNTIL-now)/1000);
+    if(status) status.innerHTML=`<b style="color:#ffe19a">Cooldownooldown ${s}d — antrian image IAMHC.</b> Tunggu lalu klik 1x. Jangan spam.`;
+    return;
+  }
+  THUMB_BUSY=true;
+  const old = btn ? btn.textContent : '';
+  if(btn){btn.disabled=true;btn.textContent='⏳ Generate 1x (jangan spam)...';}
+  if(status) status.innerHTML = '<b>AI Thumbnail 1 request...</b> Baca intent + catatan channel + kompetitor. Full-bleed + hook overlay.';
   try{
     const i = +(($('thumbTitle')&&$('thumbTitle').value)||0);
     const r = RECS[i] || RECS[0];
@@ -539,10 +648,13 @@ async function generateAIThumb(btn){
       hook,
       seed: A.seed,
       keyword: A.seed,
-      niche: A.niche && A.niche.label,
+      niche: (A.format&&A.format.label) || (A.niche && A.niche.label) || '',
+      nicheNote: A.nicheInput || nicheNoteRaw(),
+      contentFormat: (A.format&&A.format.id) || (CONTENT_FORMAT&&CONTENT_FORMAT.id) || 'auto',
       angle: A.keyword,
       language: A.lang,
-      prompt: direction,
+      prompt: [direction, A.format&&A.format.thumbBias, A.nicheInput].filter(Boolean).join('. '),
+      skipRewrite: true,
       scores: {
         final: r.score, search: r.search, browse: r.browse,
         algorithm: r.algo, patternBorn: r.patternBorn, creatorHook: r.hookScore
@@ -572,6 +684,7 @@ async function generateAIThumb(btn){
     }
     try{ renderHookLab(); }catch(e){}
     await applyAIThumbImage(result);
+    THUMB_COOLDOWN_UNTIL=Date.now()+12000; // cegah double generate
     if(status){
       const comps = (result.competitors_used||[]).slice(0,4).map(t=>`<li class="info">${esc(t)}</li>`).join('');
       status.innerHTML = `<span class="tag g">AI Image OK</span>
@@ -584,9 +697,24 @@ async function generateAIThumb(btn){
         ${result.warning?`<p class="muted" style="color:#ffe19a">${esc(result.warning)}</p>`:''}`;
     }
   }catch(e){
-    if(status){const msg=e.message||String(e); const conc=/concurrency|rate limit|limit:\s*\d+/i.test(msg); status.innerHTML = `<b style="color:#ff9eb2">Gagal:</b> ${esc(msg)}<br><span class="muted">${conc?'Batas concurrent image IAMHC penuh. Tunggu 15–30 detik, klik Generate 1x saja (jangan spam).':'Kalau load image gagal: pastikan api/ai-thumb.js v21.4 ter-deploy + IAMHC_IMAGE_MODEL=step-image-edit-2.'}</span>`;}
+    const msg=e.message||String(e);
+    const conc=/concurrency|rate limit|limit:\s*\d+/i.test(msg);
+    if(conc) THUMB_COOLDOWN_UNTIL=Date.now()+25000;
+    else THUMB_COOLDOWN_UNTIL=Date.now()+8000;
+    if(status){ status.innerHTML = `<b style="color:#ff9eb2">Gagal:</b> ${esc(msg)}<br><span class="muted">${conc?'Antrian image penuh. Tombol dikunci ~25 detik. JANGAN spam Generate.':'Coba lagi sebentar. Pastikan api/ai-thumb.js terbaru + IAMHC_IMAGE_MODEL=step-image-edit-2.'}</span>`;}
   }finally{
-    if(btn){btn.disabled=false;btn.textContent=old||'🎨 Generate AI Thumbnail';}
+    THUMB_BUSY=false;
+    if(btn){
+      btn.disabled=false;
+      btn.textContent=old||'🎨 Generate AI Thumbnail';
+      // soft lock UI during cooldown
+      if(Date.now()<THUMB_COOLDOWN_UNTIL){
+        btn.disabled=true;
+        const left=Math.ceil((THUMB_COOLDOWN_UNTIL-Date.now())/1000);
+        btn.textContent=`⏳ Tunggu ${left}d`;
+        setTimeout(()=>{ if(btn){btn.disabled=false;btn.textContent='🎨 Generate AI Thumbnail';} }, Math.max(0, THUMB_COOLDOWN_UNTIL-Date.now())+50);
+      }
+    }
   }
 }
 
@@ -677,6 +805,12 @@ function psychHookBank(a, title){
 
   if(lang!=='en' && lang!=='ar' && lang!=='uz'){
     if(id==='family' || /ibu|ayah|maaf|rindu|sedih|doa|pesan|lahir|meninggal/.test(n)){
+      if((CONTENT_FORMAT&&CONTENT_FORMAT.id==='story_song') || /lagu|lirik|cerita jadi lagu/.test(n)){
+        add('LAGU INI…','curiosity','Open loop untuk lagu emosional');
+        add('DENGAR SAMPAI HABIS','urgency','Janji emosional di lagu');
+        add('UNTUK IBU','identity','Spesifik target');
+        add('AIR MATA','emotion','Sensory emotional CTR');
+      }
       if(/maaf|ampun|menyesal|terlambat/.test(n)){
         add('MAAF… TERLAMBAT','guilt','Rasa bersalah + penyesalan mendorong klik untuk “selesai emosinya”.');
         add('AKU MENYESAL','guilt','Pengakuan langsung, kuat di mobile.');
