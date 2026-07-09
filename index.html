@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>YouTube Intelligence Engine v21.17 — Deep Suggest + Quota Guard</title>
+<title>YouTube Intelligence Engine v21.18 — High-CTR Psychology Thumb</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Black+Ops+One&family=Bungee&family=Russo+One&family=Bangers&family=Rubik:wght@700;900&family=Montserrat:wght@700;900&family=Raleway:wght@700;900&family=Oswald:wght@700&family=Orbitron:wght@700;900&family=Cinzel:wght@700;900&family=Cinzel+Decorative:wght@700;900&family=Playfair+Display:wght@700;900&family=Great+Vibes&family=Italianno&family=Pacifico&family=Special+Elite&family=Abril+Fatface&family=Permanent+Marker&family=Creepster&family=Nosifer&family=Alfa+Slab+One&family=Teko:wght@600;700&display=swap" rel="stylesheet">
@@ -19,7 +19,7 @@
 <body>
 <div class="wrap">
   <section class="hero">
-    <span class="badge">🧠 v21.17 Deep Suggest + Quota Guard</span>
+    <span class="badge">🧠 v21.18 High-CTR Psych Thumb</span>
     <h1>Mesin tetap data-based. AI Strategy membaca hasil engine, mengkritik strategi, lalu memberi verdict, alternatif judul, thumbnail strategy, dan rencana 24 jam.</h1>
     <p class="muted">Alur v21.3: 1) Keyword Lab (seperti penonton search YouTube) → 2) Pilih keyword → 3) Engine judul/kompetitor → 4) AI Strategy/Thumb. AI bukan otak utama.</p>
     <div class="warn"><b>Catatan kuota:</b> Suggest/long-tail ≈ gratis. Yang boros kuota = riset kompetitor (Data API). Default angle 3. Kalau “Kompetitor dipakai” kosong, biasanya kuota search harian habis.</div>
@@ -541,7 +541,7 @@ ${RECS.slice(0,3).map((r,i)=>`<div class="battleItem" style="margin-top:6px"><sp
 </div><ul class="reason">${(best.reasons||[]).map(x=>`<li class="${x.c}">${esc(x.t)}</li>`).join('')}</ul>${buildFinalExplanation(best,A)}<button class="small" onclick="copyText(RECS[0].title,this)">Copy Judul</button><button class="small" onclick="copyBestPack()">Copy Paket</button><button class="small green" onclick="aiStrategyReview(this)">🧠 AI Strategy Review</button></div><div id="aiStrategyBox"></div><div class="kpis"><div class="kpi"><div class="num">${m.demand}</div><div class="lab">Demand</div></div><div class="kpi"><div class="num">${m.low}</div><div class="lab">Low Competition</div></div><div class="kpi"><div class="num">${m.gap}</div><div class="lab">Pattern Gap</div></div><div class="kpi"><div class="num">${m.fresh}</div><div class="lab">Freshness</div></div><div class="kpi"><div class="num">${fmt(m.attentionLow)}-${fmt(m.attentionHigh)}</div><div class="lab">Attention Proxy</div></div><div class="kpi"><div class="num">${m.reality||0}</div><div class="lab">Reality Filter</div></div></div>`;renderPack();renderThumb();renderDetail()}function scoreOpportunity(a){let m=a.metrics;return clamp(m.demand*.28+m.low*.20+m.smallProof*.14+m.gap*.14+m.fresh*.10+m.confidence*.09+m.specificity*.05)}function renderPack(){let best=RECS[0]||{};$('packBox').innerHTML=`<div><h3>${esc(best.title||'-')}</h3><button class="small" onclick="copyText(RECS[0].title,this)">Copy Judul</button><button class="small" onclick="copyText(RECS[0].desc,this)">Copy Deskripsi</button><button class="small" onclick="copyText(RECS[0].tags,this)">Copy Tags</button><button class="small secondary" onclick="copyBestPack()">Copy Semua</button><button class="small green" onclick="aiPolishPack(this)">✨ AI Polish Pack</button></div><div class="pack"><div class="copybox"><label>Deskripsi YouTube</label><textarea readonly class="${A.lang==='ar'?'rtl':''}">${esc(best.desc||'')}</textarea></div><div class="copybox"><label>Tags</label><textarea readonly>${esc(best.tags||'')}</textarea></div></div><div id="aiAssistBox"></div>`}function renderThumb(){
   if(!RECS[0]){ $('thumbBox').innerHTML='<p class="muted">Jalankan engine judul dulu.</p>'; return; }
   let defaultHook=(RECS[0]&&RECS[0].hook)|| (typeof pickBestHook==='function'?pickBestHook(A,RECS[0].title):'HOOK') ||'HOOK';
-  if(/^(MAAF IBU|RINDU IBU|BIG HOOK)$/i.test(defaultHook)) {
+  if(/^(MAAF IBU|RINDU IBU|BIG HOOK|MAAFKAN AKU IBU|MAAFKAN AKU)$/i.test(defaultHook)) {
     try{ defaultHook=pickBestHook(A,RECS[0].title)||defaultHook; }catch(e){}
   }
   try{
@@ -628,6 +628,10 @@ ${RECS.slice(0,3).map((r,i)=>`<div class="battleItem" style="margin-top:6px"><sp
         <option value="left">Kiri</option>
         <option value="center">Tengah</option>
       </select>
+      <label style="display:flex;align-items:center;gap:8px;margin-top:10px;font-weight:700">
+        <input type="checkbox" id="hideBadge" onchange="drawThumb()" style="width:auto"> Sembunyikan badge bawah (mis. CERITA KELUARGA)
+      </label>
+      <p class="muted" style="font-size:11px;margin-top:6px">Tips CTR: pilih hook dari lab (bukan “MAAFKAN AKU IBU”), style <b>Attention Yellow</b>, wajah emosi besar, ruang kanan untuk teks.</p>
 
       <label>Style canvas (fallback tanpa AI image)</label>
       <select id="emo" onchange="drawThumb()"><option value="auto">Auto Style</option><option value="shock">Shock</option><option value="dark">Dark</option><option value="neon">Neon</option></select>
@@ -896,18 +900,31 @@ function buildLocalThumbPrompt(){
   const comps=(A.qualified||[]).slice(0,6).map(v=>v.title).filter(Boolean);
   const hook=($('hook')&&$('hook').value)||r.hook||'';
   const dir=($('thumbDirection')&&$('thumbDirection').value)||'';
+  const nicheId=A.niche&&A.niche.id;
+  // Color psychology for feed CTR (high saliency)
+  let colorGuide = nicheId==='horror'
+    ? 'cold teal/blue moonlight, deep blacks, one red accent for danger, high contrast face or silhouette'
+    : nicheId==='dj'
+      ? 'neon cyan/magenta on black, high saturation, motion blur energy'
+      : 'warm cinematic key light on face, dark moody background, orange-amber skin light, deep shadows, high contrast (eyes go to bright face first)';
+  let faceGuide = nicheId==='horror'
+    ? 'extreme fear or empty hallway silhouette, eyes wide or hidden threat'
+    : 'ONE clear face with exaggerated emotion (crying, regret, shock) — face occupies 35-50% of frame, tear visible, brows tight';
   const lines=[
-    'YouTube thumbnail BACKGROUND image, 16:9, ultra sharp, high contrast, click-worthy.',
-    'IMPORTANT: visual only — do NOT render long text; hook will be overlaid by editor.',
-    `Hook overlay text (for composition space): ${hook}`,
-    `Video title context: ${r.title}`,
+    'YouTube thumbnail BACKGROUND only, 16:9, ultra sharp, mobile-first high CTR.',
+    'PSYCHOLOGY OF CLICK: capture attention in <0.5s in a crowded feed. Strong face emotion + contrast + curiosity.',
+    `Hook text will be overlaid later as: "${hook}" — leave clean dark/negative space on the RIGHT third for big yellow/white text.`,
+    `Title/context: ${r.title}`,
     `Channel format: ${fmt}`,
     `Keyword/angle: ${A.keyword} | seed: ${A.seed||''}`,
     `Engine scores: final ${r.score}/100, search ${r.search}, browse ${r.browse}, unique ${r.unique||'-'}`,
-    comps.length? `Study competitor title emotion/patterns (do not copy logos): ${comps.join(' || ')}` : 'Competitor sample thin — stay strict on keyword intent.',
-    dir? `Extra visual direction: ${dir}` : '',
-    'Composition high CTR: large subject LEFT/CENTER, clean RIGHT third for text, exaggerated emotion if person, strong contrast, no clutter, no watermark, no UI.',
-    'Stay on-intent with keyword + channel format. No horror if story-song, no DJ neon if family song, no guaranteed viral claims.'
+    comps.length? `Competitor title emotions to beat (do not copy faces/logos): ${comps.join(' || ')}` : 'Few competitors loaded — stay strict on keyword intent.',
+    `FACE/SUBJECT: ${faceGuide}`,
+    `COLOR PSYCHOLOGY: ${colorGuide}`,
+    'COMPOSITION RULES: subject LEFT or LEFT-CENTER large; RIGHT third cleaner/darker for text; no clutter; no tiny objects; no watermark; no UI; no long paragraphs of text in image; optional single small tear highlight.',
+    'AVOID: flat lighting, smiling stock-photo vibe, centered poster look, weak emotion, pastel low-contrast, random objects, emoji baked into image.',
+    dir? `Extra direction: ${dir}` : '',
+    'Photoreal cinematic, 4k detail, punchy contrast, looks expensive not cheap AI plastic.'
   ].filter(Boolean);
   LAST_THUMB_PROMPT=lines.join('\n');
   return LAST_THUMB_PROMPT;
@@ -1123,7 +1140,7 @@ function applyAIThumbImage(result){
   });
 }
 
-function loadThumbImage(e){let f=e.target.files&&e.target.files[0];if(!f)return;let img=new Image();img.onload=()=>{THUMB_IMG=img;drawThumb()};img.src=URL.createObjectURL(f)}function pickThumb(){let i=+$('thumbTitle').value||0;let h=RECS[i].hook; if(/^(MAAF IBU|RINDU IBU|BIG HOOK)$/i.test(h||'')) h=pickBestHook(A,RECS[i].title)||h; if($('hook'))$('hook').value=h; drawThumb(); try{renderHookLab()}catch(e){} try{syncThumbPromptFromEngine()}catch(e){}}function drawThumb(){let cv=$('cv');if(!cv)return;let c=cv.getContext('2d'),W=cv.width,H=cv.height,r=RECS[+$('thumbTitle').value]||RECS[0]||{},hook=($('hook').value||r.hook||'BIG HOOK').toUpperCase(),id=A?A.niche.id:'general';let neon=id==='dj',horror=id==='horror';let pal=neon?['#090018','#24105f','#00f5ff','#ff2bd6']:horror?['#02030a','#111827','#00d5ff','#ffd166']:['#07111f','#1e2a55','#00c2ff','#18d39b'];
+function loadThumbImage(e){let f=e.target.files&&e.target.files[0];if(!f)return;let img=new Image();img.onload=()=>{THUMB_IMG=img;drawThumb()};img.src=URL.createObjectURL(f)}function pickThumb(){let i=+$('thumbTitle').value||0;let h=RECS[i].hook; if(/^(MAAF IBU|RINDU IBU|BIG HOOK|MAAFKAN AKU IBU|MAAFKAN AKU)$/i.test(h||'')) h=pickBestHook(A,RECS[i].title)||h; if($('hook'))$('hook').value=h; drawThumb(); try{renderHookLab()}catch(e){} try{syncThumbPromptFromEngine()}catch(e){}}function drawThumb(){let cv=$('cv');if(!cv)return;let c=cv.getContext('2d'),W=cv.width,H=cv.height,r=RECS[+$('thumbTitle').value]||RECS[0]||{},hook=($('hook').value||r.hook||'BIG HOOK').toUpperCase(),id=A?A.niche.id:'general';let neon=id==='dj',horror=id==='horror';let pal=neon?['#090018','#24105f','#00f5ff','#ff2bd6']:horror?['#02030a','#111827','#00d5ff','#ffd166']:['#07111f','#1e2a55','#00c2ff','#18d39b'];
 // Full-bleed when AI/upload image exists (fixes "setengah gambar")
 if(THUMB_IMG){
   drawCover(c,THUMB_IMG,0,0,W,H);
@@ -1166,98 +1183,99 @@ function mineCompetitorHooks(a){
   return uniq(bag).slice(0,10);
 }
 function psychHookBank(a, title){
-  // Psychology levers for CTR: curiosity, unfinished story, guilt, longing, urgency, contrast, identity
-  let n=norm((title||'')+' '+(a.keyword||'')+' '+(a.seed||''));
+  // High-CTR psychology (attention + emotion + curiosity gap)
+  // Data-backed principles: faces+strong emotion, unfinished phrases, specificity,
+  // high-saliency words, max 3-4 words for mobile, avoid generic "MAAF IBU".
+  let n=norm((title||'')+' '+(a.keyword||'')+' '+(a.seed||'')+' '+(a.nicheInput||''));
   let id=a.niche&&a.niche.id;
+  let fmt=(a.format&&a.format.id)||(typeof CONTENT_FORMAT!=='undefined'&&CONTENT_FORMAT&&CONTENT_FORMAT.id)||'';
   let lang=a.lang||'id';
   let out=[];
-  const add=(text,lever,why)=>out.push({text:String(text).toUpperCase(), lever, why});
+  const add=(text,lever,why,score=88)=>out.push({text:String(text).toUpperCase(), lever, why, score});
 
   if(lang!=='en' && lang!=='ar' && lang!=='uz'){
-    if(id==='family' || /ibu|ayah|maaf|rindu|sedih|doa|pesan|lahir|meninggal/.test(n)){
-      if((CONTENT_FORMAT&&CONTENT_FORMAT.id==='story_song') || /lagu|lirik|cerita jadi lagu/.test(n)){
-        add('LAGU INI…','curiosity','Open loop untuk lagu emosional');
-        add('DENGAR SAMPAI HABIS','urgency','Janji emosional di lagu');
-        add('UNTUK IBU','identity','Spesifik target');
-        add('AIR MATA','emotion','Sensory emotional CTR');
-      }
-      if(/maaf|ampun|menyesal|terlambat/.test(n)){
-        add('MAAF… TERLAMBAT','guilt','Rasa bersalah + penyesalan mendorong klik untuk “selesai emosinya”.');
-        add('AKU MENYESAL','guilt','Pengakuan langsung, kuat di mobile.');
-        add('TOLONG DENGAR','urgency','Permintaan mendesak, seolah percakapan pribadi.');
-        add('SETELAH SEMUA INI','unfinished','Cerita belum selesai — otak ingin penutup.');
-        add('IBU… AKU SALAH','guilt','Spesifik ke ibu, lebih personal dari “MAAF IBU”.');
-        add('KALAU BISA MENGULANG','regret','Fantasi “andai bisa ulang” sangat CTR di niche emosional.');
+    if(id==='family' || fmt==='story_song' || /ibu|ayah|maaf|rindu|sedih|doa|pesan|lahir|meninggal|lagu/.test(n)){
+      // GUILT + SPECIFICITY (strongest in ID emotional music/story niche)
+      if(/maaf|ampun|menyesal|terlambat|salah/.test(n)){
+        add('ANAKMU MENANGIS','guilt','Spesifik + visual emosi — lebih CTR dari “MAAF IBU”.',96);
+        add('IBU… JANGAN PERGI','urgency','Ketakutan kehilangan = dorongan klik kuat.',95);
+        add('AKU GAGAL… IBU','guilt','Pengakuan gagal memicu empati & penasaran.',94);
+        add('TERLAMBAT MINTA MAAF','regret','Frasa “terlambat” = open loop emosional.',93);
+        add('MAAF… SEBELUM PERGI','urgency','Deadline emosional (sebelum pergi).',92);
+        add('JANGAN MARAH IBU','guilt','Seperti percakapan nyata anak-ibu.',90);
+        add('KALAU IBU DENGAR INI','curiosity','Curiosity gap: dengar apa?',91);
+        add('PESAN YANG TAK TERKIRIM','unfinished','Incomplete story → otak ingin penutup.',90);
       }
       if(/rindu|kangen/.test(n)){
-        add('RINDU YANG SUNYI','longing','Kesepian lebih tajam dari kata rindu biasa.');
-        add('KAMU DI SANA?','curiosity','Seolah menyapa target — interaksi imajiner.');
-        add('TAK PERNAH PULANG','unfinished','Luka terbuka, ingin tahu kenapa.');
+        add('IBU DI MANA…','longing','Pertanyaan = pola interrupt di feed.',94);
+        add('RINDU YANG MEMBUNUH','longing','Intensitas tinggi, bukan “rindu” biasa.',93);
+        add('SUARA IBU HILANG','longing','Sensory loss — kuat di musik/cerita.',92);
       }
-      if(/sebelum|lahir|meninggal|pergi/.test(n)){
-        add('SEBELUM TERLAMBAT','urgency','FOMO emosional.');
-        add('YANG TAK PERNAH','curiosity','Incomplete information.');
-        add('PESAN TERAKHIR','urgency','Finality bias — orang penasaran isi pesan.');
+      if(/lagu|lirik|cerita jadi lagu|story_song/.test(n+fmt)){
+        add('LAGU INI BUAT NANGIS','emotion','Janji emosi jelas di feed.',95);
+        add('DENGAR SAMPAI HABIS','urgency','Retention promise + FOMO.',92);
+        add('BUAT YANG KANGEN IBU','identity','Self-relevance: “ini tentang kamu”.',91);
+        add('AIR MATA IBU','emotion','Visual kata “air mata” menarik mata.',90);
       }
-      if(!out.length){
-        add('JANGAN LEWAT','curiosity','Pattern interrupt.');
-        add('INI BUKAN BIASA','contrast','Janji beda dari konten serupa.');
-        add('DENGAR SAMPAI AKHIR','urgency','Retention promise di hook.');
+      if(/sebelum|lahir|meninggal|wafat|pergi/.test(n)){
+        add('SEBELUM IBU PERGI','urgency','Deadline emosional ekstrem.',96);
+        add('TAK PERNAH SEMBUH','unfinished','Luka terbuka → penasaran.',92);
+      }
+      if(out.length<6){
+        add('JANGAN LEWATIN INI','interrupt','Pattern interrupt di beranda.',88);
+        add('INI BUKAN LAGU BIASA','contrast','Kontras vs konten serupa.',87);
       }
     } else if(id==='horror'){
-      add('JANGAN BUKA','fear','Larangan memicu rasa ingin tahu.');
-      add('SUARA ITU…','fear','Ellipsis = incomplete threat.');
-      add('DIA MASIH DI SINI','fear','Presence threat.');
-      add('PINTU ITU','curiosity','Objek misterius.');
+      add('JANGAN BUKA PINTU','fear','Larangan = keinginan melanggar (reactance).',96);
+      add('DIA MASIH DI RUMAH','fear','Ancaman kehadiran — klasik high CTR horor.',95);
+      add('SUARA DARI KAMAR…','fear','Ellipsis + misteri suara.',94);
+      add('JANGAN SENDIRIAN','fear','Personal threat.',92);
+      add('PUKUL 3 PAGI','fear','Spesifik waktu = kredibel & seram.',91);
     } else if(id==='dj'){
-      add('FULL BASS','hype','Benefit audio langsung.');
-      add('JEDAG JEDUG','hype','Sensory keyword niche.');
-      add('VIRAL MIX','social_proof','Social proof ringan.');
+      add('BASS MANTUL','hype','Benefit sensorik langsung.',94);
+      add('JEDAG JEDUG 🔥','hype','Niche language + energy.',93);
+      add('VIRAL DI TIKTOK','social_proof','Social proof ringan.',90);
     } else {
-      add('YANG JARANG DIBAHAS','curiosity','Information gap.');
-      add('KAMU PERLU INI','identity','Self-relevance.');
-      add('STOP SCROLL','interrupt','Pattern interrupt feed.');
+      add('YANG JARANG DIBAHAS','curiosity','Information gap.',90);
+      add('STOP SCROLL DULU','interrupt','Pattern interrupt.',89);
+      add('KAMU PERLU INI','identity','Self-relevance.',88);
     }
   } else if(lang==='en'){
-    if(id==='family' || /mom|mother|sorry|miss|dad/.test(n)){
-      add('TOO LATE…','regret','Regret gap.');
-      add('I WAS WRONG','guilt','Confession CTR.');
-      add('MOM, LISTEN','urgency','Direct address.');
-      add('IF I COULD','regret','Fantasy repair.');
+    if(id==='family'||/mom|mother|sorry|miss/.test(n)){
+      add('TOO LATE MOM…','regret','Regret + unfinished.',95);
+      add('I FAILED YOU','guilt','Strong confession.',94);
+      add('MOM DON\'T GO','urgency','Loss fear.',93);
     } else if(id==='horror'){
-      add("DON'T OPEN",'fear','Forbidden action.');
-      add('THAT SOUND','fear','Threat cue.');
+      add("DON'T OPEN IT",'fear','Forbidden action.',96);
+      add('STILL INSIDE','fear','Presence threat.',94);
     } else {
-      add('WAIT FOR IT','curiosity','Open loop.');
-      add('NOT NORMAL','contrast','Contrast claim.');
+      add('WAIT FOR IT','curiosity','Open loop.',90);
     }
-  } else {
-    // fallback short
-    add('STOP','interrupt','Pattern interrupt');
-    add('LISTEN','urgency','Direct command');
   }
 
-  // competitor-mined hooks (shorten)
-  mineCompetitorHooks(a).forEach(h=>{
-    let t=h.toUpperCase().replace(/[^A-Z0-9\u00C0-\u024F\u0400-\u04FF\u0600-\u06FF\s…\.\!\?']/g,' ').replace(/\s+/g,' ').trim();
-    if(t.length>=4 && t.length<=22) add(t,'competitor','Dipotong dari pola judul kompetitor relevan.');
-  });
+  // competitor mined short hooks
+  try{
+    mineCompetitorHooks(a).forEach(h=>{
+      let t=h.toUpperCase().replace(/[^A-Z0-9\u00C0-\u024F\s…\.\!\?']/g,' ').replace(/\s+/g,' ').trim();
+      if(t.length>=5 && t.length<=24 && !/^(MAAF IBU|RINDU IBU)$/.test(t))
+        add(t,'competitor','Dipotong dari pola judul kompetitor relevan.',86);
+    });
+  }catch(e){}
 
-  // diversify + score lightly
+  // score + kill weak generics
   let seen={}; let clean=[];
   out.forEach(h=>{
     let k=norm(h.text);
     if(seen[k]) return; seen[k]=1;
-    // penalty generic weak hooks
     let pen=0;
-    if(/^(MAAF IBU|RINDU IBU|BIG HOOK|JUDUL)$/.test(h.text)) pen=40;
-    if(h.text.length<5) pen+=10;
-    if(h.text.length>20) pen+=8;
-    h.score=clamp(78 + (h.lever==='guilt'||h.lever==='curiosity'||h.lever==='fear'?8:0) + (h.lever==='competitor'?4:0) - pen);
-    clean.push(h);
+    if(/^(MAAF IBU|RINDU IBU|BIG HOOK|JUDUL|HOOK|MAAFKAN AKU IBU)$/.test(h.text)) pen=50;
+    if(h.text.length>22) pen+=10;
+    if(h.text.split(/\s+/).length>5) pen+=8;
+    h.score=clamp((h.score||85) - pen);
+    if(h.score>=70) clean.push(h);
   });
   clean.sort((a,b)=>b.score-a.score);
-  return clean.slice(0,8);
+  return clean.slice(0,10);
 }
 function pickBestHook(a, title){
   let lab=psychHookBank(a, title);
@@ -1370,11 +1388,12 @@ function getTextStyleId(){
   let el=$('textStyle');
   let v=el&&el.value;
   if(v && v!=='auto') return v;
-  // auto by niche
+  // auto by niche — family uses high-saliency yellow (attention psychology)
   let id=A&&A.niche&&A.niche.id;
+  let fmt=(A&&A.format&&A.format.id)||'';
   if(id==='horror') return 'horror_glow';
   if(id==='dj') return 'neon_stack';
-  if(id==='family') return 'soft_impact';
+  if(id==='family' || fmt==='story_song') return 'attention_yellow';
   return 'yt_classic';
 }
 function getTextPos(){
@@ -1400,13 +1419,37 @@ function textStylePack(id, pal){
       label:'Soft Emotional',
       font:'Arial Black, Impact, sans-serif',
       weight:'900',
-      fill:'#fff7ea',
-      stroke:'rgba(40,20,10,.88)',
-      strokeW:0.12,
-      shadow:'rgba(255,180,80,.25)',
-      shadowBlur:14,
+      fill:'#FFE566',
+      stroke:'rgba(0,0,0,.95)',
+      strokeW:0.17,
+      shadow:'rgba(255,80,0,.35)',
+      shadowBlur:16,
       uppercase:true,
       tracking:0.5
+    },
+    attention_yellow:{
+      label:'Attention Yellow (max CTR color)',
+      font:'Impact, Arial Black, sans-serif',
+      weight:'1000',
+      fill:'#FFE600',
+      stroke:'#000000',
+      strokeW:0.18,
+      shadow:'rgba(0,0,0,.75)',
+      shadowBlur:10,
+      uppercase:true,
+      tracking:0
+    },
+    attention_white_red:{
+      label:'White + Red Edge',
+      font:'Impact, Arial Black, sans-serif',
+      weight:'1000',
+      fill:'#FFFFFF',
+      stroke:'#B00020',
+      strokeW:0.15,
+      shadow:'rgba(0,0,0,.8)',
+      shadowBlur:12,
+      uppercase:true,
+      tracking:0
     },
     horror_glow:{
       label:'Horror Glow',
@@ -1572,17 +1615,50 @@ function drawText(c,t,p){
   });
 }
 
-function localizedNicheLabel(){if(!A)return'YOUTUBE';let id=A.niche.id,lang=A.lang;if(id==='horror'){if(lang==='ar')return'قصص رعب';if(lang==='uz')return'QO‘RQINCHLI HIKOYA';if(lang==='en')return'HORROR STORY';return'CERITA HOROR'}if(id==='dj'){if(lang==='ar')return'دي جي ريمكس';if(lang==='uz')return'DJ REMIX';return'DJ REMIX'}if(id==='family'){if(lang==='ar')return'قصة عائلية';if(lang==='uz')return'OILAVIY HIKOYA';if(lang==='en')return'FAMILY STORY';return'CERITA KELUARGA'}return A.niche.label||'YOUTUBE'}
+function localizedNicheLabel(){
+  if(!A) return '';
+  // Dynamic badge — NOT static "CERITA KELUARGA" forever
+  let fmt=(A.format&&A.format.id)||(typeof CONTENT_FORMAT!=='undefined'&&CONTENT_FORMAT&&CONTENT_FORMAT.id)||'auto';
+  let note=norm(A.nicheInput||(typeof nicheNoteRaw==='function'?nicheNoteRaw():'')||'');
+  let kw=norm((A.keyword||'')+' '+(A.seed||'')+' '+(RECS[0]&&RECS[0].title||''));
+  let lang=A.lang||'id';
+  if(fmt==='story_song' || /cerita jadi lagu|lagu sedih|lirik/.test(note+kw)){
+    if(lang==='en') return 'SAD SONG STORY';
+    return 'CERITA JADI LAGU';
+  }
+  if(/maaf|menyesal|terlambat|ampun/.test(kw)) return lang==='en'?'SORRY MOM':'LAGU MAAF IBU';
+  if(/rindu|kangen|miss/.test(kw)) return lang==='en'?'MISSING MOM':'RINDU IBU';
+  if(/sebelum|lahir|meninggal|wafat/.test(kw)) return lang==='en'?'BEFORE IT\'S LATE':'SEBELUM TERLAMBAT';
+  let id=A.niche&&A.niche.id;
+  if(id==='horror') return lang==='en'?'HORROR STORY':'CERITA HOROR';
+  if(id==='dj') return 'DJ REMIX';
+  if(id==='family') return lang==='en'?'FAMILY STORY':'KISAH KELUARGA';
+  if(id==='street') return lang==='en'?'STREET STORY':'KISAH JALANAN';
+  // short from niche label
+  let lab=(A.niche&&A.niche.label)||'YOUTUBE';
+  return String(lab).replace(/\s*·.*$/,'').slice(0,22).toUpperCase();
+}
 function drawLabel(c,p){
-  let label=String(localizedNicheLabel()||'').toUpperCase().slice(0,22);
+  // Optional badge — dynamic text + attention color (not boring static gray forever)
+  let hide=$('hideBadge') && $('hideBadge').checked;
+  if(hide) return;
+  let label=String(localizedNicheLabel()||'').toUpperCase().slice(0,24);
   if(!label) return;
-  c.font='900 20px Arial';
-  let padX=14, padY=10, tw=c.measureText(label).width, w=tw+padX*2, h=36;
-  let x=28, y=c.canvas.height-28-h;
-  c.fillStyle='rgba(0,0,0,.62)';
-  round(c,x,y,w,h,10); c.fill();
+  c.font='900 18px Arial Black, Arial';
+  let padX=12, tw=c.measureText(label).width, w=tw+padX*2+10, h=34;
+  let x=24, y=c.canvas.height-24-h;
+  // color psychology: warm red/orange draws eye in feed (attention)
+  let bg = (A&&A.niche&&A.niche.id==='horror') ? 'rgba(120,0,30,.88)'
+    : (A&&A.niche&&A.niche.id==='dj') ? 'rgba(90,0,140,.88)'
+    : 'rgba(200,40,20,.90)'; // family/emotional = red attention chip
+  c.fillStyle=bg;
+  round(c,x,y,w,h,8); c.fill();
+  // thin yellow edge for saliency
+  c.strokeStyle='rgba(255,220,50,.85)';
+  c.lineWidth=2;
+  round(c,x,y,w,h,8); c.stroke();
   c.fillStyle='#fff'; c.textAlign='left'; c.textBaseline='middle';
-  c.fillText(label, x+padX, y+h/2);
+  c.fillText(label, x+padX, y+h/2+1);
 }
 function drawVignette(c,W,H){let g=c.createRadialGradient(W/2,H/2,120,W/2,H/2,780);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,.62)');c.fillStyle=g;c.fillRect(0,0,W,H)}function grain(c,W,H,a){c.save();c.globalAlpha=a;for(let i=0;i<1200;i++){c.fillStyle=Math.random()>.5?'#fff':'#000';c.fillRect(Math.random()*W,Math.random()*H,1,1)}c.restore()}function round(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath()}function wrap(c,t,max,size){let w=String(t).split(' '),out=[],cur='';c.font=`1000 ${size}px Impact,Arial Black,Arial`;w.forEach(x=>{let z=cur?cur+' '+x:x;if(c.measureText(z).width>max&&cur){out.push(cur);cur=x}else cur=z});if(cur)out.push(cur);return out.slice(0,3)}function downloadThumb(){drawThumb();let a=document.createElement('a');a.download='thumbnail-keyword-first.png';a.href=$('cv').toDataURL('image/png');a.click()}
 function demoData(kw){let list=norm(kw).includes('dj')?['DJ Terbaru 2026 Full Bass Viral','DJ Remix Viral TikTok Full Bass','DJ Jedag Jedug Nonstop Terbaru','DJ Full Bass Paling Enak','DJ Remix Terbaru Bass Mantap','DJ TikTok Viral Remix 2026','DJ Nonstop Party Mix Full Bass','Remix Terbaru 2026 Viral']:['Cerita Hantu Rumah Kosong','Suara Tengah Malam dari Rumah Tua','Jangan Buka Pintu Setelah Jam 12','Kisah Hantu yang Bikin Merinding','Sosok di Ujung Lorong','Rumah Angker yang Tak Berpenghuni','Aku Tidak Sendiri di Kamar Itu','Lampu Padam Lalu Ada Suara'];let now=Date.now();return{videos:list.map((t,i)=>{let age=[12,25,42,70,15,90,34,55][i]||30,subs=[12000,85000,45000,220000,18000,9500,60000,15000][i]||10000,views=Math.round((50000+Math.random()*800000)/(age/45));return{id:'d'+i,url:'#',title:t,publishedAt:new Date(now-age*864e5).toISOString(),channelTitle:'Demo Channel '+(i+1),channel:{subscriberCount:subs},viewCount:views,likeCount:Math.round(views*.03),commentCount:Math.round(views*.004)}})}};
