@@ -254,18 +254,28 @@ async function fetchUrlAsBase64(imageUrl, apiKey) {
   throw lastErr || new Error('Tidak bisa unduh image URL ke base64');
 }
 
+function sleep(ms) {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
+function isConcurrencyError(msg = '') {
+  return /concurrency|rate limit|too many|limit:\s*\d+/i.test(String(msg));
+}
+
 async function generateImage({ prompt, model, baseUrl, apiKey, size = '1792x1024' }) {
   const url = `${String(baseUrl).replace(/\/$/, '')}/images/generations`;
+  // Keep attempts FEW — many parallel retries trigger IAMHC concurrency limits (e.g. 11 > 10)
   const attempts = [
-    { model, prompt, n: 1, size, response_format: 'b64_json' },
     { model, prompt, n: 1, size: '1024x1024', response_format: 'b64_json' },
     { model, prompt, n: 1, size: '1024x1024' },
-    { model, prompt, n: 1, size: '1792x1024' },
-    { model, prompt },
+    { model, prompt, n: 1, size },
   ];
 
   let lastErr = null;
-  for (const body of attempts) {
+  for (let i = 0; i < attempts.length; i++) {
+    const body = attempts[i];
+    // small spacing between attempts to avoid concurrency pile-up
+    if (i > 0) await sleep(700 * i);
     try {
       const r = await fetch(url, {
         method: 'POST',
@@ -277,9 +287,13 @@ async function generateImage({ prompt, model, baseUrl, apiKey, size = '1792x1024
       });
       const data = await r.json().catch(() => ({}));
       if (!r.ok) {
-        lastErr = new Error(
-          data?.error?.message || data?.error || data?.message || `Image HTTP ${r.status}`
-        );
+        const msg =
+          data?.error?.message || data?.error || data?.message || `Image HTTP ${r.status}`;
+        lastErr = new Error(String(msg));
+        if (isConcurrencyError(msg)) {
+          // wait and try next payload once concurrency frees
+          await sleep(1800);
+        }
         continue;
       }
 
@@ -449,11 +463,15 @@ module.exports = async function handler(req, res) {
       },
     });
   } catch (e) {
+    const msg = e.message || String(e);
+    const concurrency = /concurrency|rate limit|too many|limit:\s*\d+/i.test(msg);
     return res.status(502).json({
       ok: false,
-      error: e.message || String(e),
-      hint:
-        'Set IAMHC_IMAGE_MODEL=step-image-edit-2 (atau model image exact di market). Jika error fetch image, deploy ulang api/ai-thumb.js versi proxy base64.',
+      error: msg,
+      code: concurrency ? 'CONCURRENCY' : 'IMAGE_FAIL',
+      hint: concurrency
+        ? 'Batas concurrent image IAMHC penuh. Tunggu 10–20 detik, jangan spam klik Generate. Coba 1x saja.'
+        : 'Set IAMHC_IMAGE_MODEL=step-image-edit-2. Deploy api/ai-thumb.js terbaru (base64 + retry).',
     });
   }
 };
