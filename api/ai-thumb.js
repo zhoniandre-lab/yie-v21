@@ -1,20 +1,8 @@
 /**
  * POST /api/ai-thumb
- * Generate high-CTR thumbnail IMAGE via IAMHC (OpenAI-compatible images API)
- * + optional AI prompt rewrite locked to engine evidence.
- *
- * Body:
- * {
- *   title, hook, niche, angle, language,
- *   prompt?, style?,
- *   scores?, metrics?
- * }
- *
- * Env:
- *   IAMHC_API_KEY
- *   IAMHC_BASE_URL=https://api.iamhc.cn/v1
- *   IAMHC_IMAGE_MODEL=  (contoh: flux, flux-schnell, dall-e-3, gpt-image-1, qwen-image, dll — sesuai market IAMHC)
- *   IAMHC_MODEL=        (untuk rewrite prompt teks)
+ * Generate high-CTR thumbnail IMAGE via IAMHC.
+ * - Baca intent keyword + kompetitor (jangan ngarang di luar jalur)
+ * - Prefer base64 agar browser tidak kena CORS/403 URL eksternal
  */
 
 const {
@@ -25,66 +13,144 @@ const {
   extractJsonObject,
 } = require('./_lib/iamhc');
 
-function nicheStylePack(niche = '', angle = '', title = '') {
-  const t = `${niche} ${angle} ${title}`.toLowerCase();
-  if (/dj|remix|bass|jedag|tiktok|party|club/.test(t)) {
+function asArray(v) {
+  return Array.isArray(v) ? v : [];
+}
+
+function detectIntent(seed = '', angle = '', title = '', niche = '') {
+  const t = `${seed} ${angle} ${title} ${niche}`.toLowerCase();
+  if (/(sebelum.*lahir|lahir tanpa|pergi sebelum|meninggal sebelum)/.test(t)) {
     return {
-      style: 'neon club',
-      palette: 'cyan, magenta, deep purple, black',
-      subject:
-        'DJ booth energy, glowing speakers, bass waves, neon fog, night party atmosphere',
-      emotion: 'hype, powerful, loud',
+      id: 'loss_before_birth',
+      label: 'Kehilangan sebelum lahir',
+      searcher_goal: 'Orang mencari cerita/lagu emosional tentang ibu yang tiada sebelum anak lahir',
+      visual:
+        'soft memory of mother figure, empty cradle or soft light silhouette, emotional longing, not horror, not DJ',
+      avoid: 'ghost jump scare, club neon, funny meme face, horror blood',
     };
   }
-  if (/hantu|horor|horror|ghost|haunted|mistis|seram|scary|rеб|رعب/.test(t)) {
+  if (/(rindu ibu|kangen ibu|miss mom|rindu mama)/.test(t)) {
     return {
-      style: 'cinematic horror',
-      palette: 'cold blue, black, pale moonlight, desaturated teal',
-      subject:
-        'dark hallway or empty house, silhouette, moonlight through window, eerie fog, high tension',
-      emotion: 'fear, curiosity, suspense',
+      id: 'longing_mother',
+      label: 'Rindu ibu',
+      searcher_goal: 'Orang mencari lagu/cerita rindu ibu yang menyentuh',
+      visual:
+        'adult child missing mother, warm memory light, soft tears or quiet emotion, intimate portrait mood',
+      avoid: 'horror, party, DJ, random clickbait monster',
     };
   }
-  if (/ibu|ayah|family|sedih|maaf|rindu|mother|father|emotional/.test(t)) {
+  if (/(maaf ibu|ampuni|menyesal|sorry mom)/.test(t)) {
     return {
-      style: 'emotional cinematic',
-      palette: 'warm amber, soft gold, gentle shadows',
-      subject:
-        'emotional family moment, soft light on face, memory atmosphere, intimate storytelling',
-      emotion: 'touching, heartfelt, nostalgic',
+      id: 'apology_mother',
+      label: 'Maaf ke ibu',
+      searcher_goal: 'Orang mencari cerita penyesalan/maaf kepada ibu',
+      visual: 'emotional apology atmosphere, warm dim light, sincere facial emotion',
+      avoid: 'horror, comedy exaggeration, neon club',
+    };
+  }
+  if (/(dj|remix|full bass|jedag|jedug|nonstop|club mix)/.test(t)) {
+    return {
+      id: 'dj_remix',
+      label: 'DJ / Remix',
+      searcher_goal: 'Orang mencari DJ remix full bass / viral untuk diputar',
+      visual: 'DJ booth, neon bass energy, club lights, speaker glow',
+      avoid: 'sad family story, horror house',
+    };
+  }
+  if (/(hantu|horor|horror|ghost|haunted|mistis|rumah kosong)/.test(t)) {
+    return {
+      id: 'horror',
+      label: 'Horror',
+      searcher_goal: 'Orang mencari cerita horor/suara misterius/rumah angker',
+      visual: 'dark empty house, silhouette, moonlight, suspense fog',
+      avoid: 'cute family, DJ neon party',
+    };
+  }
+  if (/(ibu|ayah|family|mother|father|sedih|doa)/.test(t)) {
+    return {
+      id: 'family_emotion',
+      label: 'Family emotional',
+      searcher_goal: 'Orang mencari cerita keluarga emosional',
+      visual: 'cinematic family emotion, warm amber light, intimate storytelling',
+      avoid: 'horror gore, DJ party',
     };
   }
   return {
-    style: 'cinematic youtube thumbnail',
-    palette: 'high contrast teal and orange',
-    subject: 'clear main subject with dramatic lighting and depth',
-    emotion: 'curiosity and urgency',
+    id: 'general',
+    label: 'General',
+    searcher_goal: 'Orang mencari konten sesuai keyword yang diketik di YouTube',
+    visual: 'clear main subject, dramatic lighting, high contrast thumbnail subject',
+    avoid: 'off-topic random elements, unreadable clutter',
   };
 }
 
-function buildHighCtrPrompt({ title, hook, niche, angle, language, stylePack, userPrompt }) {
+function summarizeCompetitors(list) {
+  return asArray(list)
+    .slice(0, 8)
+    .map((v, i) => {
+      const title = v.title || v.normTitle || '';
+      const views = v.views != null ? v.views : '';
+      const ch = v.channel || v.channelTitle || '';
+      return `${i + 1}. ${title}${views !== '' ? ` | views:${views}` : ''}${ch ? ` | ${ch}` : ''}`;
+    })
+    .filter((x) => x.length > 3);
+}
+
+function extractVisualCuesFromTitles(titles) {
+  const joined = titles.join(' ').toLowerCase();
+  const cues = [];
+  if (/ibu|mama|bunda|mother|mom/.test(joined)) cues.push('mother figure / maternal emotion');
+  if (/rindu|kangen|miss|longing/.test(joined)) cues.push('longing / missing atmosphere');
+  if (/maaf|sorry|ampun|menyesal/.test(joined)) cues.push('apology / regret emotion');
+  if (/lahir|born/.test(joined)) cues.push('birth / beginning of life memory');
+  if (/lagu|song|music/.test(joined)) cues.push('musical storytelling mood (not DJ club unless explicit)');
+  if (/rumah|house|pintu|door|suara|sound/.test(joined)) cues.push('house / door / sound mystery cues');
+  if (/dj|bass|remix|neon/.test(joined)) cues.push('neon bass / remix energy');
+  if (!cues.length) cues.push('match dominant competitor emotional theme');
+  return cues;
+}
+
+function buildHighCtrPrompt({
+  title,
+  hook,
+  niche,
+  angle,
+  seed,
+  language,
+  intent,
+  competitorTitles,
+  userPrompt,
+  patterns,
+}) {
   const hookText = (hook || '').trim();
-  const lang = language || 'id';
-  // Important: ask model for VISUAL only. Big readable text is overlaid later by canvas for CTR.
+  const comps = competitorTitles.slice(0, 6);
+  const cues = extractVisualCuesFromTitles(comps.concat([title, angle, seed]));
   return [
-    `YouTube thumbnail background image, 16:9, ultra sharp, high contrast, click-worthy composition.`,
-    `Main subject: ${stylePack.subject}.`,
-    `Style: ${stylePack.style}, cinematic lighting, shallow depth of field, professional color grade.`,
-    `Color palette: ${stylePack.palette}.`,
-    `Emotion: ${stylePack.emotion}.`,
-    `Topic context: ${title || angle || niche || 'youtube video'}.`,
-    userPrompt ? `Extra direction: ${userPrompt}` : '',
-    `Composition rules for high CTR:`,
-    `- subject large and clear on LEFT or CENTER, leave clean space on RIGHT for big text overlay`,
-    `- face emotion exaggerated if people appear (shock/fear/joy)`,
-    `- strong contrast, no clutter, no tiny objects`,
-    `- no watermark, no logo, no UI mockup`,
-    `- DO NOT render long paragraphs of text`,
-    hookText
-      ? `- if any text appears, only a tiny optional short word near edge, never full sentence; primary text will be overlaid later: "${hookText}"`
-      : `- avoid text in image`,
-    `Aspect ratio 16:9, photoreal or premium cinematic illustration, 4k detail.`,
-    lang === 'ar' ? 'Middle-east friendly visual cues if relevant.' : '',
+    `YouTube thumbnail BACKGROUND image, 16:9, ultra sharp, high contrast, click-worthy.`,
+    `IMPORTANT: Stay on-intent. This is NOT a random pretty image.`,
+    `Searcher intent (like a real YouTube user typing this query): ${intent.searcher_goal}`,
+    `Intent label: ${intent.label}`,
+    `Keyword/seed: ${seed || angle || ''}`,
+    `Winning title context: ${title || ''}`,
+    `Angle: ${angle || ''}`,
+    `Niche: ${niche || ''}`,
+    `Main visual direction: ${intent.visual}`,
+    `Visual cues from competitor titles (study them, do not copy logos/faces exactly): ${cues.join('; ')}`,
+    comps.length
+      ? `Competitor title patterns to respect:\n${comps.map((t) => `- ${t}`).join('\n')}`
+      : 'Competitor list thin: stay strictly on keyword intent.',
+    patterns && patterns.length
+      ? `Title patterns mined: ${patterns.map((p) => p.label || p).slice(0, 5).join(', ')}`
+      : '',
+    userPrompt ? `Creator extra direction (only if on-intent): ${userPrompt}` : '',
+    `Avoid completely: ${intent.avoid}`,
+    `Composition for high CTR:`,
+    `- large subject LEFT/CENTER, clean RIGHT space for big text overlay`,
+    `- exaggerated readable emotion if person appears`,
+    `- strong contrast, no clutter, no watermark, no YouTube UI`,
+    `- DO NOT write long text in image; hook will be overlaid later: "${hookText || 'HOOK'}"`,
+    `Photoreal or premium cinematic illustration, 4k detail, 16:9.`,
+    language === 'ar' ? 'Use culturally fitting visuals if relevant.' : '',
   ]
     .filter(Boolean)
     .join('\n');
@@ -96,29 +162,30 @@ async function rewritePromptWithTextModel(basePrompt, evidence, cfg) {
       models: [cfg.polishModel, cfg.fallbackModel],
       baseUrl: cfg.baseUrl,
       apiKey: cfg.apiKey,
-      temperature: 0.5,
+      temperature: 0.4,
       timeoutMs: 45000,
       messages: [
         {
           role: 'system',
           content:
-            'You write high-CTR YouTube thumbnail IMAGE prompts. Output JSON only. Never invent analytics metrics. Prefer visual composition over text-in-image.',
+            'You design on-intent high-CTR YouTube thumbnail image prompts from competitor evidence. Output JSON only. Never invent view counts. Never go off-topic from searcher intent. Prefer visual composition; big text is overlaid later.',
         },
         {
           role: 'user',
-          content: `Perbaiki prompt gambar thumbnail biar high CTR.
-Evidence engine (jangan dikarang):
+          content: `Buat prompt gambar thumbnail yang TAAT INTENT + baca kompetitor.
+Evidence:
 ${JSON.stringify(evidence)}
 
-Prompt awal:
+Prompt dasar:
 ${basePrompt}
 
 Output JSON:
 {
-  "image_prompt":"prompt final bahasa Inggris yang detail visual",
-  "hook_text":"HOOK PENDEK MAX 4 KATA HURUF BESAR",
-  "composition_note":"1 kalimat",
-  "ctr_reason":"1-2 kalimat kenapa visual ini berpotensi CTR (tanpa klaim pasti viral)"
+  "image_prompt":"English detailed visual prompt, on-intent",
+  "hook_text":"MAX 4 WORDS UPPERCASE",
+  "composition_note":"1 sentence",
+  "ctr_reason":"1-2 sentences, no guaranteed viral claim",
+  "on_intent_check":"why this stays on the searcher goal"
 }`,
         },
       ],
@@ -129,6 +196,7 @@ Output JSON:
       hook_text: parsed.hook_text || evidence.hook || '',
       composition_note: parsed.composition_note || '',
       ctr_reason: parsed.ctr_reason || '',
+      on_intent_check: parsed.on_intent_check || '',
       model_text: out.model,
     };
   } catch {
@@ -137,33 +205,63 @@ Output JSON:
       hook_text: evidence.hook || '',
       composition_note: '',
       ctr_reason: '',
+      on_intent_check: '',
       model_text: null,
     };
   }
 }
 
+async function fetchUrlAsBase64(imageUrl, apiKey) {
+  const headerVariants = [
+    {
+      'User-Agent': 'Mozilla/5.0 (compatible; YIE/21.1)',
+      Accept: 'image/*,*/*',
+    },
+    {
+      'User-Agent': 'Mozilla/5.0 (compatible; YIE/21.1)',
+      Accept: 'image/*,*/*',
+      Authorization: `Bearer ${apiKey}`,
+    },
+    {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+      Accept: 'image/avif,image/webp,image/apng,image/*,*/*;q=0.8',
+      Referer: 'https://api.iamhc.cn/',
+    },
+  ];
+
+  let lastErr = null;
+  for (const headers of headerVariants) {
+    try {
+      const r = await fetch(imageUrl, { headers });
+      if (!r.ok) {
+        lastErr = new Error(`Fetch image HTTP ${r.status}`);
+        continue;
+      }
+      const ctype = (r.headers.get('content-type') || 'image/png').split(';')[0];
+      const buf = Buffer.from(await r.arrayBuffer());
+      if (buf.length < 100) {
+        lastErr = new Error('Image terlalu kecil / kosong');
+        continue;
+      }
+      return {
+        b64: buf.toString('base64'),
+        mime: ctype.startsWith('image/') ? ctype : 'image/png',
+      };
+    } catch (e) {
+      lastErr = e;
+    }
+  }
+  throw lastErr || new Error('Tidak bisa unduh image URL ke base64');
+}
+
 async function generateImage({ prompt, model, baseUrl, apiKey, size = '1792x1024' }) {
   const url = `${String(baseUrl).replace(/\/$/, '')}/images/generations`;
   const attempts = [
-    // OpenAI style
-    {
-      model,
-      prompt,
-      n: 1,
-      size,
-      response_format: 'b64_json',
-    },
-    // Some gateways ignore response_format / use different size
-    {
-      model,
-      prompt,
-      n: 1,
-      size: '1024x1024',
-    },
-    {
-      model,
-      prompt,
-    },
+    { model, prompt, n: 1, size, response_format: 'b64_json' },
+    { model, prompt, n: 1, size: '1024x1024', response_format: 'b64_json' },
+    { model, prompt, n: 1, size: '1024x1024' },
+    { model, prompt, n: 1, size: '1792x1024' },
+    { model, prompt },
   ];
 
   let lastErr = null;
@@ -184,26 +282,53 @@ async function generateImage({ prompt, model, baseUrl, apiKey, size = '1792x1024
         );
         continue;
       }
+
       const item = data?.data?.[0] || data?.images?.[0] || data?.result?.[0] || data;
-      const b64 =
+      let b64 =
         item?.b64_json ||
         item?.base64 ||
         item?.image_base64 ||
-        (typeof item?.image === 'string' && item.image.length > 200 && !item.image.startsWith('http')
+        (typeof item?.image === 'string' &&
+        item.image.length > 200 &&
+        !item.image.startsWith('http')
           ? item.image
           : null);
+      let mime = 'image/png';
       const imageUrl =
         item?.url ||
         item?.image_url ||
         data?.url ||
-        (typeof item?.image === 'string' && item.image.startsWith('http') ? item.image : null);
+        (typeof item?.image === 'string' && item.image.startsWith('http')
+          ? item.image
+          : null);
+
+      // Convert remote URL -> base64 on server (fixes browser CORS/403)
+      if (!b64 && imageUrl) {
+        try {
+          const got = await fetchUrlAsBase64(imageUrl, apiKey);
+          b64 = got.b64;
+          mime = got.mime || mime;
+        } catch (e) {
+          // last resort: return url (client may still fail)
+          lastErr = e;
+          return {
+            type: 'url',
+            value: imageUrl,
+            mime,
+            raw: data,
+            model,
+            warning:
+              'Image URL tidak bisa di-proxy ke base64. Browser mungkin gagal load (CORS/403).',
+          };
+        }
+      }
 
       if (b64) {
-        return { type: 'b64', value: b64, raw: data, model };
+        // strip data-url prefix if present
+        const clean = String(b64).replace(/^data:image\/\w+;base64,/, '');
+        return { type: 'b64', value: clean, mime, raw: data, model, source_url: imageUrl || null };
       }
-      if (imageUrl) {
-        return { type: 'url', value: imageUrl, raw: data, model };
-      }
+
       lastErr = new Error('Image API merespons tapi tidak ada url/base64');
     } catch (e) {
       lastErr = e;
@@ -223,6 +348,8 @@ module.exports = async function handler(req, res) {
     const body = await readJson(req);
     const title = body.title || body.finalTitle || '';
     const hook = body.hook || body.thumbnailHook || '';
+    const seed = body.seed || body.keyword || '';
+    const angle = body.angle || '';
     if (!title && !hook && !body.prompt) {
       return res.status(400).json({
         ok: false,
@@ -238,35 +365,56 @@ module.exports = async function handler(req, res) {
     const imageModel =
       process.env.IAMHC_IMAGE_MODEL ||
       process.env.IAMHC_IMG_MODEL ||
-      'flux'; // user can override in Vercel env to exact market model name
+      'step-image-edit-2';
 
-    const stylePack = nicheStylePack(body.niche, body.angle, title);
+    const competitors = asArray(body.qualifiedCompetitors || body.competitors);
+    const competitorTitles = competitors
+      .map((v) => v.title || '')
+      .filter(Boolean)
+      .concat(asArray(body.competitorTitles).map(String));
+    const patterns = asArray(body.patterns);
+    const intent = detectIntent(seed, angle, title, body.niche || '');
+
     const basePrompt = buildHighCtrPrompt({
       title,
       hook,
       niche: body.niche || '',
-      angle: body.angle || '',
+      angle,
+      seed,
       language: body.language || 'id',
-      stylePack,
+      intent,
+      competitorTitles,
       userPrompt: body.prompt || body.direction || '',
+      patterns,
     });
 
     const evidence = {
+      seed,
+      angle,
       title,
       hook,
       niche: body.niche || '',
-      angle: body.angle || '',
       language: body.language || 'id',
+      intent,
       scores: body.scores || {},
       metrics: body.metrics || {},
+      competitor_titles: competitorTitles.slice(0, 8),
+      competitor_summary: summarizeCompetitors(competitors).slice(0, 8),
+      patterns: patterns.slice(0, 6),
+      rules: [
+        'Jangan keluar jalur dari intent pencarian YouTube user',
+        'Baca kompetitor sebagai pola visual/emosi, jangan mengarang metrik',
+        'Jangan klaim pasti viral / high CTR terjamin',
+      ],
     };
 
     const rewritten = body.skipRewrite
       ? {
           image_prompt: basePrompt,
           hook_text: hook,
-          composition_note: 'left/center subject, right text space',
-          ctr_reason: 'High contrast subject + clean text space.',
+          composition_note: 'subject left/center, text space right',
+          ctr_reason: 'On-intent emotion + clean text space.',
+          on_intent_check: intent.searcher_goal,
           model_text: null,
         }
       : await rewritePromptWithTextModel(basePrompt, evidence, cfg);
@@ -285,16 +433,19 @@ module.exports = async function handler(req, res) {
       model_image: img.model,
       model_text: rewritten.model_text,
       result: {
-        image_type: img.type, // b64 | url
+        image_type: img.type,
         image: img.value,
-        mime: 'image/png',
+        mime: img.mime || 'image/png',
         prompt_used: finalPrompt,
         hook_text: rewritten.hook_text || hook,
         composition_note: rewritten.composition_note || '',
         ctr_reason: rewritten.ctr_reason || '',
-        style_pack: stylePack,
+        on_intent_check: rewritten.on_intent_check || intent.searcher_goal,
+        intent,
+        competitors_used: competitorTitles.slice(0, 8),
+        warning: img.warning || null,
         note:
-          'Gambar AI = background high-CTR. Teks hook besar digambar engine di canvas agar lebih terbaca.',
+          'Thumbnail taat intent + kompetitor. AI = background; hook teks ditimpa canvas engine.',
       },
     });
   } catch (e) {
@@ -302,7 +453,7 @@ module.exports = async function handler(req, res) {
       ok: false,
       error: e.message || String(e),
       hint:
-        'Pastikan IAMHC_IMAGE_MODEL di Vercel diisi nama model gambar yang tersedia di Model Market IAMHC. Endpoint yang dipakai: /v1/images/generations',
+        'Set IAMHC_IMAGE_MODEL=step-image-edit-2 (atau model image exact di market). Jika error fetch image, deploy ulang api/ai-thumb.js versi proxy base64.',
     });
   }
 };
