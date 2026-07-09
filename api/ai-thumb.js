@@ -262,20 +262,18 @@ function isConcurrencyError(msg = '') {
   return /concurrency|rate limit|too many|limit:\s*\d+/i.test(String(msg));
 }
 
-async function generateImage({ prompt, model, baseUrl, apiKey, size = '1792x1024' }) {
+async function generateImage({ prompt, model, baseUrl, apiKey, size = '1024x1024' }) {
   const url = `${String(baseUrl).replace(/\/$/, '')}/images/generations`;
-  // Keep attempts FEW — many parallel retries trigger IAMHC concurrency limits (e.g. 11 > 10)
+  // MAX 2 attempts total. Concurrency limit IAMHC ~10 — jangan spam retry.
   const attempts = [
     { model, prompt, n: 1, size: '1024x1024', response_format: 'b64_json' },
     { model, prompt, n: 1, size: '1024x1024' },
-    { model, prompt, n: 1, size },
   ];
 
   let lastErr = null;
   for (let i = 0; i < attempts.length; i++) {
     const body = attempts[i];
-    // small spacing between attempts to avoid concurrency pile-up
-    if (i > 0) await sleep(700 * i);
+    if (i > 0) await sleep(2500);
     try {
       const r = await fetch(url, {
         method: 'POST',
@@ -291,10 +289,13 @@ async function generateImage({ prompt, model, baseUrl, apiKey, size = '1792x1024
           data?.error?.message || data?.error || data?.message || `Image HTTP ${r.status}`;
         lastErr = new Error(String(msg));
         if (isConcurrencyError(msg)) {
-          // wait and try next payload once concurrency frees
-          await sleep(1800);
+          // one long wait then single retry only
+          await sleep(12000);
+          continue;
         }
-        continue;
+        // non-concurrency: don't thrash
+        if (i === 0) continue;
+        break;
       }
 
       const item = data?.data?.[0] || data?.images?.[0] || data?.result?.[0] || data;
@@ -387,7 +388,22 @@ module.exports = async function handler(req, res) {
       .filter(Boolean)
       .concat(asArray(body.competitorTitles).map(String));
     const patterns = asArray(body.patterns);
-    const intent = detectIntent(seed, angle, title, body.niche || '');
+    const intent = detectIntent(
+      seed,
+      angle,
+      title,
+      `${body.niche || ''} ${body.nicheNote || ''} ${body.contentFormat || ''}`
+    );
+    // format lock from client
+    if (String(body.contentFormat || body.nicheNote || '').match(/story_song|cerita jadi lagu|lagu sedih|lirik/i)) {
+      intent.id = 'longing_mother';
+      intent.label = 'Cerita jadi lagu / emosional';
+      intent.searcher_goal =
+        'Orang mencari lagu/cerita-jadi-lagu emosional (bukan DJ remix, bukan horor)';
+      intent.visual =
+        'emotional song storytelling, mother/child memory, soft cinematic light, music mood without DJ club neon';
+      intent.avoid = 'DJ neon club, horror ghost, funny meme, random off-topic';
+    }
 
     const basePrompt = buildHighCtrPrompt({
       title,
@@ -422,7 +438,9 @@ module.exports = async function handler(req, res) {
       ],
     };
 
-    const rewritten = body.skipRewrite
+    // Default: SKIP text rewrite (hemat + hindari delay). Set skipRewrite:false jika mau polish prompt.
+    const doRewrite = body.skipRewrite === false;
+    const rewritten = !doRewrite
       ? {
           image_prompt: basePrompt,
           hook_text: hook,
@@ -469,9 +487,10 @@ module.exports = async function handler(req, res) {
       ok: false,
       error: msg,
       code: concurrency ? 'CONCURRENCY' : 'IMAGE_FAIL',
+      retryAfterSec: concurrency ? 25 : 0,
       hint: concurrency
-        ? 'Batas concurrent image IAMHC penuh. Tunggu 10–20 detik, jangan spam klik Generate. Coba 1x saja.'
-        : 'Set IAMHC_IMAGE_MODEL=step-image-edit-2. Deploy api/ai-thumb.js terbaru (base64 + retry).',
+        ? 'Antrian image IAMHC penuh (limit ~10). JANGAN spam. Tunggu ±25 detik lalu Generate 1x.'
+        : 'Set IAMHC_IMAGE_MODEL=step-image-edit-2.',
     });
   }
 };
