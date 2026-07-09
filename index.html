@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>YouTube Intelligence Engine v21.6 — Hook Psychology Lab</title>
+<title>YouTube Intelligence Engine v21.7 — Text Style Pack</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}body{font-family:Arial,Segoe UI,sans-serif;background:#050714;color:#f6f8ff;min-height:100vh;padding-bottom:72px}.wrap{max-width:1120px;margin:auto;padding:16px 14px}.hero{padding:24px 0 16px;border-bottom:1px solid #1d2740}.badge{display:inline-flex;gap:7px;align-items:center;background:#13213a;color:#9ed0ff;border:1px solid #284b7a;border-radius:999px;padding:7px 12px;font-size:12px;font-weight:900}.hero h1{font-size:clamp(28px,6vw,52px);line-height:1.04;margin:12px 0;background:linear-gradient(90deg,#fff,#ff4f72,#4aa3ff,#18d39b);-webkit-background-clip:text;-webkit-text-fill-color:transparent}.muted{color:#a4afc5;font-size:13px;line-height:1.58}.warn{background:#2a220f;border:1px solid #70581a;color:#ffe29a;border-radius:14px;padding:12px;margin-top:12px;font-size:13px;line-height:1.5}.card{background:linear-gradient(180deg,#101522,#0b101c);border:1px solid #26324d;border-radius:18px;padding:16px;box-shadow:0 14px 40px #0007;margin-top:16px}h2,h3{margin-bottom:10px}.grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}label{display:block;margin:10px 0 6px;font-size:12px;font-weight:900;color:#cbd6eb}input,select,textarea{width:100%;padding:12px;border:1px solid #2d3b5c;border-radius:12px;background:#090d16;color:#fff;outline:0}textarea{min-height:110px;resize:vertical;line-height:1.45}button{border:0;border-radius:12px;padding:12px 13px;font-weight:900;color:#fff;background:linear-gradient(135deg,#ff365f,#9b4dff);cursor:pointer}button.secondary{background:#172033;border:1px solid #344665;color:#d8e8ff}button.green{background:linear-gradient(135deg,#0aae79,#18d39b)}button.ghost{background:#0b1020;border:1px solid #26324d;color:#cfe2ff}button.small{padding:8px 10px;font-size:12px;margin:4px 4px 0 0}.btns{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px;margin-top:12px}.loading{display:none;text-align:center;padding:18px;border-radius:16px;border:1px solid #26324d;background:#101522;margin-top:16px}.spin{width:38px;height:38px;border-radius:50%;border:3px solid #26324d;border-top-color:#ff365f;animation:spin 1s linear infinite;margin:0 auto 10px}@keyframes spin{to{transform:rotate(360deg)}}.progress{height:12px;background:#070a11;border:1px solid #1e2a44;border-radius:999px;overflow:hidden;margin:12px 0}.progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,#ff365f,#18d39b)}#results{display:none}.scoreHero{display:grid;grid-template-columns:175px 1fr;gap:16px;align-items:center}.circle{width:158px;height:158px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(#18d39b calc(var(--p)*1%),#1b2540 0);position:relative;margin:auto}.circle:before{content:"";position:absolute;inset:13px;background:#090d16;border-radius:50%;border:1px solid #26324d}.circle span{position:relative;font-size:37px;font-weight:1000}.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-top:13px}.kpi{background:#090d16;border:1px solid #222d46;border-radius:14px;text-align:center;padding:13px}.num{font-size:22px;font-weight:1000}.lab{font-size:11px;color:#8d99b0;margin-top:4px;line-height:1.25}.tag{display:inline-block;margin:4px;padding:6px 10px;border-radius:999px;font-size:12px}.tag.g{background:#0d3529;color:#82f4d1;border:1px solid #216b55}.tag.b{background:#10263f;color:#b8ddff;border:1px solid #28547e}.tag.r{background:#35101b;color:#ff9eb2;border:1px solid #733044}.tag.y{background:#32280f;color:#ffe19a;border:1px solid #6b571f}.tag.p{background:#26173f;color:#d5beff;border:1px solid #5d3b91}.reason{list-style:none;margin-top:10px}.reason li{margin:7px 0;padding:9px 10px;border-radius:10px;font-size:13px;line-height:1.45}.good{background:#0b2a22;border-left:3px solid #18d39b;color:#b7ffe8}.bad{background:#32111b;border-left:3px solid #ff365f;color:#ffb0c0}.info{background:#10243a;border-left:3px solid #4aa3ff;color:#cfe6ff}.yellow{background:#2c260e;border-left:3px solid #ffd166;color:#ffe7a6}.finalBox{background:linear-gradient(135deg,rgba(24,211,155,.15),rgba(74,163,255,.08));border:1px solid rgba(24,211,155,.35);border-radius:16px;padding:15px;margin-top:13px}.winnerTitle{font-size:21px;line-height:1.35;font-weight:1000;color:#fff;margin:8px 0}.bar{display:grid;grid-template-columns:140px 1fr 45px;gap:8px;align-items:center;margin:8px 0}.track{height:11px;background:#070a11;border-radius:999px;overflow:hidden;border:1px solid #1e2a44}.fill{height:100%;background:linear-gradient(90deg,#4aa3ff,#18d39b)}.battleItem{display:grid;grid-template-columns:auto 1fr auto;gap:9px;align-items:start;background:#070b14;border:1px solid #1d2944;border-radius:12px;padding:10px;margin:8px 0}.battleItem small{color:#9aa6bd;line-height:1.45}.badge2{font-weight:1000;border-radius:999px;padding:5px 9px;font-size:11px}.vwin{background:#0d3529;color:#82f4d1;border:1px solid #216b55}.vtest{background:#32280f;color:#ffe19a;border:1px solid #6b571f}.vlose{background:#35101b;color:#ff9eb2;border:1px solid #733044}.pack{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}.copybox textarea{font-size:12px;background:#060911}.thumbgrid{display:grid;grid-template-columns:360px 1fr;gap:15px}.canvasbox{background:#05070d;border:1px solid #26324d;border-radius:15px;padding:10px}canvas{width:100%;border-radius:12px;background:#111}.tablebox{overflow:auto;border:1px solid #26324d;border-radius:14px;margin-top:10px}.table{width:100%;border-collapse:collapse;min-width:850px}.table th,.table td{border-bottom:1px solid #24304a;padding:9px;text-align:left;font-size:12px;vertical-align:top}.table th{background:#121a2b;color:#d6e5ff}.table a{color:#93c9ff;text-decoration:none}details{margin-top:12px;background:#090d16;border:1px solid #26324d;border-radius:14px;padding:12px}summary{cursor:pointer;font-weight:900;color:#d8e8ff}.sticky{position:fixed;left:0;right:0;bottom:0;background:rgba(5,7,20,.96);border-top:1px solid #26324d;padding:9px;display:none;justify-content:center;gap:8px;z-index:99}.sticky button{font-size:12px;padding:9px 10px}.rtl{direction:rtl;text-align:right}.angleGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.kwLab{margin-top:10px}.kwChips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;max-height:210px;overflow:auto;padding-right:2px}.kwChip{display:inline-flex;align-items:center;gap:6px;background:#090d16;border:1px solid #26324d;border-radius:999px;padding:7px 10px;cursor:pointer;color:#eef3ff;font-size:12px;line-height:1.2;max-width:100%}.kwChip b{font-size:12px;font-weight:800}.kwChip .sc{background:#13213a;color:#9ed0ff;border-radius:999px;padding:2px 6px;font-size:10px;font-weight:900}.kwChip.on{border-color:#18d39b;background:#0b1a16;box-shadow:0 0 0 1px #18d39b55}.kwPick{margin-top:8px;padding:10px;border-radius:12px;background:#0b1a16;border:1px solid #216b55}.flowSteps{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}.flowSteps span{background:#121a2b;border:1px solid #2a3654;border-radius:999px;padding:5px 9px;font-size:10px;font-weight:800;color:#9ed0ff}.flowSteps span.on{border-color:#18d39b;color:#82f4d1;background:#0d3529}
 @media(max-width:900px){.grid,.grid2,.grid3,.scoreHero,.pack,.thumbgrid,.angleGrid{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}.bar{grid-template-columns:1fr}.btns{grid-template-columns:1fr}.circle{width:142px;height:142px}.sticky{justify-content:space-around}.hero h1{letter-spacing:-.5px}}
@@ -12,7 +12,7 @@
 <body>
 <div class="wrap">
   <section class="hero">
-    <span class="badge">🧠 v21.6 Hook Psychology Lab</span>
+    <span class="badge">🧠 v21.7 Text Style Pack</span>
     <h1>Mesin tetap data-based. AI Strategy membaca hasil engine, mengkritik strategi, lalu memberi verdict, alternatif judul, thumbnail strategy, dan rencana 24 jam.</h1>
     <p class="muted">Alur v21.3: 1) Keyword Lab (seperti penonton search YouTube) → 2) Pilih keyword → 3) Engine judul/kompetitor → 4) AI Strategy/Thumb. AI bukan otak utama.</p>
     <div class="warn"><b>Catatan kuota:</b> Mode ini meriset beberapa angle. Mulai dari 3-5 angle dulu agar kuota YouTube API aman.</div>
@@ -357,15 +357,38 @@ function renderAll(){let best=RECS[0]||{},m=A.metrics,decision=scoreOpportunity(
     <input id="thumbDirection" placeholder="Contoh: close-up air mata, genggam tangan ibu, cahaya hangat">
     <label>Upload gambar opsional</label>
     <input type="file" accept="image/*" onchange="loadThumbImage(event)">
-    <label>Style canvas</label>
+    <label>Style canvas (fallback tanpa AI image)</label>
     <select id="emo" onchange="drawThumb()"><option value="auto">Auto Style</option><option value="shock">Shock</option><option value="dark">Dark</option><option value="neon">Neon</option></select>
+    <label>Style tulisan hook</label>
+    <select id="textStyle" onchange="drawThumb()">
+      <option value="auto">Auto (ikut niche)</option>
+      <option value="yt_classic">YouTube Classic (Impact)</option>
+      <option value="soft_impact">Soft Emotional</option>
+      <option value="horror_glow">Horror Glow</option>
+      <option value="neon_stack">Neon Stack</option>
+      <option value="thick_comic">Thick Comic / Yellow</option>
+      <option value="clean_box">Clean Box (putih)</option>
+      <option value="stacked_poster">Stacked Poster</option>
+      <option value="minimal_outline">Minimal Outline</option>
+    </select>
+    <label>Posisi tulisan</label>
+    <select id="textPos" onchange="drawThumb()">
+      <option value="right">Kanan (rekomendasi CTR)</option>
+      <option value="left">Kiri</option>
+      <option value="center">Tengah</option>
+    </select>
     <button class="small green" style="margin-top:10px;width:100%" onclick="generateAIThumb(this)">🎨 Generate AI Thumbnail</button>
     <button class="green" style="margin-top:8px;width:100%" onclick="downloadThumb()">⬇️ Download Thumbnail PNG</button>
     <div id="thumbAIStatus" class="muted" style="margin-top:8px"></div>
   </div>
   <div class="canvasbox"><canvas id="cv" width="1280" height="720"></canvas>
-  <p class="muted" style="margin-top:8px">Hook = gerbang CTR. Pilih dari Hook Lab (bukan selalu “MAAF IBU”). Gambar full-bleed + teks overlay.</p>
+  <p class="muted" style="margin-top:8px">Hook + style tulisan = gerbang CTR. Ganti style (Horror Glow / Neon / Clean Box / dll) & posisi teks. AI tidak wajib untuk style font.</p>
   </div></div>`;
+  // auto text style by niche (user can change)
+  try{
+    let ts=$('textStyle');
+    if(ts && ts.value==='auto'){ /* keep auto */ }
+  }catch(e){}
   drawThumb();
   renderHookLab();
 }function renderDetail(){let angles=ANGLES.map((r,i)=>`<div class="battleItem"><span class="badge2 ${i===0?'vwin':r.score>=60?'vtest':'vlose'}">${i===0?'ANGLE':'TEST'}</span><div><b>${esc(r.keyword)}</b><br><small>${r.reasons.map(x=>x.t).join(' ')}</small></div><b>${r.score}</b></div>`).join('');let titles=RECS.slice(0,5).map((r,i)=>`<div class="battleItem"><span class="badge2 ${i===0?'vwin':r.score>=60?'vtest':'vlose'}">${i===0?'WINNER':'TEST'}</span><div><b>${esc(r.title)}</b><br><small>Search ${r.search}, Browse ${r.browse}, Pattern ${r.patternBorn||0}, Hook ${r.hookScore||0}, Quality ${r.quality}</small></div><b>${r.score}</b></div>`).join('');$('detailBox').innerHTML=`<details open><summary>Angle Ranking</summary>${angles}</details><details><summary>Candidate Title Battle</summary>${titles}</details><details open><summary>Title Patterns Mined</summary>${(A.patterns.titlePatterns||[]).slice(0,8).map(p=>`<div class="battleItem"><span class="badge2 vtest">PATTERN</span><div><b>${esc(p.label)}</b><br><small>Muncul ${p.count}x, weight ${Math.round(p.weight)}. Contoh: ${esc((p.examples||[])[0]||'-')}</small></div><b>${Math.round(p.weight)}</b></div>`).join('')}</details><details><summary>Winning Words & Patterns</summary>${A.patterns.topWords.slice(0,24).map(([w,c])=>`<span class="tag b">${esc(w)} ${c}x</span>`).join('')}</details><details open><summary>Reality Filter: Dipakai vs Dibuang</summary><div><b>Query diuji:</b> ${((A.queryVariants||[]).map(q=>`<span class="tag b">${esc(q)}</span>`).join(''))}</div><h3 style="margin-top:10px">Kompetitor dipakai</h3>${A.qualified.slice(0,10).map(v=>`<div class="battleItem"><span class="badge2 vwin">${v.relevance}</span><div><b>${esc(v.title)}</b><br><small>Query: ${esc(v._query||'-')} | Channel: ${esc(v.channelTitle||'-')}</small></div><b>${fmt(v.views)}</b></div>`).join('')}<h3 style="margin-top:10px">Kompetitor dibuang</h3>${A.rejected.slice(0,10).map(v=>`<div class="battleItem"><span class="badge2 vlose">${v.relevance}</span><div><b>${esc(v.title)}</b><br><small>Alasan: relevance rendah untuk intent/niche ini. Query: ${esc(v._query||'-')}</small></div><b>${fmt(v.views)}</b></div>`).join('')}</details><details><summary>Data Kompetitor Angle Terpilih</summary><div class="tablebox"><table class="table"><tr><th>#</th><th>Judul</th><th>Views</th><th>Age</th><th>VPD</th><th>VPM</th><th>Subs</th></tr>${A.videos.slice(0,25).map((v,i)=>`<tr><td>${i+1}</td><td><a href="${esc(v.url||'#')}" target="_blank">${esc(v.title)}</a><br><span class="muted">${esc(v.channelTitle||'')}</span></td><td>${fmt(v.views)}</td><td>${v.age}d</td><td>${fmt(v.vpd)}</td><td>${fmt(v.vpm)}</td><td>${fmt(v.subs)}</td></tr>`).join('')}</table></div></details>`}
@@ -742,32 +765,205 @@ function applyHookLab(idx){
 }
 
 
+
+function getTextStyleId(){
+  let el=$('textStyle');
+  let v=el&&el.value;
+  if(v && v!=='auto') return v;
+  // auto by niche
+  let id=A&&A.niche&&A.niche.id;
+  if(id==='horror') return 'horror_glow';
+  if(id==='dj') return 'neon_stack';
+  if(id==='family') return 'soft_impact';
+  return 'yt_classic';
+}
+function getTextPos(){
+  let el=$('textPos');
+  return (el&&el.value)||'right';
+}
+function textStylePack(id, pal){
+  // pal = [bg1,bg2,accent,accent2]
+  const packs={
+    yt_classic:{
+      label:'YouTube Classic',
+      font:'Impact, Arial Black, sans-serif',
+      weight:'1000',
+      fill:'#ffffff',
+      stroke:'rgba(0,0,0,.92)',
+      strokeW:0.16,
+      shadow:'rgba(0,0,0,.55)',
+      shadowBlur:8,
+      uppercase:true,
+      tracking:0
+    },
+    soft_impact:{
+      label:'Soft Emotional',
+      font:'Arial Black, Impact, sans-serif',
+      weight:'900',
+      fill:'#fff7ea',
+      stroke:'rgba(40,20,10,.88)',
+      strokeW:0.12,
+      shadow:'rgba(255,180,80,.25)',
+      shadowBlur:14,
+      uppercase:true,
+      tracking:0.5
+    },
+    horror_glow:{
+      label:'Horror Glow',
+      font:'Impact, Arial Black, sans-serif',
+      weight:'1000',
+      fill:'#e8fbff',
+      stroke:'rgba(0,0,0,.95)',
+      strokeW:0.14,
+      shadow:(pal&&pal[2])||'#00d5ff',
+      shadowBlur:22,
+      uppercase:true,
+      tracking:1
+    },
+    neon_stack:{
+      label:'Neon Stack',
+      font:'Arial Black, Impact, sans-serif',
+      weight:'1000',
+      fill:'#ffffff',
+      stroke:'#120018',
+      strokeW:0.12,
+      shadow:(pal&&pal[2])||'#00f5ff',
+      shadowBlur:18,
+      uppercase:true,
+      tracking:1.2,
+      multiGlow:true,
+      glow2:(pal&&pal[3])||'#ff2bd6'
+    },
+    thick_comic:{
+      label:'Thick Comic',
+      font:'Arial Black, Helvetica, sans-serif',
+      weight:'1000',
+      fill:'#ffe566',
+      stroke:'#111111',
+      strokeW:0.18,
+      shadow:'rgba(0,0,0,.65)',
+      shadowBlur:6,
+      uppercase:true,
+      tracking:0
+    },
+    clean_box:{
+      label:'Clean Box',
+      font:'Arial Black, Arial, sans-serif',
+      weight:'900',
+      fill:'#111111',
+      stroke:'rgba(0,0,0,0)',
+      strokeW:0,
+      shadow:'rgba(0,0,0,0)',
+      shadowBlur:0,
+      uppercase:true,
+      tracking:0.2,
+      box:true,
+      boxFill:'rgba(255,255,255,.92)',
+      boxPad:16
+    },
+    stacked_poster:{
+      label:'Stacked Poster',
+      font:'Impact, Arial Black, sans-serif',
+      weight:'1000',
+      fill:'#ffffff',
+      stroke:'rgba(0,0,0,.9)',
+      strokeW:0.15,
+      shadow:'rgba(0,0,0,.5)',
+      shadowBlur:10,
+      uppercase:true,
+      tracking:0,
+      biggerFirst:true
+    },
+    minimal_outline:{
+      label:'Minimal Outline',
+      font:'Arial Black, Arial, sans-serif',
+      weight:'900',
+      fill:'rgba(255,255,255,.08)',
+      stroke:'#ffffff',
+      strokeW:0.08,
+      shadow:'rgba(0,0,0,.4)',
+      shadowBlur:4,
+      uppercase:true,
+      tracking:2
+    }
+  };
+  return packs[id]||packs.yt_classic;
+}
 function drawText(c,t,p){
   let lang=A?A.lang:'id';
   let hook=smartHookText(t,A);
-  let lines=wrap(c,hook, Math.min(700, c.canvas.width*0.52), 92);
-  let size=lines.length>2?72: lines.join('').length>14?78:92;
-  c.font=`1000 ${size}px Impact,Arial Black,Arial`;
+  let styleId=getTextStyleId();
+  let st=textStylePack(styleId,p);
+  if(st.uppercase) hook=String(hook).toUpperCase();
+  let pos=getTextPos(); // left | center | right
+  let maxW = pos==='center' ? c.canvas.width*0.78 : c.canvas.width*0.52;
+  let baseSize = hook.length>18 ? 70 : hook.length>12 ? 82 : 96;
+  if(styleId==='minimal_outline') baseSize += 8;
+  if(styleId==='clean_box') baseSize -= 6;
+  let lines=wrap(c,hook, maxW, baseSize);
+  // font setup helper
+  const setFont=(size)=>{ c.font=`${st.weight} ${size}px ${st.font}`; };
+  setFont(baseSize);
   c.textBaseline='middle';
-  // Place hook on right-center clean zone (full-bleed friendly), no decorative bars
-  let xRight=c.canvas.width-48, xLeft=48, y0=c.canvas.height*0.42;
-  if(lang==='ar'){
-    c.direction='rtl'; c.textAlign='right';
-    lines.forEach((line,i)=>{
-      let y=y0+i*(size+10);
-      c.lineWidth=16; c.strokeStyle='rgba(0,0,0,.88)'; c.strokeText(line,xRight,y);
-      c.fillStyle='#fff'; c.fillText(line,xRight,y);
-    });
-  }else{
-    c.direction='ltr'; c.textAlign='right';
-    lines.forEach((line,i)=>{
-      let y=y0+i*(size+10);
-      c.lineWidth=16; c.strokeStyle='rgba(0,0,0,.88)'; c.strokeText(line,xRight,y);
-      // slight color accent on last word line only via second pass shadow
-      c.fillStyle='#fff'; c.fillText(line,xRight,y);
-    });
+  if(lang==='ar'){ c.direction='rtl'; }
+  else { c.direction='ltr'; }
+
+  let W=c.canvas.width, H=c.canvas.height;
+  let align = pos==='left'?'left': pos==='center'?'center':'right';
+  c.textAlign=align;
+  let x = pos==='left' ? 48 : pos==='center' ? W/2 : W-48;
+  let totalH = lines.length * (baseSize + 8);
+  let y0 = H*0.40 - totalH/2 + baseSize/2;
+  // keep away from bottom label
+  if(y0 + totalH > H-90) y0 = H-90-totalH+baseSize/2;
+  if(y0 < 70) y0 = 70;
+
+  // optional box behind all lines
+  if(st.box){
+    setFont(baseSize);
+    let maxLineW=0;
+    lines.forEach(line=>{ maxLineW=Math.max(maxLineW, c.measureText(line).width); });
+    let pad=st.boxPad||14;
+    let bw=maxLineW+pad*2, bh=totalH+pad*1.2;
+    let bx = pos==='left' ? x-pad : pos==='center' ? x-bw/2 : x-bw+pad;
+    let by = y0 - baseSize/2 - pad*0.6;
+    c.fillStyle=st.boxFill||'rgba(255,255,255,.9)';
+    round(c,bx,by,bw,bh,12); c.fill();
   }
+
+  lines.forEach((line,i)=>{
+    let size=baseSize;
+    if(st.biggerFirst && i===0 && lines.length>1) size=Math.round(baseSize*1.12);
+    if(st.biggerFirst && i>0) size=Math.round(baseSize*0.86);
+    setFont(size);
+    let y=y0+i*(baseSize+10);
+    // shadow / glow
+    if(st.shadowBlur && st.shadow){
+      c.save();
+      c.shadowColor=st.shadow;
+      c.shadowBlur=st.shadowBlur;
+      c.shadowOffsetX=0; c.shadowOffsetY=2;
+      if(st.multiGlow && st.glow2){
+        c.shadowColor=st.glow2; c.shadowBlur=st.shadowBlur+6;
+        c.fillStyle=st.fill; c.fillText(line,x,y);
+      }
+      c.shadowColor=st.shadow; c.shadowBlur=st.shadowBlur;
+      c.fillStyle=st.fill; c.fillText(line,x,y);
+      c.restore();
+    }
+    // stroke then fill for readability
+    if(st.strokeW && st.stroke && st.stroke!=='rgba(0,0,0,0)'){
+      c.lineJoin='round';
+      c.miterLimit=2;
+      c.lineWidth=Math.max(4, size*st.strokeW);
+      c.strokeStyle=st.stroke;
+      c.strokeText(line,x,y);
+    }
+    c.fillStyle=st.fill;
+    c.fillText(line,x,y);
+  });
 }
+
 function localizedNicheLabel(){if(!A)return'YOUTUBE';let id=A.niche.id,lang=A.lang;if(id==='horror'){if(lang==='ar')return'قصص رعب';if(lang==='uz')return'QO‘RQINCHLI HIKOYA';if(lang==='en')return'HORROR STORY';return'CERITA HOROR'}if(id==='dj'){if(lang==='ar')return'دي جي ريمكس';if(lang==='uz')return'DJ REMIX';return'DJ REMIX'}if(id==='family'){if(lang==='ar')return'قصة عائلية';if(lang==='uz')return'OILAVIY HIKOYA';if(lang==='en')return'FAMILY STORY';return'CERITA KELUARGA'}return A.niche.label||'YOUTUBE'}
 function drawLabel(c,p){
   let label=String(localizedNicheLabel()||'').toUpperCase().slice(0,22);
