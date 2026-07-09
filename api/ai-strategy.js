@@ -1,15 +1,16 @@
 /**
  * POST /api/ai-strategy
  * AI Strategy Review — reads engine evidence, does NOT invent metrics.
+ * Uses multi-provider LLM router (IAMHC → Groq → Gemini → OpenRouter).
  */
 
+const { setCors, readJson } = require('./_lib/iamhc');
 const {
-  callWithFallback,
+  callLLM,
   envConfig,
-  setCors,
-  readJson,
+  anyProviderConfigured,
   extractJsonObject,
-} = require('./_lib/iamhc');
+} = require('./_lib/llm-router');
 
 function asArray(v) {
   return Array.isArray(v) ? v : [];
@@ -69,6 +70,7 @@ function normalizeInput(body) {
     candidateTitles: asArray(body.candidateTitles),
     manualCalibration: asArray(body.manualCalibration),
     notes: body.notes || '',
+    engineFacts: body.engineFacts || null,
   };
 }
 
@@ -213,6 +215,7 @@ function buildPrompt(input) {
     patterns: input.patterns.slice(0, 6),
     candidateTitles: input.candidateTitles.slice(0, 6),
     notes: input.notes,
+    engineFacts: input.engineFacts,
   };
 
   return `Kamu adalah AI Strategy Reviewer untuk YouTube Intelligence Engine.
@@ -225,6 +228,7 @@ ATURAN KERAS:
 3. Kalau data tipis, bilang risk + data_gaps.
 4. Output HARUS JSON murni (tanpa markdown, tanpa penjelasan di luar JSON).
 5. Bahasa output: ${input.language === 'en' ? 'English' : 'Bahasa Indonesia'}.
+6. Hormati engineFacts bila ada (saturasi, gap_words, top_competitors).
 
 Schema output yang WAJIB:
 {
@@ -282,25 +286,25 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    const cfg = envConfig();
-    if (!cfg.apiKey) {
-      return res
-        .status(500)
-        .json({ ok: false, error: 'IAMHC_API_KEY belum diset di Vercel.' });
+    if (!anyProviderConfigured()) {
+      return res.status(500).json({
+        ok: false,
+        error:
+          'Tidak ada provider AI. Set IAMHC_API_KEY atau GROQ_API_KEY / GEMINI_API_KEY / OPENROUTER_API_KEY',
+        providers: envConfig().providers,
+      });
     }
 
     const prompt = buildPrompt(input);
-    const out = await callWithFallback({
-      models: [cfg.strategyModel, cfg.fallbackModel, cfg.polishModel],
-      baseUrl: cfg.baseUrl,
-      apiKey: cfg.apiKey,
+    const out = await callLLM({
+      role: 'strategy',
       temperature: 0.4,
-      timeoutMs: 100000,
+      timeoutMs: 90000,
       messages: [
         {
           role: 'system',
           content:
-            'You are a strict YouTube strategy reviewer. Output valid JSON only. Never invent metrics. Never claim guaranteed virality.',
+            'You are a strict YouTube strategy reviewer. Output valid JSON only. Never invent metrics. Never claim guaranteed virality. Stay bound to provided engine evidence.',
         },
         { role: 'user', content: prompt },
       ],
@@ -323,10 +327,13 @@ module.exports = async function handler(req, res) {
       return res.status(200).json({
         ok: true,
         model: out.model,
+        provider: out.provider,
         result: fallbackResult,
         raw: out.text,
         usage: out.usage,
-        warning: 'AI tidak mengembalikan JSON valid; hasil dinormalisasi dari teks.',
+        tried: out.tried || [],
+        warning:
+          'AI tidak mengembalikan JSON valid; hasil dinormalisasi dari teks.',
       });
     }
 
@@ -334,11 +341,18 @@ module.exports = async function handler(req, res) {
     return res.status(200).json({
       ok: true,
       model: out.model,
+      provider: out.provider,
       result,
       raw: out.text,
       usage: out.usage,
+      tried: out.tried || [],
     });
   } catch (e) {
-    return res.status(500).json({ ok: false, error: e.message || String(e) });
+    return res.status(500).json({
+      ok: false,
+      error: e.message || String(e),
+      tried: e.tried || [],
+      providers: envConfig().providers,
+    });
   }
 };
