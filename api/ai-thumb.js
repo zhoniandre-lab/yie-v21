@@ -451,7 +451,10 @@ module.exports = async function handler(req, res) {
         }
       : await rewritePromptWithTextModel(basePrompt, evidence, cfg);
 
-    const finalPrompt = rewritten.image_prompt || basePrompt;
+    // Prefer explicit client prompt box (user-edited / AI-polished) when long enough
+    const clientPrompt = String(body.prompt || body.direction || '').trim();
+    const finalPrompt =
+      clientPrompt.length > 40 ? clientPrompt : (rewritten.image_prompt || basePrompt);
     const img = await generateImage({
       prompt: finalPrompt,
       model: imageModel,
