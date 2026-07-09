@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>YouTube Intelligence Engine v21.14 — Auto-Queue Thumbnail</title>
+<title>YouTube Intelligence Engine v21.15 — Fast Image Queue</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Black+Ops+One&family=Bungee&family=Russo+One&family=Bangers&family=Rubik:wght@700;900&family=Montserrat:wght@700;900&family=Raleway:wght@700;900&family=Oswald:wght@700&family=Orbitron:wght@700;900&family=Cinzel:wght@700;900&family=Cinzel+Decorative:wght@700;900&family=Playfair+Display:wght@700;900&family=Great+Vibes&family=Italianno&family=Pacifico&family=Special+Elite&family=Abril+Fatface&family=Permanent+Marker&family=Creepster&family=Nosifer&family=Alfa+Slab+One&family=Teko:wght@600;700&display=swap" rel="stylesheet">
@@ -19,7 +19,7 @@
 <body>
 <div class="wrap">
   <section class="hero">
-    <span class="badge">🧠 v21.14 Auto-Queue Thumbnail</span>
+    <span class="badge">🧠 v21.15 Fast Image Queue</span>
     <h1>Mesin tetap data-based. AI Strategy membaca hasil engine, mengkritik strategi, lalu memberi verdict, alternatif judul, thumbnail strategy, dan rencana 24 jam.</h1>
     <p class="muted">Alur v21.3: 1) Keyword Lab (seperti penonton search YouTube) → 2) Pilih keyword → 3) Engine judul/kompetitor → 4) AI Strategy/Thumb. AI bukan otak utama.</p>
     <div class="warn"><b>Catatan kuota:</b> Mode ini meriset beberapa angle. Mulai dari 3-5 angle dulu agar kuota YouTube API aman.</div>
@@ -899,70 +899,64 @@ async function generateAIThumb(btn){
   if(!A||!RECS[0]) return alert('Jalankan engine judul dulu bro.');
   const st=$('thumbAIStatus');
   if(typeof THUMB_BUSY==='undefined') THUMB_BUSY=false;
-  if(typeof THUMB_COOLDOWN_UNTIL==='undefined') THUMB_COOLDOWN_UNTIL=0;
   if(THUMB_BUSY){
-    if(st) st.innerHTML='<b style="color:#ffe19a">Masih mengantri/generate...</b> Satu proses saja.';
+    if(st) st.innerHTML='<b style="color:#ffe19a">Masih proses...</b>';
     return;
   }
 
-  let promptText=( $('thumbPrompt') && $('thumbPrompt').value || '').trim();
+  let promptText=(($('thumbPrompt')&&$('thumbPrompt').value)||'').trim();
   if(!promptText){
-    try{ promptText=buildLocalThumbPrompt(); setThumbPrompt(promptText); }catch(e){ promptText=''; }
+    try{ promptText=buildLocalThumbPrompt(); setThumbPrompt(promptText);}catch(e){}
   }
-  if(!promptText){ alert('Isi prompt dulu (Prompt dari Engine / Poles Prompt AI).'); return; }
+  if(!promptText){ alert('Isi prompt dulu (Prompt dari Engine).'); return; }
   LAST_THUMB_PROMPT=promptText;
 
   THUMB_BUSY=true;
   const old=btn?btn.textContent:'';
-  if(btn){ btn.disabled=true; }
+  if(btn) btn.disabled=true;
 
-  const maxTries=10;          // auto antre sampai dapat slot
-  const waitBetween=18000;    // 18 detik antar percobaan saat concurrency
-  let lastMsg='';
-
+  // CEPAT: max ~45–60 detik total, bukan 2–3 menit
+  const maxTries=6;
+  const waitBusy=7000;   // 7s saat slot penuh
+  const wait504=4000;    // 4s saat timeout gateway
   const sleepLocal=(ms)=>new Promise(r=>setTimeout(r,ms));
 
+  const buildPayload=()=>{
+    const idx=+(($('thumbTitle')&&$('thumbTitle').value)||0);
+    const r=RECS[idx]||RECS[0];
+    const hook=($('hook')&&$('hook').value)||r.hook||'';
+    return {
+      title:r.title, hook,
+      seed:A.seed, keyword:A.seed,
+      niche:(A.format&&A.format.label)||(A.niche&&A.niche.label)||'',
+      nicheNote:A.nicheInput||(typeof nicheNoteRaw==='function'?nicheNoteRaw():''),
+      contentFormat:(A.format&&A.format.id)||(typeof CONTENT_FORMAT!=='undefined'&&CONTENT_FORMAT&&CONTENT_FORMAT.id)||'auto',
+      angle:A.keyword, language:A.lang,
+      prompt:promptText, skipRewrite:true,
+      scores:{final:r.score,search:r.search,browse:r.browse,algorithm:r.algo,patternBorn:r.patternBorn,creatorHook:r.hookScore},
+      metrics:A.metrics||{},
+      qualifiedCompetitors:(A.qualified||[]).slice(0,8).map(v=>({title:v.title,channel:v.channelTitle,views:v.views,relevance:v.relevance,query:v._query})),
+      competitorTitles:(A.qualified||[]).slice(0,8).map(v=>v.title).filter(Boolean),
+      patterns:(A.patterns&&A.patterns.titlePatterns||[]).slice(0,6).map(p=>({label:p.label,count:p.count,weight:Math.round(p.weight||0),example:(p.examples||[])[0]}))
+    };
+  };
+
+  let lastMsg='';
   try{
     for(let tryNo=1; tryNo<=maxTries; tryNo++){
-      if(btn) btn.textContent = tryNo===1 ? '⏳ Generate...' : `⏳ Antri slot ${tryNo}/${maxTries}`;
+      if(btn) btn.textContent = tryNo===1 ? '⏳ Generate...' : `⏳ Coba ${tryNo}/${maxTries}`;
       if(st) st.innerHTML = tryNo===1
-        ? '<b>Mengirim request gambar...</b> Jangan tutup halaman.'
-        : `<b>Antrian image penuh — auto coba lagi ${tryNo}/${maxTries}</b><br><span class="muted">Menunggu slot IAMHC. Tetap di halaman ini. Tidak perlu ke ChatGPT.</span>`;
-
-      const i=+(($('thumbTitle')&&$('thumbTitle').value)||0);
-      const r=RECS[i]||RECS[0];
-      const hook=($('hook')&&$('hook').value)||r.hook||'';
-      const payload={
-        title:r.title,
-        hook,
-        seed:A.seed,
-        keyword:A.seed,
-        niche:(A.format&&A.format.label)||(A.niche&&A.niche.label)||'',
-        nicheNote:A.nicheInput|| (typeof nicheNoteRaw==='function'?nicheNoteRaw():''),
-        contentFormat:(A.format&&A.format.id)||(typeof CONTENT_FORMAT!=='undefined'&&CONTENT_FORMAT&&CONTENT_FORMAT.id)||'auto',
-        angle:A.keyword,
-        language:A.lang,
-        prompt: promptText,
-        skipRewrite:true,
-        scores:{final:r.score,search:r.search,browse:r.browse,algorithm:r.algo,patternBorn:r.patternBorn,creatorHook:r.hookScore},
-        metrics:A.metrics||{},
-        qualifiedCompetitors:(A.qualified||[]).slice(0,8).map(v=>({title:v.title,channel:v.channelTitle,views:v.views,relevance:v.relevance,query:v._query})),
-        competitorTitles:(A.qualified||[]).slice(0,8).map(v=>v.title).filter(Boolean),
-        patterns:(A.patterns&&A.patterns.titlePatterns||[]).slice(0,6).map(p=>({label:p.label,count:p.count,weight:Math.round(p.weight||0),example:(p.examples||[])[0]}))
-      };
+        ? '<b>Generate gambar...</b> biasanya 5–20 detik.'
+        : `<b>Slot sibuk/timeout — coba cepat ${tryNo}/${maxTries}</b><span class="muted"> (tanpa nunggu 2 menit)</span>`;
 
       let res, data={};
       try{
-        res=await fetch('/api/ai-thumb',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+        res=await fetch('/api/ai-thumb',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(buildPayload())});
         data=await res.json().catch(()=>({}));
       }catch(netErr){
         lastMsg=netErr.message||String(netErr);
         if(tryNo<maxTries){
-          // network blip — short wait
-          for(let s=Math.ceil(8); s>0; s--){
-            if(btn) btn.textContent=`⏳ Jaringan, ulang ${s}s`;
-            await sleepLocal(1000);
-          }
+          for(let s=4;s>0;s--){ if(btn) btn.textContent=`⏳ Jaringan ${s}s`; await sleepLocal(1000); }
           continue;
         }
         throw netErr;
@@ -970,51 +964,42 @@ async function generateAIThumb(btn){
 
       if(res.ok && data.ok && data.result){
         const result=data.result||{};
-        if(result.prompt_used){
-          try{ setThumbPrompt(result.prompt_used); }catch(e){}
-          window.__LAST_API_PROMPT=result.prompt_used;
-        }
+        if(result.prompt_used){ try{setThumbPrompt(result.prompt_used);}catch(e){} }
         await applyAIThumbImage(result);
         if(st) st.innerHTML=`<span class="tag g">Gambar berhasil</span> <span class="tag b">${esc(data.model_image||'image')}</span>
-          <span class="muted">Percobaan ke-${tryNo}. Atur hook/font lalu Download PNG.</span>`;
-        THUMB_COOLDOWN_UNTIL=Date.now()+5000;
+          <span class="muted"> · percobaan ${tryNo}. Download PNG siap.</span>`;
         return;
       }
 
       const errMsg=(data&&data.error)||('HTTP '+(res&&res.status));
       lastMsg=errMsg;
-      const conc = (data&&data.code==='CONCURRENCY') || /concurrency|rate limit|limit:\s*\d+/i.test(String(errMsg));
+      const conc=(data&&data.code==='CONCURRENCY')||/concurrency|rate limit|limit:\s*\d+/i.test(String(errMsg));
+      const is504 = (res&&res.status===504) || (data&&data.code==='TIMEOUT') || /504|TIMEOUT_IMAGE/i.test(String(errMsg));
 
-      if(conc && tryNo<maxTries){
-        // Auto wait with visible countdown — user stays here, no ChatGPT needed
-        const waitMs = (data&&data.retryAfterSec)? data.retryAfterSec*1000 : waitBetween;
+      if((conc||is504) && tryNo<maxTries){
+        const waitMs = conc ? waitBusy : wait504;
         const total=Math.ceil(waitMs/1000);
-        for(let s=total; s>0; s--){
-          if(btn) btn.textContent=`⏳ Slot penuh, antre ${s}s (${tryNo}/${maxTries})`;
-          if(st) st.innerHTML=`<b style="color:#ffe19a">Antrian image IAMHC penuh — auto antre</b><br>
-            <span class="muted">Coba lagi otomatis dalam <b>${s}</b> detik (percobaan ${tryNo}/${maxTries}). Jangan klik berulang. Jangan pindah ke ChatGPT.</span>`;
+        for(let s=total;s>0;s--){
+          if(btn) btn.textContent=`⏳ ${conc?'Slot':'Timeout'} ${s}s (${tryNo}/${maxTries})`;
+          if(st) st.innerHTML=`<b style="color:#ffe19a">${conc?'Slot image penuh':'Gateway timeout'}</b> — auto coba lagi <b>${s}s</b> (${tryNo}/${maxTries}).<br><span class="muted">Tetap di halaman. Total antre singkat, bukan 2 menit.</span>`;
           await sleepLocal(1000);
         }
         continue;
       }
-
-      // non-concurrency hard fail
       throw new Error(errMsg);
     }
-    throw new Error(lastMsg||'Gagal dapat slot image setelah antre otomatis');
+    throw new Error(lastMsg||'Gagal dapat slot image');
   }catch(e){
     const msg=e.message||String(e);
     if(st) st.innerHTML=`<b style="color:#ff9eb2">Gagal gambar:</b> ${esc(msg)}<br>
-      <span class="muted">Sudah diantre otomatis. Coba lagi 2–5 menit, atau pastikan IAMHC_IMAGE_MODEL=step-image-edit-2 dan tidak ada generate massal di tab lain.</span>
-      <button type="button" class="small" style="margin-top:8px" onclick="copyThumbPrompt(this)">📋 Copy Prompt (backup)</button>`;
+      <span class="muted">Penyebab umum: antrian provider image / model lambat. Pastikan env <b>IAMHC_IMAGE_MODEL=step-image-edit-2</b>. Tutup tab generate lain. Klik Generate lagi 1x.</span>
+      <button type="button" class="small" style="margin-top:8px" onclick="copyThumbPrompt(this)">📋 Copy Prompt</button>`;
   }finally{
     THUMB_BUSY=false;
-    if(btn){
-      btn.disabled=false;
-      btn.textContent=old||'🎨 Generate Gambar';
-    }
+    if(btn){ btn.disabled=false; btn.textContent=old||'🎨 Generate Gambar'; }
   }
 }
+
 
 
 function applyAIThumbImage(result){
