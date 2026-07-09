@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>YouTube Intelligence Engine v21.18 — High-CTR Psychology Thumb</title>
+<title>YouTube Intelligence Engine v21.19 — Thumb Studio + Score</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Black+Ops+One&family=Bungee&family=Russo+One&family=Bangers&family=Rubik:wght@700;900&family=Montserrat:wght@700;900&family=Raleway:wght@700;900&family=Oswald:wght@700&family=Orbitron:wght@700;900&family=Cinzel:wght@700;900&family=Cinzel+Decorative:wght@700;900&family=Playfair+Display:wght@700;900&family=Great+Vibes&family=Italianno&family=Pacifico&family=Special+Elite&family=Abril+Fatface&family=Permanent+Marker&family=Creepster&family=Nosifer&family=Alfa+Slab+One&family=Teko:wght@600;700&display=swap" rel="stylesheet">
@@ -19,7 +19,7 @@
 <body>
 <div class="wrap">
   <section class="hero">
-    <span class="badge">🧠 v21.18 High-CTR Psych Thumb</span>
+    <span class="badge">🧠 v21.19 Thumb Studio + Score</span>
     <h1>Mesin tetap data-based. AI Strategy membaca hasil engine, mengkritik strategi, lalu memberi verdict, alternatif judul, thumbnail strategy, dan rencana 24 jam.</h1>
     <p class="muted">Alur v21.3: 1) Keyword Lab (seperti penonton search YouTube) → 2) Pilih keyword → 3) Engine judul/kompetitor → 4) AI Strategy/Thumb. AI bukan otak utama.</p>
     <div class="warn"><b>Catatan kuota:</b> Suggest/long-tail ≈ gratis. Yang boros kuota = riset kompetitor (Data API). Default angle 3. Kalau “Kompetitor dipakai” kosong, biasanya kuota search harian habis.</div>
@@ -60,7 +60,7 @@ Ku Titip Anakku Pada-Mu... Jika Esok Aku Tiada"></textarea>
 <div class="sticky" id="sticky"><button onclick="copyBestPack()">📋 Copy Pack</button><button onclick="scrollToId('packBox')">Upload Pack</button><button onclick="scrollToId('thumbBox')">Thumbnail</button><button onclick="scrollToId('detailBox')">Detail</button></div>
 
 <script>
-const $=id=>document.getElementById(id);let ANGLES=[],A=null,RECS=[],THUMB_IMG=null,KW_LAB=[],KW_PICK=null,THUMB_MODE='auto',THUMB_BUSY=false,THUMB_COOLDOWN_UNTIL=0,CONTENT_FORMAT=null,LAST_THUMB_PROMPT='';
+const $=id=>document.getElementById(id);let ANGLES=[],A=null,RECS=[],THUMB_IMG=null,KW_LAB=[],KW_PICK=null,THUMB_MODE='auto',THUMB_BUSY=false,THUMB_COOLDOWN_UNTIL=0,CONTENT_FORMAT=null,LAST_THUMB_PROMPT='',LAST_THUMB_SCORE=null;
 const STOP=new Set('yang dan di ke dari ini itu untuk dengan pada ada akan jadi bisa tidak tak nya se ber me ter per kan lah pun atau karena agar sebagai dalam saat ketika the of and in to a is are was were be for on by an it this that you your our new full video official lyrics lirik part episode shorts short و في من على إلى الى عن هذا هذه ذلك تلك مع أن ان كان كانت هو هي لا ما كل uchun bilan va yoki ham bu shu bir edi bor yoq juda'.split(' '));
 const PROFILES={
   dj:{label:'DJ / Remix Music',keys:['dj','remix','full bass','jedag','jedug','tiktok','tik tok','nonstop','dugem','party mix','club mix','bass'],baseTags:{id:['dj terbaru','dj remix','dj viral','dj tiktok','full bass','dj jedag jedug','remix terbaru','dj nonstop'],en:['dj remix','latest dj remix','full bass','viral dj','tiktok remix','party mix','nonstop dj']}},
@@ -558,7 +558,7 @@ ${RECS.slice(0,3).map((r,i)=>`<div class="battleItem" style="margin-top:6px"><sp
       <select id="thumbTitle" onchange="pickThumb()">${RECS.map((r,i)=>`<option value="${i}">${esc(r.title)}</option>`).join('')}</select>
 
       <label>Hook teks (psikologi klik)</label>
-      <input id="hook" value="${esc(defaultHook)}" oninput="drawThumb();try{renderHookLab()}catch(e){}">
+      <input id="hook" value="${esc(defaultHook)}" oninput="drawThumb();try{renderHookLab()}catch(e){};try{renderThumbScore()}catch(e){}">
       <div id="hookLabBox"></div>
 
       <label>Prompt thumbnail (boleh edit)</label>
@@ -580,7 +580,7 @@ ${RECS.slice(0,3).map((r,i)=>`<div class="battleItem" style="margin-top:6px"><sp
       <input type="file" accept="image/*" onchange="loadThumbImage(event)">
 
       <label>Style efek tulisan</label>
-      <select id="textStyle" onchange="drawThumb()">
+      <select id="textStyle" onchange="drawThumb();try{renderThumbScore()}catch(e){}">
         <option value="auto">Auto (ikut niche)</option>
         <option value="yt_classic">YouTube Classic</option>
         <option value="soft_impact">Soft Emotional</option>
@@ -623,18 +623,38 @@ ${RECS.slice(0,3).map((r,i)=>`<div class="battleItem" style="margin-top:6px"><sp
       <div id="fontLabBox"></div>
 
       <label>Posisi tulisan</label>
-      <select id="textPos" onchange="drawThumb()">
+      <select id="textPos" onchange="drawThumb();try{renderThumbScore()}catch(e){}">
         <option value="right">Kanan (rekomendasi CTR)</option>
         <option value="left">Kiri</option>
         <option value="center">Tengah</option>
       </select>
       <label style="display:flex;align-items:center;gap:8px;margin-top:10px;font-weight:700">
-        <input type="checkbox" id="hideBadge" onchange="drawThumb()" style="width:auto"> Sembunyikan badge bawah (mis. CERITA KELUARGA)
+        <input type="checkbox" id="hideBadge" onchange="drawThumb();try{renderThumbScore()}catch(e){}" style="width:auto"> Sembunyikan badge bawah (mis. CERITA KELUARGA)
       </label>
       <p class="muted" style="font-size:11px;margin-top:6px">Tips CTR: pilih hook dari lab (bukan “MAAFKAN AKU IBU”), style <b>Attention Yellow</b>, wajah emosi besar, ruang kanan untuk teks.</p>
 
+
+      <div class="finalBox" style="margin-top:12px;padding:12px">
+        <h3 style="margin:0 0 8px">🎛️ Poles Manual Thumbnail</h3>
+        <p class="muted" style="font-size:11px;margin:0 0 8px">Edit manual: 2–3 teks, gelap/opacity, warna. Skor dihitung dari hook + kompetitor + style (bukan asal AI).</p>
+        <label>Teks 2 (pendukung)</label>
+        <input id="hook2" placeholder="Contoh: LAGU INI BUAT NANGIS" oninput="drawThumb();renderThumbScore()">
+        <label>Teks 3 (mikro)</label>
+        <input id="hook3" placeholder="Contoh: FULL · SEDIH" oninput="drawThumb();renderThumbScore()">
+        <label>Gelap overlay (baca teks): <b id="imgDarkVal">48</b>%</label>
+        <input id="imgDark" type="range" min="0" max="80" value="48" oninput="document.getElementById('imgDarkVal').textContent=this.value;drawThumb();renderThumbScore()" style="padding:0;border:0;background:transparent">
+        <label>Warm ↔ Cool: <b id="imgWarmVal">10</b></label>
+        <input id="imgWarm" type="range" min="-40" max="40" value="10" oninput="document.getElementById('imgWarmVal').textContent=this.value;drawThumb();renderThumbScore()" style="padding:0;border:0;background:transparent">
+        <label>Punch kontras: <b id="imgPunchVal">20</b></label>
+        <input id="imgPunch" type="range" min="0" max="60" value="20" oninput="document.getElementById('imgPunchVal').textContent=this.value;drawThumb();renderThumbScore()" style="padding:0;border:0;background:transparent">
+        <label>Skala teks: <b id="textScaleVal">100</b>%</label>
+        <input id="textScale" type="range" min="70" max="130" value="100" oninput="document.getElementById('textScaleVal').textContent=this.value;drawThumb();renderThumbScore()" style="padding:0;border:0;background:transparent">
+        <label>Grain: <b id="imgGrainVal">10</b></label>
+        <input id="imgGrain" type="range" min="0" max="40" value="10" oninput="document.getElementById('imgGrainVal').textContent=this.value;drawThumb()" style="padding:0;border:0;background:transparent">
+        <div id="thumbScoreBox"></div>
+      </div>
       <label>Style canvas (fallback tanpa AI image)</label>
-      <select id="emo" onchange="drawThumb()"><option value="auto">Auto Style</option><option value="shock">Shock</option><option value="dark">Dark</option><option value="neon">Neon</option></select>
+      <select id="emo" onchange="drawThumb();try{renderThumbScore()}catch(e){}"><option value="auto">Auto Style</option><option value="shock">Shock</option><option value="dark">Dark</option><option value="neon">Neon</option></select>
 
       <button class="green" style="margin-top:12px;width:100%" onclick="downloadThumb()">⬇️ Download Thumbnail PNG</button>
     </div>
@@ -657,6 +677,7 @@ ${RECS.slice(0,3).map((r,i)=>`<div class="battleItem" style="margin-top:6px"><sp
   try{ renderHookLab(); }catch(e){}
   try{ renderFontLab(); }catch(e){}
   try{ syncThumbPromptFromEngine(); }catch(e){}
+  try{ renderThumbScore(); }catch(e){}
 }function renderDetail(){let angles=ANGLES.map((r,i)=>`<div class="battleItem"><span class="badge2 ${i===0?'vwin':r.score>=60?'vtest':'vlose'}">${i===0?'ANGLE':'TEST'}</span><div><b>${esc(r.keyword)}</b><br><small>${r.reasons.map(x=>x.t).join(' ')}</small></div><b>${r.score}</b></div>`).join('');let titles=RECS.slice(0,5).map((r,i)=>`<div class="battleItem"><span class="badge2 ${i===0?'vwin':r.score>=60?'vtest':'vlose'}">${i===0?'WINNER':'TEST'}</span><div><b>${esc(r.title)}</b><br><small>Search ${r.search}, Browse ${r.browse}, Pattern ${r.patternBorn||0}, Hook ${r.hookScore||0}, Quality ${r.quality}</small></div><b>${r.score}</b></div>`).join('');$('detailBox').innerHTML=`<details open><summary>Angle Ranking</summary>${angles}</details><details><summary>Candidate Title Battle</summary>${titles}</details><details open><summary>Title Patterns Mined</summary>${(A.patterns.titlePatterns||[]).slice(0,8).map(p=>`<div class="battleItem"><span class="badge2 vtest">PATTERN</span><div><b>${esc(p.label)}</b><br><small>Muncul ${p.count}x, weight ${Math.round(p.weight)}. Contoh: ${esc((p.examples||[])[0]||'-')}</small></div><b>${Math.round(p.weight)}</b></div>`).join('')}</details><details><summary>Winning Words & Patterns</summary>${A.patterns.topWords.slice(0,24).map(([w,c])=>`<span class="tag b">${esc(w)} ${c}x</span>`).join('')}</details><details open><summary>Reality Filter: Dipakai vs Dibuang</summary><div><b>Query diuji:</b> ${((A.queryVariants||[]).map(q=>`<span class="tag b">${esc(q)}</span>`).join(''))}</div><h3 style="margin-top:10px">Kompetitor dipakai</h3>${(A.qualified&&A.qualified.length)?A.qualified.slice(0,10).map(v=>`<div class="battleItem"><span class="badge2 vwin">${v.relevance}</span><div><b>${esc(v.title)}</b><br><small>Query: ${esc(v._query||'-')} | Channel: ${esc(v.channelTitle||'-')}</small></div><b>${fmt(v.views)}</b></div>`).join(''):`<p class="muted">Kosong. Paling sering: <b>kuota YouTube Data API habis</b>. Keyword Lab tetap bisa dipakai. Solusi: API key cadangan / tunggu reset / paste judul YouTube ke kalibrasi manual.</p>`}<h3 style="margin-top:10px">Kompetitor dibuang</h3>${(A.rejected&&A.rejected.length)?A.rejected.slice(0,10).map(v=>`<div class="battleItem"><span class="badge2 vlose">${v.relevance}</span><div><b>${esc(v.title)}</b><br><small>Alasan: relevance rendah untuk intent/niche ini. Query: ${esc(v._query||'-')}</small></div><b>${fmt(v.views)}</b></div>`).join(''):`<p class="muted">Tidak ada data buang — atau kompetitor belum termuat (kuota API).</p>`}</details><details><summary>Data Kompetitor Angle Terpilih</summary><div class="tablebox"><table class="table"><tr><th>#</th><th>Judul</th><th>Views</th><th>Age</th><th>VPD</th><th>VPM</th><th>Subs</th></tr>${A.videos.slice(0,25).map((v,i)=>`<tr><td>${i+1}</td><td><a href="${esc(v.url||'#')}" target="_blank">${esc(v.title)}</a><br><span class="muted">${esc(v.channelTitle||'')}</span></td><td>${fmt(v.views)}</td><td>${v.age}d</td><td>${fmt(v.vpd)}</td><td>${fmt(v.vpm)}</td><td>${fmt(v.subs)}</td></tr>`).join('')}</table></div></details>`}
 function levelLabel(v){return v>=80?'kuat':v>=65?'cukup kuat':v>=50?'sedang':'lemah'}
 function buildFinalExplanation(best,a){let m=a.metrics,comp=(a.qualified||a.videos||[]).slice(0,4),patterns=(a.patterns.titlePatterns||[]).slice(0,3),risk=finalRisk(best,a),adv=freshAngleAdvice(a,best),gaps=gapWords(a);return`<div class="finalBox" style="background:rgba(7,11,20,.55);border-color:#26324d"><h3>Diagnosa pasar & angle</h3><ul class="reason">${adv.lines.map(t=>`<li class="info">${t}</li>`).join('')}<li class="yellow"><b>Gap words (jarang di judul kompetitor):</b> ${gaps.length?gaps.map(g=>`<span class="tag b">${esc(g)}</span>`).join(' '):'Belum ketemu gap kuat — perketat angle.'}</li></ul><h3 style="margin-top:12px">Battle vs kompetitor (bukan chatbot)</h3>
@@ -1140,30 +1161,217 @@ function applyAIThumbImage(result){
   });
 }
 
-function loadThumbImage(e){let f=e.target.files&&e.target.files[0];if(!f)return;let img=new Image();img.onload=()=>{THUMB_IMG=img;drawThumb()};img.src=URL.createObjectURL(f)}function pickThumb(){let i=+$('thumbTitle').value||0;let h=RECS[i].hook; if(/^(MAAF IBU|RINDU IBU|BIG HOOK|MAAFKAN AKU IBU|MAAFKAN AKU)$/i.test(h||'')) h=pickBestHook(A,RECS[i].title)||h; if($('hook'))$('hook').value=h; drawThumb(); try{renderHookLab()}catch(e){} try{syncThumbPromptFromEngine()}catch(e){}}function drawThumb(){let cv=$('cv');if(!cv)return;let c=cv.getContext('2d'),W=cv.width,H=cv.height,r=RECS[+$('thumbTitle').value]||RECS[0]||{},hook=($('hook').value||r.hook||'BIG HOOK').toUpperCase(),id=A?A.niche.id:'general';let neon=id==='dj',horror=id==='horror';let pal=neon?['#090018','#24105f','#00f5ff','#ff2bd6']:horror?['#02030a','#111827','#00d5ff','#ffd166']:['#07111f','#1e2a55','#00c2ff','#18d39b'];
-// Full-bleed when AI/upload image exists (fixes "setengah gambar")
-if(THUMB_IMG){
-  drawCover(c,THUMB_IMG,0,0,W,H);
-  // dark gradient on right for readable hook
-  let gd=c.createLinearGradient(W*0.35,0,W,0);
-  gd.addColorStop(0,'rgba(0,0,0,0)');
-  gd.addColorStop(0.45,'rgba(0,0,0,.35)');
-  gd.addColorStop(1,'rgba(0,0,0,.72)');
-  c.fillStyle=gd; c.fillRect(0,0,W,H);
-  // soft bottom shade
-  let gb=c.createLinearGradient(0,H*0.55,0,H);
-  gb.addColorStop(0,'rgba(0,0,0,0)');
-  gb.addColorStop(1,'rgba(0,0,0,.55)');
-  c.fillStyle=gb; c.fillRect(0,0,W,H);
-  drawVignette(c,W,H);
-  drawText(c,hook,pal);
-  drawLabel(c,pal);
-  grain(c,W,H,.04);
-  return;
+function loadThumbImage(e){let f=e.target.files&&e.target.files[0];if(!f)return;let img=new Image();img.onload=()=>{THUMB_IMG=img;drawThumb()};img.src=URL.createObjectURL(f)}function pickThumb(){let i=+$('thumbTitle').value||0;let h=RECS[i].hook; if(/^(MAAF IBU|RINDU IBU|BIG HOOK|MAAFKAN AKU IBU|MAAFKAN AKU)$/i.test(h||'')) h=pickBestHook(A,RECS[i].title)||h; if($('hook'))$('hook').value=h; drawThumb(); try{renderHookLab()}catch(e){} try{syncThumbPromptFromEngine()}catch(e){}}function thumbCtrl(id, def){
+  let el=$(id); if(!el) return def;
+  if(el.type==='checkbox') return !!el.checked;
+  if(el.type==='range' || el.type==='number') {
+    let n=parseFloat(el.value); return Number.isFinite(n)?n:def;
+  }
+  return el.value==null?def:el.value;
 }
-let g=c.createLinearGradient(0,0,W,H);g.addColorStop(0,pal[0]);g.addColorStop(.6,pal[1]);g.addColorStop(1,'#03050c');c.fillStyle=g;c.fillRect(0,0,W,H);
-if(neon)drawDJ(c,pal);else if(horror)drawHorror(c,pal);else drawGeneric(c,pal);
-drawVignette(c,W,H);drawText(c,hook,pal);drawLabel(c,pal);grain(c,W,H,.05)}function drawCover(c,img,x,y,w,h){let r=Math.max(w/img.width,h/img.height),nw=img.width*r,nh=img.height*r;c.drawImage(img,x+(w-nw)/2,y+(h-nh)/2,nw,nh)}function drawDJ(c,p){let rg=c.createRadialGradient(260,350,20,260,350,280);rg.addColorStop(0,p[2]+'cc');rg.addColorStop(1,'rgba(0,0,0,0)');c.fillStyle=rg;c.fillRect(0,0,540,720);c.strokeStyle=p[2];c.lineWidth=10;for(let i=0;i<4;i++){c.beginPath();c.arc(260,355,80+i*35,0,Math.PI*2);c.stroke()}c.fillStyle='#090d16';c.beginPath();c.arc(260,355,105,0,Math.PI*2);c.fill();c.fillStyle=p[3];c.beginPath();c.arc(260,355,24,0,Math.PI*2);c.fill();c.fillStyle='rgba(255,255,255,.9)';c.font='900 42px Arial';c.fillText('DJ MIX',125,620)}function drawHorror(c,p){let moon=c.createRadialGradient(135,115,10,135,115,115);moon.addColorStop(0,'rgba(255,255,255,.95)');moon.addColorStop(1,'rgba(180,210,255,0)');c.fillStyle=moon;c.beginPath();c.arc(135,115,115,0,Math.PI*2);c.fill();c.fillStyle='#070b13';c.fillRect(125,345,280,220);c.beginPath();c.moveTo(90,345);c.lineTo(265,210);c.lineTo(440,345);c.closePath();c.fill();c.fillStyle=p[2];c.fillRect(230,425,70,140);c.fillStyle='#010205';c.beginPath();c.arc(425,455,38,0,Math.PI*2);c.fill();c.fillRect(405,492,42,130);c.fillStyle='rgba(255,255,255,.9)';c.font='900 34px Arial';c.fillText('HORROR',70,625)}function drawGeneric(c,p){c.fillStyle='#111827';round(c,115,210,285,250,24);c.fill();c.fillStyle=p[2];c.fillRect(150,260,210,22);c.fillRect(150,315,160,22);c.fillRect(150,370,190,22);c.fillStyle='rgba(255,255,255,.9)';c.font='900 34px Arial';c.fillText('STORY',160,625)}
+function scoreThumbnail(){
+  // Data-aware thumb score (not random AI vibes)
+  if(!A||!RECS[0]) return null;
+  let r=RECS[+$('thumbTitle')?.value||0]||RECS[0];
+  let t1=(thumbCtrl('hook','')||r.hook||'').trim();
+  let t2=(thumbCtrl('hook2','')||'').trim();
+  let t3=(thumbCtrl('hook3','')||'').trim();
+  let style=getTextStyleId();
+  let dark=thumbCtrl('imgDark',45);
+  let hasImg=!!THUMB_IMG;
+  let reasons=[]; let score=40;
+
+  // 1) Hook psychology / specificity
+  let hookN=norm(t1);
+  let hookWords=t1.split(/\s+/).filter(Boolean).length;
+  let generic=/^(maaf ibu|maafkan aku ibu|rindu ibu|big hook|hook)$/i.test(t1);
+  let psych=0;
+  try{
+    let lab=psychHookBank(A,r.title)||[];
+    let hit=lab.find(h=>norm(h.text)===hookN);
+    if(hit){ psych=Math.min(28, Math.round((hit.score||80)*0.28)); reasons.push({c:'good',t:`Hook cocok psikologi lab (${hit.lever||'emotion'}) · +${psych}`}); }
+    else if(!generic && hookWords>=2 && hookWords<=5){ psych=16; reasons.push({c:'info',t:'Hook custom 2–5 kata · +16'}); }
+    else if(generic){ psych=2; reasons.push({c:'bad',t:'Hook generik lemah di feed · +2'}); }
+    else { psych=10; reasons.push({c:'yellow',t:'Hook biasa · +10'}); }
+  }catch(e){ psych=10; }
+  score+=psych;
+
+  // 2) Text contrast style (color saliency)
+  let stylePts = /attention_yellow|thick_comic|attention_white_red|neon_stack|horror_glow/.test(style)?18
+    : /soft_impact|yt_classic|stacked_poster/.test(style)?12
+    : /clean_box|minimal_outline/.test(style)?9 : 10;
+  score+=stylePts; reasons.push({c:stylePts>=16?'good':'info', t:`Style teks "${style}" (saliency) · +${stylePts}`});
+
+  // 3) Visual base + text readability darken
+  if(hasImg){ score+=14; reasons.push({c:'good',t:'Ada gambar AI/upload (bukan canvas kosong) · +14'}); }
+  else { score+=4; reasons.push({c:'yellow',t:'Belum ada gambar AI — preview canvas saja · +4'}); }
+  let darkPts = dark>=35 && dark<=70 ? 12 : dark>70 ? 7 : 5;
+  score+=darkPts; reasons.push({c:darkPts>=12?'good':'yellow', t:`Gelap overlay ${dark}% (baca teks di feed) · +${darkPts}`});
+
+  // 4) Multi-line hierarchy (optional but useful)
+  let lines=1+(t2?1:0)+(t3?1:0);
+  let linePts = lines===1?8 : lines===2?12 : 10;
+  score+=linePts; reasons.push({c:'info', t:`Layer teks: ${lines} · +${linePts}`});
+
+  // 5) Competitor differentiation (data)
+  let comps=(A.qualified||[]).slice(0,12);
+  let maxSim=0;
+  comps.forEach(v=>{ maxSim=Math.max(maxSim, sim(t1+' '+t2, v.title||'')); });
+  let uniqPts = maxSim>=0.72?2 : maxSim>=0.5?8 : 14;
+  score+=uniqPts;
+  reasons.push({c:uniqPts>=12?'good':uniqPts>=8?'yellow':'bad', t:`Beda dari judul kompetitor (max sim ${Math.round(maxSim*100)}%) · +${uniqPts}`});
+
+  // 6) Format / intent fit
+  let fmt=(A.format&&A.format.id)||'auto';
+  let blob=norm(t1+' '+t2+' '+t3+' '+(r.title||''));
+  let fit=8;
+  if(fmt==='story_song' && /lagu|lirik|nangis|ibu|maaf|rindu/.test(blob)) fit=12;
+  if(fmt==='story_song' && /dj|bass|hantu|horor/.test(blob)) fit=2;
+  if((A.niche&&A.niche.id)==='horror' && /jangan|pintu|suara|malam|hantu/.test(blob)) fit=12;
+  score+=fit; reasons.push({c:fit>=12?'good':'yellow', t:`Cocok format/niche (${fmt}) · +${fit}`});
+
+  // 7) Title-thumb message match (retention risk)
+  let titleSim=sim(t1, r.title||'');
+  let matchPts = titleSim>=0.2 && titleSim<=0.75 ? 8 : titleSim>0.85 ? 4 : 6;
+  score+=matchPts; reasons.push({c:'info', t:`Selaras judul (sim ${Math.round(titleSim*100)}%) · +${matchPts}`});
+
+  score=clamp(score);
+  let level=score>=80?'KUAT CTR':score>=65?'LAYAK TEST':score>=50?'LEMAH':'RISIKO';
+  let out={score, level, reasons, maxSim, hasImg, dark, style, lines, hook:t1};
+  LAST_THUMB_SCORE=out;
+  return out;
+}
+function renderThumbScore(){
+  let box=$('thumbScoreBox'); if(!box) return;
+  let s=scoreThumbnail(); if(!s){ box.innerHTML=''; return; }
+  let col=s.score>=80?'#82f4d1':s.score>=65?'#ffe19a':'#ff9eb2';
+  box.innerHTML=`<div class="finalBox" style="margin-top:10px;border-color:${col}55">
+    <div style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap">
+      <h3 style="margin:0">Skor Thumbnail (data-aware)</h3>
+      <span class="tag ${s.score>=80?'g':s.score>=65?'y':'r'}">${s.level} ${s.score}/100</span>
+    </div>
+    <p class="muted" style="font-size:11px;margin:6px 0 0">Bukan klaim viral. Dihitung dari hook, warna/style, gelap baca teks, beda kompetitor, dan cocok niche.</p>
+    <ul class="reason" style="margin-top:8px">${s.reasons.map(x=>`<li class="${x.c}">${esc(x.t)}</li>`).join('')}</ul>
+    <p class="muted" style="font-size:11px">Saran: skor &lt; 65 → ganti hook lab + Attention Yellow + gelap 45–60% + 1 baris pendukung.</p>
+  </div>`;
+}
+function drawThumb(){
+  let cv=$('cv'); if(!cv) return;
+  let c=cv.getContext('2d'), W=cv.width, H=cv.height;
+  let r=RECS[+$('thumbTitle')?.value||0]||RECS[0]||{};
+  let id=A?A.niche.id:'general';
+  let neon=id==='dj', horror=id==='horror';
+  let pal=neon?['#090018','#24105f','#00f5ff','#ff2bd6']:horror?['#02030a','#111827','#00d5ff','#ffd166']:['#07111f','#1e2a55','#00c2ff','#18d39b'];
+
+  // base
+  if(THUMB_IMG){
+    drawCover(c,THUMB_IMG,0,0,W,H);
+    // user polish: darken/opacity overlay for text readability
+    let dark=thumbCtrl('imgDark',48)/100; // 0..1
+    // right-weighted dark for text (attention to face left + text right)
+    let gd=c.createLinearGradient(W*0.25,0,W,0);
+    gd.addColorStop(0,`rgba(0,0,0,${Math.max(0, dark*0.15)})`);
+    gd.addColorStop(0.45,`rgba(0,0,0,${dark*0.45})`);
+    gd.addColorStop(1,`rgba(0,0,0,${Math.min(0.88, dark*0.95)})`);
+    c.fillStyle=gd; c.fillRect(0,0,W,H);
+    // bottom shade
+    let gb=c.createLinearGradient(0,H*0.55,0,H);
+    gb.addColorStop(0,'rgba(0,0,0,0)');
+    gb.addColorStop(1,`rgba(0,0,0,${0.25+dark*0.35})`);
+    c.fillStyle=gb; c.fillRect(0,0,W,H);
+    // color grade: warm / cool
+    let warm=thumbCtrl('imgWarm',10); // -50..50
+    if(warm>0){
+      c.fillStyle=`rgba(255,120,40,${Math.min(0.28, warm/180)})`;
+      c.fillRect(0,0,W,H);
+    } else if(warm<0){
+      c.fillStyle=`rgba(40,100,255,${Math.min(0.28, (-warm)/180)})`;
+      c.fillRect(0,0,W,H);
+    }
+    // contrast punch (subtle)
+    let punch=thumbCtrl('imgPunch',20)/100;
+    if(punch>0){
+      c.fillStyle=`rgba(0,0,0,${punch*0.12})`; c.fillRect(0,0,W,H);
+      c.globalCompositeOperation='screen';
+      c.fillStyle=`rgba(255,255,255,${punch*0.06})`; c.fillRect(0,0,W,H);
+      c.globalCompositeOperation='source-over';
+    }
+  } else {
+    let g=c.createLinearGradient(0,0,W,H); g.addColorStop(0,pal[0]); g.addColorStop(.6,pal[1]); g.addColorStop(1,'#03050c');
+    c.fillStyle=g; c.fillRect(0,0,W,H);
+    if(neon) drawDJ(c,pal); else if(horror) drawHorror(c,pal); else drawGeneric(c,pal);
+  }
+
+  drawVignette(c,W,H);
+  // multi-text layers
+  drawMultiThumbText(c, pal);
+  drawLabel(c,pal);
+  grain(c,W,H, 0.03 + thumbCtrl('imgGrain',10)/500);
+  try{ renderThumbScore(); }catch(e){}
+}
+function drawMultiThumbText(c, pal){
+  // Layer 1 main, layer 2 support, layer 3 micro
+  let t1=(thumbCtrl('hook','')||'HOOK').trim();
+  let t2=(thumbCtrl('hook2','')||'').trim();
+  let t3=(thumbCtrl('hook3','')||'').trim();
+  let pos=getTextPos();
+  let styleId=getTextStyleId();
+  let st=textStylePack(styleId, pal);
+  let hookFont=getHookFont();
+  const fontFamily=(hookFont&&hookFont.family)||'Impact, Arial Black, sans-serif';
+  const isScript=!!(hookFont&&hookFont.script);
+  let scale=thumbCtrl('textScale',100)/100;
+  let W=c.canvas.width, H=c.canvas.height;
+  let align = pos==='left'?'left': pos==='center'?'center':'right';
+  let x = pos==='left' ? 48 : pos==='center' ? W/2 : W-48;
+  c.textAlign=align; c.textBaseline='middle';
+  if((A&&A.lang)==='ar') c.direction='rtl'; else c.direction='ltr';
+
+  function paintLine(text, size, y, fillOverride){
+    if(!text) return;
+    let fill=fillOverride || st.fill;
+    let weight=isScript?'700':(st.weight||'900');
+    c.font=`${weight} ${Math.round(size)}px ${fontFamily}`;
+    let txt=text;
+    if(st.uppercase && !isScript) txt=String(text).toUpperCase();
+    // shadow
+    if(st.shadowBlur && st.shadow){
+      c.save();
+      c.shadowColor=st.shadow; c.shadowBlur=st.shadowBlur; c.shadowOffsetY=2;
+      c.fillStyle=fill; c.fillText(txt,x,y);
+      c.restore();
+    }
+    if(st.strokeW && st.stroke && st.stroke!=='rgba(0,0,0,0)'){
+      c.lineJoin='round'; c.miterLimit=2;
+      c.lineWidth=Math.max(3, size*st.strokeW);
+      c.strokeStyle=st.stroke; c.strokeText(txt,x,y);
+    }
+    c.fillStyle=fill; c.fillText(txt,x,y);
+  }
+
+  // layout stack on right/center/left
+  let base = Math.round((t1.length>20?64:t1.length>14?76:90) * scale);
+  let lines1=[];
+  // wrap main into up to 3 visual lines using canvas wrap helper
+  try{ lines1=wrap(c, (st.uppercase&&!isScript)?t1.toUpperCase():t1, pos==='center'?W*0.78:W*0.52, base).slice(0,3); }
+  catch(e){ lines1=[t1]; }
+  let blockH = lines1.length*(base+8) + (t2? base*0.55+10:0) + (t3? base*0.4+8:0);
+  let y0 = H*0.42 - blockH/2 + base/2;
+  if(y0<70) y0=70;
+  if(y0+blockH>H-90) y0=H-90-blockH+base/2;
+
+  lines1.forEach((ln,i)=> paintLine(ln, base*(i===0?1:0.92), y0+i*(base+8)));
+  let y=y0+lines1.length*(base+8);
+  if(t2){
+    // secondary often white for hierarchy
+    paintLine(t2, Math.round(base*0.52), y+6, styleId==='attention_yellow'?'#FFFFFF':st.fill);
+    y+=Math.round(base*0.52)+12;
+  }
+  if(t3){
+    paintLine(t3, Math.round(base*0.40), y+2, '#FFD24A');
+  }
+}
+function drawCover(c,img,x,y,w,h){let r=Math.max(w/img.width,h/img.height),nw=img.width*r,nh=img.height*r;c.drawImage(img,x+(w-nw)/2,y+(h-nh)/2,nw,nh)}function drawDJ(c,p){let rg=c.createRadialGradient(260,350,20,260,350,280);rg.addColorStop(0,p[2]+'cc');rg.addColorStop(1,'rgba(0,0,0,0)');c.fillStyle=rg;c.fillRect(0,0,540,720);c.strokeStyle=p[2];c.lineWidth=10;for(let i=0;i<4;i++){c.beginPath();c.arc(260,355,80+i*35,0,Math.PI*2);c.stroke()}c.fillStyle='#090d16';c.beginPath();c.arc(260,355,105,0,Math.PI*2);c.fill();c.fillStyle=p[3];c.beginPath();c.arc(260,355,24,0,Math.PI*2);c.fill();c.fillStyle='rgba(255,255,255,.9)';c.font='900 42px Arial';c.fillText('DJ MIX',125,620)}function drawHorror(c,p){let moon=c.createRadialGradient(135,115,10,135,115,115);moon.addColorStop(0,'rgba(255,255,255,.95)');moon.addColorStop(1,'rgba(180,210,255,0)');c.fillStyle=moon;c.beginPath();c.arc(135,115,115,0,Math.PI*2);c.fill();c.fillStyle='#070b13';c.fillRect(125,345,280,220);c.beginPath();c.moveTo(90,345);c.lineTo(265,210);c.lineTo(440,345);c.closePath();c.fill();c.fillStyle=p[2];c.fillRect(230,425,70,140);c.fillStyle='#010205';c.beginPath();c.arc(425,455,38,0,Math.PI*2);c.fill();c.fillRect(405,492,42,130);c.fillStyle='rgba(255,255,255,.9)';c.font='900 34px Arial';c.fillText('HORROR',70,625)}function drawGeneric(c,p){c.fillStyle='#111827';round(c,115,210,285,250,24);c.fill();c.fillStyle=p[2];c.fillRect(150,260,210,22);c.fillRect(150,315,160,22);c.fillRect(150,370,190,22);c.fillStyle='rgba(255,255,255,.9)';c.font='900 34px Arial';c.fillText('STORY',160,625)}
 function mineCompetitorHooks(a){
   let titles=(a.qualified||a.videos||[]).slice(0,15).map(v=>v.title||'');
   let bag=[];
