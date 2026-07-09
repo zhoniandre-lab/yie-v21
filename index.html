@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>YouTube Intelligence Engine v21.9 — Niche Lock + Safe Thumb Queue</title>
+<title>YouTube Intelligence Engine v21.10 — Thumb Button Fix + Prompt Panel</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Black+Ops+One&family=Bungee&family=Russo+One&family=Bangers&family=Rubik:wght@700;900&family=Montserrat:wght@700;900&family=Raleway:wght@700;900&family=Oswald:wght@700&family=Orbitron:wght@700;900&family=Cinzel:wght@700;900&family=Cinzel+Decorative:wght@700;900&family=Playfair+Display:wght@700;900&family=Great+Vibes&family=Italianno&family=Pacifico&family=Special+Elite&family=Abril+Fatface&family=Permanent+Marker&family=Creepster&family=Nosifer&family=Alfa+Slab+One&family=Teko:wght@600;700&display=swap" rel="stylesheet">
@@ -19,7 +19,7 @@
 <body>
 <div class="wrap">
   <section class="hero">
-    <span class="badge">🧠 v21.9 Niche Lock + Safe Thumb</span>
+    <span class="badge">🧠 v21.10 Thumb Fix + Prompt Panel</span>
     <h1>Mesin tetap data-based. AI Strategy membaca hasil engine, mengkritik strategi, lalu memberi verdict, alternatif judul, thumbnail strategy, dan rencana 24 jam.</h1>
     <p class="muted">Alur v21.3: 1) Keyword Lab (seperti penonton search YouTube) → 2) Pilih keyword → 3) Engine judul/kompetitor → 4) AI Strategy/Thumb. AI bukan otak utama.</p>
     <div class="warn"><b>Catatan kuota:</b> Mode ini meriset beberapa angle. Mulai dari 3-5 angle dulu agar kuota YouTube API aman.</div>
@@ -60,7 +60,7 @@ Ku Titip Anakku Pada-Mu... Jika Esok Aku Tiada"></textarea>
 <div class="sticky" id="sticky"><button onclick="copyBestPack()">📋 Copy Pack</button><button onclick="scrollToId('packBox')">Upload Pack</button><button onclick="scrollToId('thumbBox')">Thumbnail</button><button onclick="scrollToId('detailBox')">Detail</button></div>
 
 <script>
-const $=id=>document.getElementById(id);let ANGLES=[],A=null,RECS=[],THUMB_IMG=null,KW_LAB=[],KW_PICK=null,THUMB_MODE='auto';
+const $=id=>document.getElementById(id);let ANGLES=[],A=null,RECS=[],THUMB_IMG=null,KW_LAB=[],KW_PICK=null,THUMB_MODE='auto',THUMB_BUSY=false,THUMB_COOLDOWN_UNTIL=0,CONTENT_FORMAT=null,LAST_THUMB_PROMPT='';
 const STOP=new Set('yang dan di ke dari ini itu untuk dengan pada ada akan jadi bisa tidak tak nya se ber me ter per kan lah pun atau karena agar sebagai dalam saat ketika the of and in to a is are was were be for on by an it this that you your our new full video official lyrics lirik part episode shorts short و في من على إلى الى عن هذا هذه ذلك تلك مع أن ان كان كانت هو هي لا ما كل uchun bilan va yoki ham bu shu bir edi bor yoq juda'.split(' '));
 const PROFILES={
   dj:{label:'DJ / Remix Music',keys:['dj','remix','full bass','jedag','jedug','tiktok','tik tok','nonstop','dugem','party mix','club mix','bass'],baseTags:{id:['dj terbaru','dj remix','dj viral','dj tiktok','full bass','dj jedag jedug','remix terbaru','dj nonstop'],en:['dj remix','latest dj remix','full bass','viral dj','tiktok remix','party mix','nonstop dj']}},
@@ -529,6 +529,7 @@ function renderAll(){let best=RECS[0]||{},m=A.metrics,decision=scoreOpportunity(
   drawThumb();
   renderHookLab();
   renderFontLab();
+  try{ buildLocalThumbPrompt(); showThumbPromptBox('<span class="tag g">Prompt high-CTR siap</span> <span class="muted">Klik Generate untuk gambar AI, atau copy prompt manual.</span>'); }catch(e){}
 }function renderDetail(){let angles=ANGLES.map((r,i)=>`<div class="battleItem"><span class="badge2 ${i===0?'vwin':r.score>=60?'vtest':'vlose'}">${i===0?'ANGLE':'TEST'}</span><div><b>${esc(r.keyword)}</b><br><small>${r.reasons.map(x=>x.t).join(' ')}</small></div><b>${r.score}</b></div>`).join('');let titles=RECS.slice(0,5).map((r,i)=>`<div class="battleItem"><span class="badge2 ${i===0?'vwin':r.score>=60?'vtest':'vlose'}">${i===0?'WINNER':'TEST'}</span><div><b>${esc(r.title)}</b><br><small>Search ${r.search}, Browse ${r.browse}, Pattern ${r.patternBorn||0}, Hook ${r.hookScore||0}, Quality ${r.quality}</small></div><b>${r.score}</b></div>`).join('');$('detailBox').innerHTML=`<details open><summary>Angle Ranking</summary>${angles}</details><details><summary>Candidate Title Battle</summary>${titles}</details><details open><summary>Title Patterns Mined</summary>${(A.patterns.titlePatterns||[]).slice(0,8).map(p=>`<div class="battleItem"><span class="badge2 vtest">PATTERN</span><div><b>${esc(p.label)}</b><br><small>Muncul ${p.count}x, weight ${Math.round(p.weight)}. Contoh: ${esc((p.examples||[])[0]||'-')}</small></div><b>${Math.round(p.weight)}</b></div>`).join('')}</details><details><summary>Winning Words & Patterns</summary>${A.patterns.topWords.slice(0,24).map(([w,c])=>`<span class="tag b">${esc(w)} ${c}x</span>`).join('')}</details><details open><summary>Reality Filter: Dipakai vs Dibuang</summary><div><b>Query diuji:</b> ${((A.queryVariants||[]).map(q=>`<span class="tag b">${esc(q)}</span>`).join(''))}</div><h3 style="margin-top:10px">Kompetitor dipakai</h3>${A.qualified.slice(0,10).map(v=>`<div class="battleItem"><span class="badge2 vwin">${v.relevance}</span><div><b>${esc(v.title)}</b><br><small>Query: ${esc(v._query||'-')} | Channel: ${esc(v.channelTitle||'-')}</small></div><b>${fmt(v.views)}</b></div>`).join('')}<h3 style="margin-top:10px">Kompetitor dibuang</h3>${A.rejected.slice(0,10).map(v=>`<div class="battleItem"><span class="badge2 vlose">${v.relevance}</span><div><b>${esc(v.title)}</b><br><small>Alasan: relevance rendah untuk intent/niche ini. Query: ${esc(v._query||'-')}</small></div><b>${fmt(v.views)}</b></div>`).join('')}</details><details><summary>Data Kompetitor Angle Terpilih</summary><div class="tablebox"><table class="table"><tr><th>#</th><th>Judul</th><th>Views</th><th>Age</th><th>VPD</th><th>VPM</th><th>Subs</th></tr>${A.videos.slice(0,25).map((v,i)=>`<tr><td>${i+1}</td><td><a href="${esc(v.url||'#')}" target="_blank">${esc(v.title)}</a><br><span class="muted">${esc(v.channelTitle||'')}</span></td><td>${fmt(v.views)}</td><td>${v.age}d</td><td>${fmt(v.vpd)}</td><td>${fmt(v.vpm)}</td><td>${fmt(v.subs)}</td></tr>`).join('')}</table></div></details>`}
 function levelLabel(v){return v>=80?'kuat':v>=65?'cukup kuat':v>=50?'sedang':'lemah'}
 function buildFinalExplanation(best,a){let m=a.metrics,comp=(a.qualified||a.videos||[]).slice(0,4),patterns=(a.patterns.titlePatterns||[]).slice(0,3),risk=finalRisk(best,a),adv=freshAngleAdvice(a,best),gaps=gapWords(a);return`<div class="finalBox" style="background:rgba(7,11,20,.55);border-color:#26324d"><h3>Diagnosa pasar & angle</h3><ul class="reason">${adv.lines.map(t=>`<li class="info">${t}</li>`).join('')}<li class="yellow"><b>Gap words (jarang di judul kompetitor):</b> ${gaps.length?gaps.map(g=>`<span class="tag b">${esc(g)}</span>`).join(' '):'Belum ketemu gap kuat — perketat angle.'}</li></ul><h3 style="margin-top:12px">Kenapa mesin memilih judul ini?</h3><ul class="reason"><li class="${best.search>=70?'good':'yellow'}"><b>Search Potential ${best.search}/100 (${levelLabel(best.search)}).</b> Judul masih dekat dengan angle <b>${esc(a.keyword)}</b> dan keyword utama, jadi layak mengejar pencarian YouTube.</li><li class="${best.browse>=70?'good':'yellow'}"><b>Browse/Rekomendasi ${best.browse}/100 (${levelLabel(best.browse)}).</b> Judul punya creator hook: <b>${esc(best.strategy||'-')}</b>, cocok dipasangkan dengan thumbnail hook <b>${esc(best.hook||'-')}</b>.</li><li class="${best.patternBorn>=70?'good':'yellow'}"><b>Pattern-Born ${best.patternBorn}/100.</b> Kandidat ini mengikuti pola yang dibaca dari kompetitor relevan, bukan template kosong.</li><li class="info"><b>Demand Proxy ${m.demand}/100.</b> Estimated attention ${fmt(m.attentionLow)}-${fmt(m.attentionHigh)}/bulan dari kompetitor relevan. Ini bukan search volume resmi, tapi sinyal perhatian pasar.</li><li class="${risk.c}"><b>Risk:</b> ${esc(risk.t)}</li></ul><details><summary>Bukti kompetitor yang dipakai</summary>${comp.map(v=>`<div class="battleItem"><span class="badge2 vwin">${v.relevance||''}</span><div><b>${esc(v.title)}</b><br><small>Channel: ${esc(v.channelTitle||'-')} • Views: ${fmt(v.views||0)} • Query: ${esc(v._query||'-')}</small></div><b>${fmt(v.vpm||0)}</b></div>`).join('')||'<p class="muted">Belum ada kompetitor relevan cukup kuat.</p>'}</details><details><summary>Pola kompetitor yang mempengaruhi judul</summary>${patterns.map(p=>`<div class="battleItem"><span class="badge2 vtest">PATTERN</span><div><b>${esc(p.label)}</b><br><small>Muncul ${p.count}x. Contoh: ${esc((p.examples||[])[0]||'-')}</small></div><b>${Math.round(p.weight||0)}</b></div>`).join('')||'<p class="muted">Pola belum cukup kuat.</p>'}</details><h3 style="margin-top:12px">Saran eksekusi</h3><ul class="reason"><li class="good">Pakai judul ini sebagai <b>${esc(best.strategy||'hybrid')}</b>. Jangan ubah terlalu jauh dari angle yang menang.</li><li class="info">Thumbnail harus menonjolkan hook pendek: <b>${esc(best.hook||'-')}</b>. Jangan pakai teks terlalu panjang.</li><li class="yellow">Pantau 24-48 jam pertama: CTR, retention awal, dan impressions. Kalau impressions tinggi tapi CTR rendah, ganti thumbnail dulu sebelum ganti judul.</li></ul></div>`}
@@ -621,23 +622,61 @@ function renderAIResult(x,raw){let outline=Array.isArray(x.script_outline)?x.scr
 function copyAIPack(){let x=window.__AI_PACK||{},txt=`JUDUL:\n${x.polished_title||''}\n\nDESKRIPSI:\n${x.polished_description||''}\n\nTAGS:\n${x.clean_tags||''}\n\nTHUMBNAIL HOOK:\n${x.thumbnail_hook||''}\n\nTHUMBNAIL PROMPT:\n${x.thumbnail_prompt||''}\n\nOPENING:\n${x.opening_hook||''}\n\nSCRIPT OUTLINE:\n${(x.script_outline||[]).join('\n')}`;copyText(txt,{textContent:'Copy AI Pack'})}
 function copyText(t,b){if(navigator.clipboard)navigator.clipboard.writeText(t);else prompt('Copy manual:',t);let o=b.textContent;b.textContent='✅ Tersalin';setTimeout(()=>b.textContent=o,1000)}function copyBestPack(){if(!RECS[0])return;let r=RECS[0];copyText(`ANGLE:\n${A.keyword}\n\nJUDUL:\n${r.title}\n\nDESKRIPSI:\n${r.desc}\n\nTAGS:\n${r.tags}\n\nTHUMBNAIL HOOK:\n${r.hook}`,{textContent:'Copy'})}function scrollToId(id){document.getElementById(id).scrollIntoView({behavior:'smooth',block:'start'})}function resetAll(){$('results').style.display='none';$('sticky').style.display='none'}
 
+function buildLocalThumbPrompt(){
+  // High-CTR prompt from engine evidence (shown even if image API busy)
+  if(!A||!RECS[0]) return '';
+  const r=RECS[0];
+  const note=(A.nicheInput|| (typeof nicheNoteRaw==='function'?nicheNoteRaw():'') ||'');
+  const fmt=(A.format&&A.format.label)||note|| (A.niche&&A.niche.label)||'';
+  const comps=(A.qualified||[]).slice(0,5).map(v=>v.title).filter(Boolean);
+  const hook=($('hook')&&$('hook').value)||r.hook||'';
+  const dir=($('thumbDirection')&&$('thumbDirection').value)||'';
+  const lines=[
+    'YouTube thumbnail 16:9 high-CTR background (visual only, big text overlaid later):',
+    `Title: ${r.title}`,
+    `Hook text overlay: ${hook}`,
+    `Channel format lock: ${fmt}`,
+    `Angle/keyword: ${A.keyword} | seed: ${A.seed||''}`,
+    `Scores: final ${r.score}, search ${r.search}, browse ${r.browse}, unique ${r.unique||'-'}`,
+    comps.length? `Competitor titles: ${comps.join(' | ')}` : 'Competitors: thin sample',
+    dir? `Creator direction: ${dir}` : '',
+    'Composition: large subject left/center, clean right space for hook, exaggerated emotion, high contrast, no clutter, no watermark, no long text in image.',
+    'Stay on-intent with keyword + channel format. No guaranteed viral claims.'
+  ].filter(Boolean);
+  LAST_THUMB_PROMPT=lines.join('\n');
+  return LAST_THUMB_PROMPT;
+}
+function showThumbPromptBox(extraHtml){
+  const status=$('thumbAIStatus'); if(!status) return;
+  const prompt=LAST_THUMB_PROMPT||buildLocalThumbPrompt();
+  status.innerHTML=`${extraHtml||''}
+    <details open style="margin-top:8px"><summary><b>Prompt high-CTR (dari engine)</b></summary>
+      <p class="muted" style="white-space:pre-wrap;font-size:11px;margin-top:6px">${esc(prompt)}</p>
+      <button class="small" type="button" onclick="copyText(LAST_THUMB_PROMPT||buildLocalThumbPrompt(),this)">📋 Copy Prompt</button>
+    </details>`;
+}
 async function generateAIThumb(btn){
-  if(!A||!RECS[0]) return alert('Jalankan riset dulu bro.');
-  const status = $('thumbAIStatus');
-  const now=Date.now();
-  if(THUMB_BUSY){
-    if(status) status.innerHTML='<b style="color:#ffe19a">Masih proses generate...</b> Jangan klik berulang.';
-    return;
-  }
-  if(now < THUMB_COOLDOWN_UNTIL){
-    const s=Math.ceil((THUMB_COOLDOWN_UNTIL-now)/1000);
-    if(status) status.innerHTML=`<b style="color:#ffe19a">Cooldownooldown ${s}d — antrian image IAMHC.</b> Tunggu lalu klik 1x. Jangan spam.`;
-    return;
-  }
-  THUMB_BUSY=true;
-  const old = btn ? btn.textContent : '';
-  if(btn){btn.disabled=true;btn.textContent='⏳ Generate 1x (jangan spam)...';}
-  if(status) status.innerHTML = '<b>AI Thumbnail 1 request...</b> Baca intent + catatan channel + kompetitor. Full-bleed + hook overlay.';
+    if(!A||!RECS[0]) return alert('Jalankan riset dulu bro. (Engine judul dulu)');
+    const status = $('thumbAIStatus');
+    // always refresh prompt panel first so user sees high-CTR prompt even if image fails
+    buildLocalThumbPrompt();
+    showThumbPromptBox('<span class="tag b">Prompt ready</span> <span class="muted">Gambar AI menyusul...</span>');
+    const now=Date.now();
+    if(typeof THUMB_BUSY==='undefined'){ window.THUMB_BUSY=false; }
+    if(typeof THUMB_COOLDOWN_UNTIL==='undefined'){ window.THUMB_COOLDOWN_UNTIL=0; }
+    if(THUMB_BUSY){
+      showThumbPromptBox('<b style="color:#ffe19a">Masih proses generate...</b> Jangan klik berulang.');
+      return;
+    }
+    if(now < THUMB_COOLDOWN_UNTIL){
+      const s=Math.ceil((THUMB_COOLDOWN_UNTIL-now)/1000);
+      showThumbPromptBox(`<b style="color:#ffe19a">Cooldownooldown ${s} detik (antrian image).</b> Prompt di bawah tetap bisa di-copy.`);
+      return;
+    }
+    THUMB_BUSY=true;
+    const old = btn ? btn.textContent : '';
+    if(btn){btn.disabled=true;btn.textContent='⏳ Generate 1x...';}
+    showThumbPromptBox('<b>Mengirim 1 request image...</b>');
   try{
     const i = +(($('thumbTitle')&&$('thumbTitle').value)||0);
     const r = RECS[i] || RECS[0];
@@ -693,15 +732,20 @@ async function generateAIThumb(btn){
         <div style="margin-top:8px" class="muted"><b>Searcher goal:</b> ${esc((result.intent&&result.intent.searcher_goal)||result.on_intent_check||'')}</div>
         <div style="margin-top:6px" class="muted">${esc(result.ctr_reason||result.composition_note||'')}</div>
         ${comps?`<details open style="margin-top:8px"><summary>Kompetitor yang dibaca</summary><ul class="reason">${comps}</ul></details>`:''}
-        <details style="margin-top:8px"><summary>Prompt dipakai</summary><p class="muted" style="white-space:pre-wrap">${esc(result.prompt_used||'')}</p></details>
+        <details open style="margin-top:8px"><summary><b>Prompt high-CTR dipakai</b></summary>
+          <p class="muted" style="white-space:pre-wrap;font-size:11px">${esc(result.prompt_used||LAST_THUMB_PROMPT||'')}</p>
+          <button class="small" type="button" onclick="copyText(window.__LAST_API_PROMPT||LAST_THUMB_PROMPT||'',this)">📋 Copy Prompt</button>
+        </details>
         ${result.warning?`<p class="muted" style="color:#ffe19a">${esc(result.warning)}</p>`:''}`;
+      window.__LAST_API_PROMPT=result.prompt_used||LAST_THUMB_PROMPT||'';
+      LAST_THUMB_PROMPT=window.__LAST_API_PROMPT;
     }
   }catch(e){
     const msg=e.message||String(e);
     const conc=/concurrency|rate limit|limit:\s*\d+/i.test(msg);
-    if(conc) THUMB_COOLDOWN_UNTIL=Date.now()+25000;
-    else THUMB_COOLDOWN_UNTIL=Date.now()+8000;
-    if(status){ status.innerHTML = `<b style="color:#ff9eb2">Gagal:</b> ${esc(msg)}<br><span class="muted">${conc?'Antrian image penuh. Tombol dikunci ~25 detik. JANGAN spam Generate.':'Coba lagi sebentar. Pastikan api/ai-thumb.js terbaru + IAMHC_IMAGE_MODEL=step-image-edit-2.'}</span>`;}
+    if(conc) THUMB_COOLDOWN_UNTIL=Date.now()+30000;
+    else THUMB_COOLDOWN_UNTIL=Date.now()+10000;
+    showThumbPromptBox(`<b style="color:#ff9eb2">Gagal gambar:</b> ${esc(msg)}<br><span class="muted">${conc?'Antrian IAMHC penuh. Tunggu 30 dtk, klik 1x. Prompt high-CTR di bawah tetap ada (bisa di-copy).':'Coba lagi. Prompt high-CTR tetap ditampilkan.'}</span>`);
   }finally{
     THUMB_BUSY=false;
     if(btn){
