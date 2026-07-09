@@ -1,14 +1,15 @@
 /**
  * GET/POST /api/ai-test
- * Smoke test IAMHC gateway
+ * Smoke test multi-provider LLM router
  */
 
+const { setCors } = require('./_lib/iamhc');
 const {
-  callWithFallback,
+  callLLM,
   envConfig,
-  setCors,
-  extractTextFromChatCompletion,
-} = require('./_lib/iamhc');
+  anyProviderConfigured,
+  listConfiguredProviders,
+} = require('./_lib/llm-router');
 
 module.exports = async function handler(req, res) {
   setCors(res);
@@ -19,18 +20,23 @@ module.exports = async function handler(req, res) {
 
   try {
     const cfg = envConfig();
-    if (!cfg.apiKey) {
-      return res.status(500).json({ ok: false, error: 'IAMHC_API_KEY belum diset.' });
+    const providers = listConfiguredProviders();
+
+    if (!anyProviderConfigured()) {
+      return res.status(500).json({
+        ok: false,
+        message: 'Belum ada provider AI yang dikonfigurasi.',
+        error:
+          'Set minimal satu: IAMHC_API_KEY / GROQ_API_KEY / GEMINI_API_KEY / OPENROUTER_API_KEY',
+        providers: [],
+      });
     }
 
     const prompt =
       'Jawab singkat dalam bahasa Indonesia: API AI sudah aktif atau belum? Jawab 1 kalimat saja.';
 
-    const models = [cfg.polishModel, cfg.fallbackModel, cfg.strategyModel];
-    const out = await callWithFallback({
-      models,
-      baseUrl: cfg.baseUrl,
-      apiKey: cfg.apiKey,
+    const out = await callLLM({
+      role: 'test',
       temperature: 0.2,
       timeoutMs: 45000,
       messages: [
@@ -39,24 +45,33 @@ module.exports = async function handler(req, res) {
       ],
     });
 
-    // If fallback logic already ensured non-empty, still return raw fields
     return res.status(200).json({
       ok: true,
       message: out.text
-        ? 'AI gateway berhasil dipanggil.'
-        : 'Gateway merespons tapi content kosong (cek model/parser).',
+        ? 'AI router berhasil dipanggil.'
+        : 'Router merespons tapi content kosong.',
+      provider: out.provider,
       model: out.model,
-      baseUrl: cfg.baseUrl,
       prompt,
       reply: out.text || '',
       usage: out.usage,
       empty: !out.text,
+      tried: out.tried || [],
+      providersConfigured: providers,
+      flags: {
+        iamhc: cfg.iamhc,
+        groq: cfg.groq,
+        gemini: cfg.gemini,
+        openrouter: cfg.openrouter,
+      },
     });
   } catch (e) {
     return res.status(502).json({
       ok: false,
       error: e.message || String(e),
-      message: 'AI gateway gagal dipanggil.',
+      message: 'AI router gagal dipanggil.',
+      tried: e.tried || [],
+      providersConfigured: listConfiguredProviders(),
     });
   }
 };
