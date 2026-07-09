@@ -3,16 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>YouTube Intelligence Engine v21.3 — Keyword Lab + Full Thumb</title>
+<title>YouTube Intelligence Engine v21.4 — Smart Titles + Compact Lab</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}body{font-family:Arial,Segoe UI,sans-serif;background:#050714;color:#f6f8ff;min-height:100vh;padding-bottom:72px}.wrap{max-width:1120px;margin:auto;padding:16px 14px}.hero{padding:24px 0 16px;border-bottom:1px solid #1d2740}.badge{display:inline-flex;gap:7px;align-items:center;background:#13213a;color:#9ed0ff;border:1px solid #284b7a;border-radius:999px;padding:7px 12px;font-size:12px;font-weight:900}.hero h1{font-size:clamp(28px,6vw,52px);line-height:1.04;margin:12px 0;background:linear-gradient(90deg,#fff,#ff4f72,#4aa3ff,#18d39b);-webkit-background-clip:text;-webkit-text-fill-color:transparent}.muted{color:#a4afc5;font-size:13px;line-height:1.58}.warn{background:#2a220f;border:1px solid #70581a;color:#ffe29a;border-radius:14px;padding:12px;margin-top:12px;font-size:13px;line-height:1.5}.card{background:linear-gradient(180deg,#101522,#0b101c);border:1px solid #26324d;border-radius:18px;padding:16px;box-shadow:0 14px 40px #0007;margin-top:16px}h2,h3{margin-bottom:10px}.grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}label{display:block;margin:10px 0 6px;font-size:12px;font-weight:900;color:#cbd6eb}input,select,textarea{width:100%;padding:12px;border:1px solid #2d3b5c;border-radius:12px;background:#090d16;color:#fff;outline:0}textarea{min-height:110px;resize:vertical;line-height:1.45}button{border:0;border-radius:12px;padding:12px 13px;font-weight:900;color:#fff;background:linear-gradient(135deg,#ff365f,#9b4dff);cursor:pointer}button.secondary{background:#172033;border:1px solid #344665;color:#d8e8ff}button.green{background:linear-gradient(135deg,#0aae79,#18d39b)}button.ghost{background:#0b1020;border:1px solid #26324d;color:#cfe2ff}button.small{padding:8px 10px;font-size:12px;margin:4px 4px 0 0}.btns{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px;margin-top:12px}.loading{display:none;text-align:center;padding:18px;border-radius:16px;border:1px solid #26324d;background:#101522;margin-top:16px}.spin{width:38px;height:38px;border-radius:50%;border:3px solid #26324d;border-top-color:#ff365f;animation:spin 1s linear infinite;margin:0 auto 10px}@keyframes spin{to{transform:rotate(360deg)}}.progress{height:12px;background:#070a11;border:1px solid #1e2a44;border-radius:999px;overflow:hidden;margin:12px 0}.progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,#ff365f,#18d39b)}#results{display:none}.scoreHero{display:grid;grid-template-columns:175px 1fr;gap:16px;align-items:center}.circle{width:158px;height:158px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(#18d39b calc(var(--p)*1%),#1b2540 0);position:relative;margin:auto}.circle:before{content:"";position:absolute;inset:13px;background:#090d16;border-radius:50%;border:1px solid #26324d}.circle span{position:relative;font-size:37px;font-weight:1000}.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-top:13px}.kpi{background:#090d16;border:1px solid #222d46;border-radius:14px;text-align:center;padding:13px}.num{font-size:22px;font-weight:1000}.lab{font-size:11px;color:#8d99b0;margin-top:4px;line-height:1.25}.tag{display:inline-block;margin:4px;padding:6px 10px;border-radius:999px;font-size:12px}.tag.g{background:#0d3529;color:#82f4d1;border:1px solid #216b55}.tag.b{background:#10263f;color:#b8ddff;border:1px solid #28547e}.tag.r{background:#35101b;color:#ff9eb2;border:1px solid #733044}.tag.y{background:#32280f;color:#ffe19a;border:1px solid #6b571f}.tag.p{background:#26173f;color:#d5beff;border:1px solid #5d3b91}.reason{list-style:none;margin-top:10px}.reason li{margin:7px 0;padding:9px 10px;border-radius:10px;font-size:13px;line-height:1.45}.good{background:#0b2a22;border-left:3px solid #18d39b;color:#b7ffe8}.bad{background:#32111b;border-left:3px solid #ff365f;color:#ffb0c0}.info{background:#10243a;border-left:3px solid #4aa3ff;color:#cfe6ff}.yellow{background:#2c260e;border-left:3px solid #ffd166;color:#ffe7a6}.finalBox{background:linear-gradient(135deg,rgba(24,211,155,.15),rgba(74,163,255,.08));border:1px solid rgba(24,211,155,.35);border-radius:16px;padding:15px;margin-top:13px}.winnerTitle{font-size:21px;line-height:1.35;font-weight:1000;color:#fff;margin:8px 0}.bar{display:grid;grid-template-columns:140px 1fr 45px;gap:8px;align-items:center;margin:8px 0}.track{height:11px;background:#070a11;border-radius:999px;overflow:hidden;border:1px solid #1e2a44}.fill{height:100%;background:linear-gradient(90deg,#4aa3ff,#18d39b)}.battleItem{display:grid;grid-template-columns:auto 1fr auto;gap:9px;align-items:start;background:#070b14;border:1px solid #1d2944;border-radius:12px;padding:10px;margin:8px 0}.battleItem small{color:#9aa6bd;line-height:1.45}.badge2{font-weight:1000;border-radius:999px;padding:5px 9px;font-size:11px}.vwin{background:#0d3529;color:#82f4d1;border:1px solid #216b55}.vtest{background:#32280f;color:#ffe19a;border:1px solid #6b571f}.vlose{background:#35101b;color:#ff9eb2;border:1px solid #733044}.pack{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}.copybox textarea{font-size:12px;background:#060911}.thumbgrid{display:grid;grid-template-columns:360px 1fr;gap:15px}.canvasbox{background:#05070d;border:1px solid #26324d;border-radius:15px;padding:10px}canvas{width:100%;border-radius:12px;background:#111}.tablebox{overflow:auto;border:1px solid #26324d;border-radius:14px;margin-top:10px}.table{width:100%;border-collapse:collapse;min-width:850px}.table th,.table td{border-bottom:1px solid #24304a;padding:9px;text-align:left;font-size:12px;vertical-align:top}.table th{background:#121a2b;color:#d6e5ff}.table a{color:#93c9ff;text-decoration:none}details{margin-top:12px;background:#090d16;border:1px solid #26324d;border-radius:14px;padding:12px}summary{cursor:pointer;font-weight:900;color:#d8e8ff}.sticky{position:fixed;left:0;right:0;bottom:0;background:rgba(5,7,20,.96);border-top:1px solid #26324d;padding:9px;display:none;justify-content:center;gap:8px;z-index:99}.sticky button{font-size:12px;padding:9px 10px}.rtl{direction:rtl;text-align:right}.angleGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.kwLab{margin-top:12px}.kwGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.kwItem{background:#090d16;border:1px solid #26324d;border-radius:12px;padding:10px;cursor:pointer;text-align:left;color:#eef3ff}.kwItem:hover,.kwItem.on{border-color:#18d39b;background:#0b1a16}.kwItem b{display:block;font-size:13px;line-height:1.35;margin-bottom:6px}.kwItem .meta{font-size:11px;color:#8d99b0;line-height:1.35}.flowSteps{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.flowSteps span{background:#121a2b;border:1px solid #2a3654;border-radius:999px;padding:6px 10px;font-size:11px;font-weight:800;color:#9ed0ff}.flowSteps span.on{border-color:#18d39b;color:#82f4d1;background:#0d3529}
+*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}body{font-family:Arial,Segoe UI,sans-serif;background:#050714;color:#f6f8ff;min-height:100vh;padding-bottom:72px}.wrap{max-width:1120px;margin:auto;padding:16px 14px}.hero{padding:24px 0 16px;border-bottom:1px solid #1d2740}.badge{display:inline-flex;gap:7px;align-items:center;background:#13213a;color:#9ed0ff;border:1px solid #284b7a;border-radius:999px;padding:7px 12px;font-size:12px;font-weight:900}.hero h1{font-size:clamp(28px,6vw,52px);line-height:1.04;margin:12px 0;background:linear-gradient(90deg,#fff,#ff4f72,#4aa3ff,#18d39b);-webkit-background-clip:text;-webkit-text-fill-color:transparent}.muted{color:#a4afc5;font-size:13px;line-height:1.58}.warn{background:#2a220f;border:1px solid #70581a;color:#ffe29a;border-radius:14px;padding:12px;margin-top:12px;font-size:13px;line-height:1.5}.card{background:linear-gradient(180deg,#101522,#0b101c);border:1px solid #26324d;border-radius:18px;padding:16px;box-shadow:0 14px 40px #0007;margin-top:16px}h2,h3{margin-bottom:10px}.grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}label{display:block;margin:10px 0 6px;font-size:12px;font-weight:900;color:#cbd6eb}input,select,textarea{width:100%;padding:12px;border:1px solid #2d3b5c;border-radius:12px;background:#090d16;color:#fff;outline:0}textarea{min-height:110px;resize:vertical;line-height:1.45}button{border:0;border-radius:12px;padding:12px 13px;font-weight:900;color:#fff;background:linear-gradient(135deg,#ff365f,#9b4dff);cursor:pointer}button.secondary{background:#172033;border:1px solid #344665;color:#d8e8ff}button.green{background:linear-gradient(135deg,#0aae79,#18d39b)}button.ghost{background:#0b1020;border:1px solid #26324d;color:#cfe2ff}button.small{padding:8px 10px;font-size:12px;margin:4px 4px 0 0}.btns{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px;margin-top:12px}.loading{display:none;text-align:center;padding:18px;border-radius:16px;border:1px solid #26324d;background:#101522;margin-top:16px}.spin{width:38px;height:38px;border-radius:50%;border:3px solid #26324d;border-top-color:#ff365f;animation:spin 1s linear infinite;margin:0 auto 10px}@keyframes spin{to{transform:rotate(360deg)}}.progress{height:12px;background:#070a11;border:1px solid #1e2a44;border-radius:999px;overflow:hidden;margin:12px 0}.progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,#ff365f,#18d39b)}#results{display:none}.scoreHero{display:grid;grid-template-columns:175px 1fr;gap:16px;align-items:center}.circle{width:158px;height:158px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(#18d39b calc(var(--p)*1%),#1b2540 0);position:relative;margin:auto}.circle:before{content:"";position:absolute;inset:13px;background:#090d16;border-radius:50%;border:1px solid #26324d}.circle span{position:relative;font-size:37px;font-weight:1000}.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-top:13px}.kpi{background:#090d16;border:1px solid #222d46;border-radius:14px;text-align:center;padding:13px}.num{font-size:22px;font-weight:1000}.lab{font-size:11px;color:#8d99b0;margin-top:4px;line-height:1.25}.tag{display:inline-block;margin:4px;padding:6px 10px;border-radius:999px;font-size:12px}.tag.g{background:#0d3529;color:#82f4d1;border:1px solid #216b55}.tag.b{background:#10263f;color:#b8ddff;border:1px solid #28547e}.tag.r{background:#35101b;color:#ff9eb2;border:1px solid #733044}.tag.y{background:#32280f;color:#ffe19a;border:1px solid #6b571f}.tag.p{background:#26173f;color:#d5beff;border:1px solid #5d3b91}.reason{list-style:none;margin-top:10px}.reason li{margin:7px 0;padding:9px 10px;border-radius:10px;font-size:13px;line-height:1.45}.good{background:#0b2a22;border-left:3px solid #18d39b;color:#b7ffe8}.bad{background:#32111b;border-left:3px solid #ff365f;color:#ffb0c0}.info{background:#10243a;border-left:3px solid #4aa3ff;color:#cfe6ff}.yellow{background:#2c260e;border-left:3px solid #ffd166;color:#ffe7a6}.finalBox{background:linear-gradient(135deg,rgba(24,211,155,.15),rgba(74,163,255,.08));border:1px solid rgba(24,211,155,.35);border-radius:16px;padding:15px;margin-top:13px}.winnerTitle{font-size:21px;line-height:1.35;font-weight:1000;color:#fff;margin:8px 0}.bar{display:grid;grid-template-columns:140px 1fr 45px;gap:8px;align-items:center;margin:8px 0}.track{height:11px;background:#070a11;border-radius:999px;overflow:hidden;border:1px solid #1e2a44}.fill{height:100%;background:linear-gradient(90deg,#4aa3ff,#18d39b)}.battleItem{display:grid;grid-template-columns:auto 1fr auto;gap:9px;align-items:start;background:#070b14;border:1px solid #1d2944;border-radius:12px;padding:10px;margin:8px 0}.battleItem small{color:#9aa6bd;line-height:1.45}.badge2{font-weight:1000;border-radius:999px;padding:5px 9px;font-size:11px}.vwin{background:#0d3529;color:#82f4d1;border:1px solid #216b55}.vtest{background:#32280f;color:#ffe19a;border:1px solid #6b571f}.vlose{background:#35101b;color:#ff9eb2;border:1px solid #733044}.pack{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}.copybox textarea{font-size:12px;background:#060911}.thumbgrid{display:grid;grid-template-columns:360px 1fr;gap:15px}.canvasbox{background:#05070d;border:1px solid #26324d;border-radius:15px;padding:10px}canvas{width:100%;border-radius:12px;background:#111}.tablebox{overflow:auto;border:1px solid #26324d;border-radius:14px;margin-top:10px}.table{width:100%;border-collapse:collapse;min-width:850px}.table th,.table td{border-bottom:1px solid #24304a;padding:9px;text-align:left;font-size:12px;vertical-align:top}.table th{background:#121a2b;color:#d6e5ff}.table a{color:#93c9ff;text-decoration:none}details{margin-top:12px;background:#090d16;border:1px solid #26324d;border-radius:14px;padding:12px}summary{cursor:pointer;font-weight:900;color:#d8e8ff}.sticky{position:fixed;left:0;right:0;bottom:0;background:rgba(5,7,20,.96);border-top:1px solid #26324d;padding:9px;display:none;justify-content:center;gap:8px;z-index:99}.sticky button{font-size:12px;padding:9px 10px}.rtl{direction:rtl;text-align:right}.angleGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.kwLab{margin-top:10px}.kwChips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;max-height:210px;overflow:auto;padding-right:2px}.kwChip{display:inline-flex;align-items:center;gap:6px;background:#090d16;border:1px solid #26324d;border-radius:999px;padding:7px 10px;cursor:pointer;color:#eef3ff;font-size:12px;line-height:1.2;max-width:100%}.kwChip b{font-size:12px;font-weight:800}.kwChip .sc{background:#13213a;color:#9ed0ff;border-radius:999px;padding:2px 6px;font-size:10px;font-weight:900}.kwChip.on{border-color:#18d39b;background:#0b1a16;box-shadow:0 0 0 1px #18d39b55}.kwPick{margin-top:8px;padding:10px;border-radius:12px;background:#0b1a16;border:1px solid #216b55}.flowSteps{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}.flowSteps span{background:#121a2b;border:1px solid #2a3654;border-radius:999px;padding:5px 9px;font-size:10px;font-weight:800;color:#9ed0ff}.flowSteps span.on{border-color:#18d39b;color:#82f4d1;background:#0d3529}
 @media(max-width:900px){.grid,.grid2,.grid3,.scoreHero,.pack,.thumbgrid,.angleGrid{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}.bar{grid-template-columns:1fr}.btns{grid-template-columns:1fr}.circle{width:142px;height:142px}.sticky{justify-content:space-around}.hero h1{letter-spacing:-.5px}}
 </style>
 </head>
 <body>
 <div class="wrap">
   <section class="hero">
-    <span class="badge">🧠 v21.3 Keyword Lab + Full Thumb</span>
+    <span class="badge">🧠 v21.4 Smart Titles + Compact Lab</span>
     <h1>Mesin tetap data-based. AI Strategy membaca hasil engine, mengkritik strategi, lalu memberi verdict, alternatif judul, thumbnail strategy, dan rencana 24 jam.</h1>
     <p class="muted">Alur v21.3: 1) Keyword Lab (seperti penonton search YouTube) → 2) Pilih keyword → 3) Engine judul/kompetitor → 4) AI Strategy/Thumb. AI bukan otak utama.</p>
     <div class="warn"><b>Catatan kuota:</b> Mode ini meriset beberapa angle. Mulai dari 3-5 angle dulu agar kuota YouTube API aman.</div>
@@ -66,86 +66,86 @@ const PROFILES={
 };
 function norm(s){return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/&/g,' and ').replace(/[^\p{L}0-9\s]/gu,' ').replace(/\s+/g,' ').trim()}function tok(s){return norm(s).split(' ').filter(w=>w.length>1&&!STOP.has(w))}function ng(t,n){let o=[];for(let i=0;i<=t.length-n;i++)o.push(t.slice(i,i+n).join(' '));return o}function cnt(a){let m={};a.forEach(x=>m[x]=(m[x]||0)+1);return m}function ent(m){return Object.entries(m).sort((a,b)=>b[1]-a[1])}function clamp(n){return Math.max(0,Math.min(100,Math.round(n)))}function fmt(n){n=+n||0;if(n>=1e9)return(n/1e9).toFixed(1)+'B';if(n>=1e6)return(n/1e6).toFixed(1)+'M';if(n>=1e3)return(n/1e3).toFixed(1)+'K';return Math.round(n)}function days(d){let x=new Date(d);return isNaN(x)?365:Math.max(1,Math.round((Date.now()-x)/864e5))}function avg(a){a=a.filter(Number.isFinite);return a.length?a.reduce((x,y)=>x+y,0)/a.length:0}function med(a){a=a.filter(Number.isFinite).sort((x,y)=>x-y);if(!a.length)return 0;let m=Math.floor(a.length/2);return a.length%2?a[m]:(a[m-1]+a[m])/2}function slog(n,k=15){return clamp(Math.log10(Math.max(1,n)+1)*k)}function esc(s){return String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}function cap(s){return String(s||'').split(' ').map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' ')}function pct(x){return Math.round((x||0)*100)+'%'}function uniq(a){let s={};return a.filter(x=>x&&!s[norm(x)]&&(s[norm(x)]=1))}function yearOf(s){let m=String(s||'').match(/20\d{2}/);return m?m[0]:''}
 
+
 function scoreSuggestKeyword(s, seed){
-  let n=norm(s), sd=norm(seed), sc=40;
-  if(n.includes(sd) || sd.split(' ').filter(w=>w.length>2&&n.includes(w)).length>=2) sc+=18;
+  let n=norm(s), sd=norm(seed), sc=38;
+  let seedParts=sd.split(' ').filter(w=>w.length>2);
+  let hit=seedParts.filter(w=>n.includes(w)).length;
+  sc += Math.min(28, hit*10);
+  if(n===sd) sc+=8;
   let w=n.split(' ').filter(Boolean);
-  if(w.length>=3 && w.length<=7) sc+=10;
-  if(/20\d{2}/.test(n)) sc+=6;
-  if(/maaf|rindu|ibu|ayah|sedih|lagu|doa|pesan|terakhir|meninggal|lahir/.test(n)) sc+=12;
-  if(/viral|terbaru|full|official/.test(n)) sc+=4;
-  if(/dj|remix|bass|jedag/.test(n) && !/dj|remix|bass/.test(sd)) sc-=25;
-  if(/hantu|horor|horror/.test(n) && !/hantu|horor|horror/.test(sd)) sc-=20;
-  // closer to user intent seed length-wise
-  sc += Math.max(0, 10 - Math.abs(n.length - sd.length)/4);
+  if(w.length>=3 && w.length<=8) sc+=8;
+  if(/20\d{2}/.test(n)) sc+=5;
+  // intent boosts only if seed also emotional/family
+  if(/ibu|ayah|maaf|rindu|sedih|doa|pesan|lahir|meninggal/.test(sd)){
+    if(/maaf|rindu|ibu|ayah|sedih|lagu|doa|pesan|terakhir|meninggal|lahir/.test(n)) sc+=14;
+  }
+  if(/viral|terbaru|full|official/.test(n)) sc+=3;
+  // off-track penalty
+  if(/dj|remix|bass|jedag/.test(n) && !/dj|remix|bass/.test(sd)) sc-=30;
+  if(/hantu|horor|horror/.test(n) && !/hantu|horor|horror/.test(sd)) sc-=24;
+  sc += Math.max(0, 8 - Math.abs(n.length - Math.min(48, sd.length))/5);
   return clamp(sc);
 }
-
 function intentLabelForKeyword(s){
   let n=norm(s);
-  if(/sebelum.*lahir|lahir tanpa/.test(n)) return 'Loss before birth';
-  if(/maaf|ampuni|menyesal/.test(n)) return 'Apology / penyesalan';
-  if(/rindu|kangen/.test(n)) return 'Longing / rindu';
-  if(/lagu|song/.test(n)) return 'Song / cerita jadi lagu';
-  if(/dj|remix|bass/.test(n)) return 'DJ / remix';
-  if(/hantu|horor|horror/.test(n)) return 'Horror';
-  return 'On-intent story';
+  if(/sebelum.*lahir|lahir tanpa/.test(n)) return 'Loss';
+  if(/maaf|ampuni|menyesal/.test(n)) return 'Maaf';
+  if(/rindu|kangen/.test(n)) return 'Rindu';
+  if(/lagu|song/.test(n)) return 'Lagu';
+  if(/dj|remix|bass/.test(n)) return 'DJ';
+  if(/hantu|horor|horror/.test(n)) return 'Horor';
+  return 'Intent';
 }
-
 async function runKeywordLab(){
   let seed=$('kw').value.trim();
-  if(!seed) return alert('Ketik dulu seperti penonton YouTube, contoh: maafkan aku ibu');
+  if(!seed) return alert('Ketik niat search, contoh: maafkan aku ibu');
   let box=$('kwLabBox');
   box.style.display='block';
-  box.innerHTML='<div class="finalBox"><b>🔎 Keyword Lab bekerja...</b><p class="muted">Mengambil YouTube Suggest seperti autocomplete saat orang search. Belum membuat judul final.</p></div>';
+  box.innerHTML='<div class="finalBox" style="padding:12px"><b>🔎 Keyword Lab...</b><p class="muted" style="margin:6px 0 0">Suggest YouTube (bukan volume resmi iklan).</p></div>';
   $('results').style.display='none';
   try{
-    let u=`/api/suggest?keyword=${encodeURIComponent(seed)}&language=${$('lang').value}&region=${$('region').value}&limit=40`;
+    let u=`/api/suggest?keyword=${encodeURIComponent(seed)}&language=${$('lang').value}&region=${$('region').value}&limit=25`;
     let r=await fetch(u); let d=await r.json();
     if(!r.ok) throw Error(d.error||'Suggest gagal');
-    let list=uniq([seed, ...(d.suggestions||[])]).slice(0,40);
-    KW_LAB=list.map(s=>({
-      keyword:s,
-      score:scoreSuggestKeyword(s, seed),
-      intent:intentLabelForKeyword(s),
-      source:'youtube_suggest'
-    })).sort((a,b)=>b.score-a.score);
-    renderKeywordLab(seed, d);
+    let list=uniq([seed, ...(d.suggestions||[])]).slice(0,25);
+    KW_LAB=list.map(s=>({keyword:s,score:scoreSuggestKeyword(s,seed),intent:intentLabelForKeyword(s),source:'suggest'})).sort((a,b)=>b.score-a.score);
+    // keep top compact
+    KW_LAB=KW_LAB.slice(0,12);
+    if(!KW_PICK) KW_PICK=KW_LAB[0]&&KW_LAB[0].keyword;
+    renderKeywordLab(seed,d);
   }catch(e){
-    // local fallback
-    let list=uniq([seed, ...localAngles(seed)]);
+    let list=uniq([seed,...localAngles(seed)]).slice(0,12);
     KW_LAB=list.map(s=>({keyword:s,score:scoreSuggestKeyword(s,seed),intent:intentLabelForKeyword(s),source:'local'}));
-    renderKeywordLab(seed, {note:'Fallback lokal (suggest API gagal): '+e.message, suggestions:list});
+    KW_PICK=KW_LAB[0]&&KW_LAB[0].keyword;
+    renderKeywordLab(seed,{note:'Fallback lokal: '+e.message,suggestions:list});
   }
 }
-
 function renderKeywordLab(seed, raw){
-  let box=$('kwLabBox');
-  if(!box) return;
-  let rows=KW_LAB.map((k,i)=>`<button type="button" class="kwItem ${KW_PICK===k.keyword?'on':''}" onclick="pickKeywordLab(${i})">
-    <b>${esc(k.keyword)}</b>
-    <div class="meta">Proxy minat <b>${k.score}</b>/100 · ${esc(k.intent)} · ${esc(k.source)}</div>
-  </button>`).join('');
-  box.innerHTML=`<div class="finalBox">
-    <h3>🔎 Keyword Lab — seperti penonton search YouTube</h3>
-    <p class="muted">Seed: <b>${esc(seed)}</b>. Pilih 1 keyword terbaik dulu. Ini belum volume resmi Google Ads; ini proxy cerdas dari pola suggest + intent fit.</p>
-    <p class="muted">${esc(raw&&raw.note||'Sumber: YouTube autocomplete/suggest.')}</p>
-    <div class="kwGrid">${rows||'<p class="muted">Tidak ada suggest.</p>'}</div>
-    <div style="margin-top:12px" class="btns">
-      <button onclick="run(false)">🚀 Pakai keyword terpilih → Engine Judul</button>
-      <button class="secondary" onclick="previewAngles()">👀 Preview angle lokal</button>
+  let box=$('kwLabBox'); if(!box) return;
+  let top=KW_LAB.slice(0,12);
+  let chips=top.map((k,i)=>`<button type="button" class="kwChip ${KW_PICK===k.keyword?'on':''}" onclick="pickKeywordLab(${i})"><span class="sc">${k.score}</span><b>${esc(k.keyword)}</b></button>`).join('');
+  let picked=KW_PICK|| (top[0]&&top[0].keyword)||seed;
+  box.innerHTML=`<div class="finalBox" style="padding:12px">
+    <div style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap">
+      <h3 style="margin:0">🔎 Keyword Lab</h3>
+      <span class="tag b">${top.length} saran</span>
     </div>
-    <p class="muted" style="margin-top:8px">Setelah pilih keyword, baru jalankan engine judul/kompetitor. AI Strategy & Thumbnail ikut evidence itu — bukan langsung AI ngarang.</p>
+    <p class="muted" style="margin:8px 0 0;font-size:12px">Seperti autocomplete YouTube. Skor = proxy minat+intent (bukan volume resmi). Ketuk 1 chip, lalu Engine Judul.</p>
+    <div class="kwChips">${chips||'<span class="muted">Kosong</span>'}</div>
+    <div class="kwPick"><b>Dipilih:</b> ${esc(picked)}
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
+        <button onclick="run(false)">🚀 Engine Judul</button>
+        <button class="secondary" onclick="runKeywordLab()">↻ Refresh</button>
+      </div>
+    </div>
+    <p class="muted" style="margin-top:8px;font-size:11px">${esc((raw&&raw.note)||'Sumber: YouTube suggest')}</p>
   </div>`;
 }
-
 function pickKeywordLab(i){
   let k=KW_LAB[i]; if(!k) return;
-  KW_PICK=k.keyword;
-  $('kw').value=k.keyword;
-  renderKeywordLab($('kw').value, {note:'Keyword dipilih. Lanjut tombol Engine Judul.'});
-  // soft highlight
-  try{ document.querySelectorAll('.kwItem').forEach((el,idx)=>el.classList.toggle('on', idx===i)); }catch(e){}
+  KW_PICK=k.keyword; $('kw').value=k.keyword;
+  renderKeywordLab(k.keyword,{note:'Siap. Lanjut Engine Judul.'});
 }
 
 async function run(demo){let seed=$('kw').value.trim();if(!seed)return alert('Isi keyword dulu bro.');let limit=+$('angleCount').value||5,max=+$('max').value||5;$('loading').style.display='block';$('results').style.display='none';$('sticky').style.display='none';$('prog').style.width='0%';$('quota').textContent=`Estimasi kuota: mode reality memakai beberapa query per angle. Mulai dari ${limit} angle x ${max} video.`;try{$('stage').textContent='Mengambil YouTube Suggest untuk mencari angle...';let angles=demo?localAngles(seed):await getSuggestAngles(seed);angles=uniq([seed,...angles]).slice(0,limit);if(!angles.length)angles=[seed];ANGLES=[];for(let i=0;i<angles.length;i++){let kw=angles[i];$('stage').textContent=`Reality search ${i+1}/${angles.length}: ${kw}`;$('prog').style.width=(i/angles.length*100)+'%';let raw=demo?demoData(kw):await fetchRealityYouTube(kw,seed,max);ANGLES.push(analyzeAngle(kw,raw,seed));await wait(250)}$('prog').style.width='100%';ANGLES.sort((a,b)=>b.score-a.score);A=ANGLES[0];RECS=generateTitles(A);renderAll();saveMemory();$('results').style.display='block';$('sticky').style.display='flex'}catch(e){alert('Gagal: '+e.message)}finally{$('loading').style.display='none'}}
@@ -196,14 +196,77 @@ if(id==='horror'){let place=topSlot(p,'place',lang==='en'?'Empty House':lang==='
 if(id==='family'){let it=keywordIntent(a);if(p.id==='LOSS_BEFORE_BIRTH'||it.deathBeforeBirth)return lang==='en'?[`Mother, You Left Before I Was Born`,`I Was Born Without Ever Knowing My Mother`]:lang==='ar'?[`أمي رحلت قبل أن أولد`,`ولدت ولم أعرف أمي أبدا`]:lang==='uz'?[`Onam men tug‘ilmasimdan ketgan`,`Men onamni tanimasdan tug‘ildim`]:[`Ibu, Engkau Pergi Sebelum Aku Lahir`,`Aku Lahir Tanpa Sempat Mengenal Ibu`];if(p.id==='THANKS_TARGET'||it.bestMother)return lang==='en'?[`Thank You Mom, You Are The Best`,`A Song For The Best Mother In The World`]:lang==='ar'?[`شكرا أمي أنت الأفضل`,`أغنية لأفضل أم في العالم`]:lang==='uz'?[`Rahmat ona, siz eng yaxshisiz`,`Dunyodagi eng yaxshi ona uchun qo‘shiq`]:[`Terima Kasih Ibu, Engkau yang Terbaik`,`Lagu untuk Ibu Terbaik dalam Hidupku`];if(p.id==='APOLOGY_TARGET'||it.apology)return lang==='en'?[`Sorry Mom, I Understood Too Late`]:lang==='ar'?[`سامحيني يا أمي فهمت بعد فوات الأوان`]:lang==='uz'?[`Kechiring ona, men juda kech tushundim`]:[`Maaf Ibu, Aku Terlambat Mengerti`];return lang==='en'?[`The Last Message That Was Never Read`]:lang==='ar'?[`الرسالة الأخيرة التي لم تقرأ`]:lang==='uz'?[`O‘qilmagan oxirgi xabar`]:[`Pesan Terakhir yang Tak Pernah Terbaca`]}
 return[]}
 function gapScore(freq,total,patterns,niche){let base=60;if(niche.id==='dj')base+=14;if(niche.id==='horror')base+=12;let rare=patterns.topWords.filter(([t,c])=>c/total<.22).length;return clamp(base+rare)}
-function generateTitles(a){let cands=[...buildPatternBornCandidates(a),...buildCandidates(a)],mem=getMemory(a.seed);return uniq(cands).filter(t=>languageFit(t,a.lang)>45).map(t=>scoreTitle(t,a,mem)).sort((x,y)=>y.score-x.score).slice(0,10)}
+function competitorTitleSet(a){return new Set((a.qualified||a.videos||[]).map(v=>norm(v.title)).filter(Boolean))}
+function suggestPhrases(a){
+  // Use top mined phrases + keyword tokens as "what people type"
+  let phrases=[];
+  (a.patterns&&a.patterns.topWords||[]).slice(0,18).forEach(([w])=>{if(String(w).split(' ').length>=2) phrases.push(w)});
+  (a.patterns&&a.patterns.signals||[]).slice(0,12).forEach(w=>phrases.push(w));
+  tok(a.keyword).forEach(t=>phrases.push(t));
+  tok(a.seed||'').forEach(t=>phrases.push(t));
+  return uniq(phrases).slice(0,24);
+}
+function gapWords(a){
+  // words people likely search (from keyword/suggest) that are rare in competitor titles
+  let comps=norm((a.qualified||a.videos||[]).slice(0,20).map(v=>v.title).join(' '));
+  let cand=uniq([...tok(a.keyword), ...tok(a.seed||''), ...suggestPhrases(a).flatMap(x=>tok(x))]);
+  return cand.filter(w=>w.length>2 && !comps.includes(w)).slice(0,10);
+}
+function buildGapCandidates(a){
+  // Build titles around underserved search phrases (on-intent), not random templates
+  let lang=a.lang||'id', kw=a.keyword, gaps=gapWords(a), phrases=suggestPhrases(a);
+  let base=uniq([kw, a.seed, ...phrases.filter(p=>sim(p,kw)>0.15 || norm(p).includes(norm(kw).split(' ')[0]||'x'))]).filter(Boolean).slice(0,8);
+  let out=[];
+  base.forEach(b=>{
+    if(lang==='en'){
+      out.push(cap(b), `${cap(b)} That Hits Different`, `Why ${cap(b)} Feels So Heavy`);
+    }else if(lang==='ar'){
+      out.push(b, `${b}…`, `لماذا ${b}`);
+    }else{
+      // Indonesian default: searcher-style titles
+      out.push(cap(b));
+      out.push(`${cap(b)} yang Jarang Diunggah`);
+      if(gaps[0]) out.push(`${cap(b)} — ${cap(gaps[0])}`);
+      if(/maaf|ampun|menyesal/.test(norm(b))) out.push(`Maaf Ibu, ${cap(b.replace(/maaf|ibu/gi,'').trim()||'Aku Terlambat Mengerti')}`);
+      if(/rindu|kangen/.test(norm(b))) out.push(`Rindu yang Tak Pernah Habis: ${cap(b)}`);
+      if(/ibu/.test(norm(b))) out.push(`${cap(b)} (Cerita yang Menusuk)`);
+    }
+  });
+  // Avoid near-duplicates of strong competitors
+  let comps=competitorTitleSet(a);
+  out=out.filter(t=>{
+    let n=norm(t); if(comps.has(n)) return false;
+    // reject if too similar to a competitor
+    for(let c of (a.qualified||[]).slice(0,12)){ if(sim(t,c.title)>=0.72) return false; }
+    return t && t.length>=12 && t.length<=90;
+  });
+  return uniq(out).slice(0,16);
+}
+function generateTitles(a){
+  let cands=[...buildGapCandidates(a), ...buildPatternBornCandidates(a), ...buildCandidates(a)];
+  // inject exact keyword-first variants (what searchers type)
+  cands.push(a.keyword, cap(a.keyword));
+  if(a.seed && a.seed!==a.keyword) cands.push(a.seed, `${cap(a.seed)} | ${cap(a.keyword)}`);
+  let mem=getMemory(a.seed);
+  let scored=uniq(cands).filter(t=>languageFit(t,a.lang)>45).map(t=>scoreTitle(t,a,mem));
+  // diversify: avoid top results all nearly same
+  scored.sort((x,y)=>y.score-x.score);
+  let picked=[], used=[];
+  for(let t of scored){
+    if(picked.length>=10) break;
+    if(used.some(u=>sim(u,t.title)>0.78)) continue;
+    picked.push(t); used.push(t.title);
+  }
+  return picked;
+}
+
 function buildCandidates(a){let id=a.niche.id,lang=a.lang,kw=a.keyword,y=yearOf(kw)||new Date().getFullYear(),out=[];if(id==='dj'){out=lang==='en'?[`Latest DJ Remix ${y} Full Bass`,`Viral DJ Remix ${y} For Party`,`Full Bass DJ Remix ${y} Nonstop`,`TikTok Viral DJ Remix ${y}`]:lang==='ar'?[`دي جي جديد ${y} فل باس`,`ريمكس دي جي ${y} ترند`,`دي جي تيك توك ${y} فل باس`,`ريمكس دي جي متواصل ${y}`]:lang==='uz'?[`Eng yangi DJ ${y} Full Bass`,`DJ Remix ${y} Viral TikTok`,`DJ Jedag Jedug ${y} Nonstop`,`DJ Full Bass ${y} Eng Zo‘r`]:[`DJ Terbaru ${y} Full Bass Viral`,`DJ Remix ${y} Paling Enak Buat Diputar`,`DJ Viral TikTok ${y} Full Bass`,`DJ Jedag Jedug ${y} Nonstop Full Bass`,`DJ Remix Terbaru ${y} Bass Mantap`,`DJ Full Bass ${y} Buat Santai dan Party`]}else if(id==='horror'){if(lang==='en')out=[`The Sound Came From The Empty House`,`I Thought It Was The Wind, Until It Followed Me`,`Do Not Open The Door After Midnight`,`There Was Someone Standing At The End Of The Hall`,`The Light Went Out, Then The Voice Came Back`];else if(lang==='ar')out=[`الصوت الذي خرج من البيت المهجور`,`ظننته ريحا حتى بدأ يقترب`,`لا تفتح الباب بعد منتصف الليل`,`كان هناك شيء يقف في آخر الممر`,`انطفأ الضوء ثم عاد الصوت`,`لم أكن وحدي في تلك الغرفة`];else if(lang==='uz')out=[`Tashlandiq uydan kelgan ovoz`,`Men buni shamol deb o‘ylagandim`,`Yarim tundan keyin eshikni ochmang`,`Yo‘lak oxirida kimdir turardi`,`Chiroq o‘chdi, keyin ovoz qaytdi`,`Men u xonada yolg‘iz emas edim`];else out=[`Suara Itu Datang dari Rumah Kosong`,`Aku Kira Itu Angin, Ternyata Ada yang Mengikuti`,`Jangan Buka Pintu Setelah Tengah Malam`,`Ada Sosok di Ujung Lorong Malam Itu`,`Lampu Padam, Lalu Suara Itu Muncul Lagi`,`Rumah Itu Kosong Bukan Tanpa Alasan`]}else if(id==='family'){out=titleBankFamilyIntent(a)}else if(id==='street'){out=lang==='en'?[`The Street Kid Who Never Gave Up`,`A Voice From The Street That Stopped People`,`From The Street To A Song`,`A Smile That Hid A Hard Life`]:lang==='ar'?[`الطفل الذي لم يستسلم في الشارع`,`صوت من الشارع جعل الناس يتوقفون`,`من الشارع إلى أغنية`,`ابتسامة تخفي حياة صعبة`]:lang==='uz'?[`Ko‘chadagi bola taslim bo‘lmadi`,`Ko‘chadan chiqqan ovoz odamlarni to‘xtatdi`,`Ko‘chadan qo‘shiqqa aylangan hikoya`,`Qiyin hayotni yashirgan tabassum`]:[`Kisah Anak Jalanan yang Tak Pernah Menyerah`,`Suara dari Jalanan yang Membuat Orang Terdiam`,`Dari Jalanan ke Lagu: Perjalanan yang Menyentuh`]}else out=lang==='en'?[`The Story People Rarely Talk About`,`The Hidden Side That Started To Appear`,`A Small Detail That Changed Everything`,`Why This Topic Is Being Searched`]:lang==='ar'?[`القصة التي نادرا ما يتحدث عنها الناس`,`الجانب الخفي الذي بدأ يظهر`,`تفصيل صغير غير كل شيء`,`لماذا يبحث الناس عن هذا الموضوع`]:lang==='uz'?[`Odamlar kam gapiradigan hikoya`,`Yashirin tomoni ko‘rina boshladi`,`Kichik detal hammasini o‘zgartirdi`,`Nega bu mavzu ko‘p izlanmoqda`]:[`Kisah yang Jarang Orang Ceritakan`,`Sisi Tersembunyi yang Mulai Terlihat`,`Satu Detail Kecil yang Mengubah Cerita Ini`,`Kenapa Topik Ini Banyak Dicari?`];return out.concat(keywordBasedVariants(kw,id,lang,y,a))}
 function keywordIntent(a){let x=norm((a.seed||'')+' '+(a.keyword||''));return{deathBeforeBirth:/sebelum aku lahir|sebelum lahir|mati sebelum|meninggal sebelum|wafat sebelum|pergi sebelum aku lahir|lahir tanpa/.test(x),bestMother:/ibu.*terbaik|engkau yang terbaik|kau yang terbaik|mama terbaik|terima kasih ibu|ibu hebat|ibu tersayang/.test(x),apology:/maaf|ampuni|menyesal|terlambat/.test(x),longing:/rindu|kangen|merindukan|ingin bertemu/.test(x),song:/jadi lagu|cerita jadi lagu|lagu/.test(x),prayer:/doa|mendoakan/.test(x)}}
 function titleBankFamilyIntent(a){let lang=a.lang,it=keywordIntent(a);if(lang==='en'){if(it.deathBeforeBirth)return[`Mother, You Left Before I Was Born`,`I Was Born Without Ever Knowing My Mother`,`A Song For The Mother I Never Met`,`Before I Could Call Her Mom, She Was Gone`,`The Child Who Never Got To Hug His Mother`];if(it.bestMother)return[`Mom, You Are The Best Gift In My Life`,`Thank You Mom, You Are The Best`,`A Song For The Best Mother In The World`,`Your Prayers Always Protect Me, Mom`,`Mom, You Are My Home`];if(it.apology)return[`Sorry Mom, I Understood Too Late`,`I Regret Not Listening To You, Mom`,`Forgive Me Mom, I Was Too Late`];return[`The Last Message That Was Never Read`,`I Understood Everything Too Late`,`The Secret Behind That Quiet Smile`,`Before It Was Too Late, A Message Was Left`]}if(lang==='ar'){if(it.deathBeforeBirth)return[`أمي رحلت قبل أن أولد`,`ولدت ولم أعرف أمي أبدا`,`أغنية للأم التي لم ألتق بها`,`قبل أن أناديها أمي كانت قد رحلت`];if(it.bestMother)return[`أمي أنت أفضل نعمة في حياتي`,`شكرا أمي أنت الأفضل`,`أغنية لأفضل أم في العالم`,`دعاؤك يحميني يا أمي`];if(it.apology)return[`سامحيني يا أمي فهمت بعد فوات الأوان`,`ندمت لأني لم أسمع كلامك يا أمي`,`أمي أعتذر لأنني تأخرت`];return[`الرسالة الأخيرة التي لم تقرأ`,`فهمت كل شيء بعد فوات الأوان`,`السر خلف تلك الابتسامة الهادئة`,`قبل فوات الأوان ترك رسالة`]}if(lang==='uz'){if(it.deathBeforeBirth)return[`Onam men tug‘ilmasimdan ketgan`,`Men onamni tanimasdan tug‘ildim`,`Men hech qachon ko‘rmagan ona uchun qo‘shiq`,`Ona deb chaqirishimdan oldin u ketgan`];if(it.bestMother)return[`Ona, siz hayotimdagi eng yaxshi inson`,`Rahmat ona, siz eng yaxshisiz`,`Dunyodagi eng yaxshi ona uchun qo‘shiq`,`Onamning duosi meni asraydi`];if(it.apology)return[`Kechiring ona, men juda kech tushundim`,`Onam, sizni tinglamaganimdan afsusdaman`,`Ona, kech qolganim uchun uzr`];return[`O‘qilmagan oxirgi xabar`,`Men hammasini juda kech tushundim`,`Sokin tabassum ortidagi sir`,`Kech bo‘lmasidan qoldirilgan xabar`]}
 if(it.deathBeforeBirth)return[`Ibu, Engkau Pergi Sebelum Aku Lahir`,`Aku Lahir Tanpa Sempat Mengenal Ibu`,`Lagu untuk Ibu yang Tak Pernah Sempat Kupeluk`,`Sebelum Aku Lahir, Ibu Sudah Pergi`,`Doa Anak untuk Ibu yang Tak Pernah Ia Kenal`,`Cerita Jadi Lagu: Ibu yang Pergi Sebelum Aku Lahir`];if(it.bestMother)return[`Ibu, Engkau yang Terbaik`,`Terima Kasih Ibu, Engkau yang Terbaik`,`Lagu untuk Ibu Terbaik dalam Hidupku`,`Ibu Terbaik, Doamu Selalu Menjagaku`,`Cerita Jadi Lagu: Ibu, Engkau yang Terbaik`,`Untuk Ibu yang Selalu Menjadi Rumah`];if(it.apology)return[`Maaf Ibu, Aku Terlambat Mengerti`,`Ibu, Maafkan Aku yang Pernah Menyakitimu`,`Aku Menyesal Setelah Mengerti Cinta Ibu`,`Maaf Ibu, Doamu Baru Aku Sadari`];if(it.longing)return[`Ibu, Aku Rindu Suaramu`,`Rindu Ibu yang Tak Pernah Hilang`,`Lagu Rindu untuk Ibu`,`Aku Ingin Sekali Bertemu Ibu`];return[`Pesan Terakhir yang Tak Pernah Terbaca`,`Aku Baru Mengerti Setelah Terlambat`,`Rahasia di Balik Senyum yang Selalu Kuat`,`Sebelum Terlambat, Pesan Ini Ditinggalkan`]}
 function keywordBasedVariants(kw,id,lang,y,a){let it=a?keywordIntent(a):{};if(id==='family'&&it.deathBeforeBirth)return lang==='id'?[`Ibu Pergi Sebelum Aku Lahir`,`Aku Tak Pernah Sempat Memanggilmu Ibu`,`Lagu Anak yang Tak Pernah Mengenal Ibunya`]:[];if(id==='family'&&it.bestMother)return lang==='id'?[`Ibu Engkau yang Terbaik`,`Terima Kasih Untuk Ibu Terbaik`,`Lagu Untuk Ibu Terbaik`]:[];if(id==='dj')return lang==='ar'?[`دي جي ${y} فل باس`,`ريمكس ${y} ترند`,`دي جي تيك توك ${y}`]:lang==='uz'?[`DJ ${y} Full Bass`,`DJ Remix ${y} Viral`,`DJ TikTok ${y}`]:lang==='en'?[`DJ ${y} Full Bass`,`DJ Remix ${y} Viral`,`TikTok DJ ${y}`]:[`DJ ${y} Full Bass`,`DJ ${y} Nonstop`,`DJ ${y} Viral TikTok`];if(id==='horror')return lang==='ar'?[`قصة رعب في بيت مهجور`,`صوت غريب بعد منتصف الليل`,`لا تفتح الباب ليلا`]:lang==='uz'?[`Tashlandiq uy voqeasi`,`Yarim tundan keyingi ovoz`,`Kechasi eshikni ochmang`]:lang==='en'?[`Haunted House Story`,`The Sound After Midnight`,`Do Not Open The Door At Night`]:[`Cerita Hantu Rumah Kosong`,`Suara Misterius Tengah Malam`,`Jangan Buka Pintu Malam Hari`];return[]}
 function languageFit(title,lang){let t=String(title||''),n=norm(t);let arab=/[\u0600-\u06FF]/.test(t);let indo=/\b(cerita|kisah|hantu|suara|pintu|rumah|malam|aku|itu|yang|dari|jangan|terbaru|paling|enak|buat|diputar|ibu|engkau|terima kasih|lahir)\b/.test(n);if(lang==='ar')return arab?100:15;if(lang==='uz'){if(arab)return 5;if(indo)return 18;if(/\b(uy|ovoz|eshik|yarim|tun|hikoya|qorq|arvoh|remix|full bass|viral|yolg|chiroq|xona|ona|tug|ketgan|qoshiq|qo‘shiq)\b/.test(n))return 100;return 65}if(lang==='en'){if(arab)return 5;if(indo)return 20;if(/\b(the|sound|door|house|story|wind|midnight|latest|viral|remix|bass|mother|mom|born)\b/.test(n))return 100;return 70}if(lang==='id'){if(arab)return 8;return indo||/[a-z]/.test(n)?100:65}return 80}
-function scoreTitle(title,a,mem){let nt=norm(title),kwTok=tok(a.keyword),terms=tok(title),cover=kwTok.length?kwTok.filter(k=>terms.some(t=>t.includes(k)||k.includes(t))).length/kwTok.length:.4,quality=titleQuality(title),langFit=languageFit(title,a.lang),intentFit=intentFitScore(title,a),nicheFit=nicheTitleFit(title,a),patternFit=patternFitScore(title,a),patternBorn=patternBornFit(title,a),ctr=ctrScore(title,a),hookScore=creatorHookScore(title,a),unique=clamp(95-Math.max(0,...a.videos.map(v=>sim(title,v.title)))*65),memoryPenalty=mem.some(m=>norm(m.title)===nt)?14:0,languagePenalty=langFit<50?38:0,search=clamp(cover*38+nicheFit*.20+langFit*.10+intentFit*.17+patternBorn*.10+hookScore*.05),browse=clamp(ctr*.30+hookScore*.22+unique*.15+patternFit*.12+patternBorn*.12+quality*.05+intentFit*.04),algo=clamp(search*.22+browse*.34+a.metrics.demand*.16+a.metrics.low*.10+a.metrics.fresh*.07+patternBorn*.07+hookScore*.04),score=clamp(search*.15+browse*.20+algo*.17+quality*.09+unique*.07+a.metrics.demand*.07+langFit*.05+intentFit*.08+patternBorn*.13+hookScore*.09-memoryPenalty-languagePenalty);let pack=makePack(title,a);return{title,score,search,browse,algo,quality,langFit,intentFit,patternBorn,hookScore,strategy:titleStrategy(search,browse,hookScore,a),unique,ctr,patternFit,memoryPenalty,desc:pack.desc,tags:pack.tags,hook:pack.hook,reasons:reasonTitle(title,a,score,search,browse,quality,memoryPenalty,langFit,intentFit,patternBorn,hookScore)}}function intentFitScore(title,a){let it=keywordIntent(a),n=norm(title);if(a.niche.id!=='family')return 65;if(it.deathBeforeBirth)return /sebelum aku lahir|lahir tanpa|tak pernah mengenal|tak pernah sempat|pergi sebelum|tug‘ilmasimdan|tanimasdan|قبل أن أولد|قبل ان اولد/.test(n)?100:25;if(it.bestMother)return /terbaik|terima kasih|doa|rumah|engkau yang terbaik|eng yaxsh|rahmat ona|أفضل|شكرا/.test(n)?100:30;if(it.apology)return /maaf|ampuni|menyesal|terlambat|sorry|forgive|سامح|uzr|kechiring/.test(n)?100:35;if(it.longing)return /rindu|kangen|miss|sog‘indim|اشتاق/.test(n)?100:40;return 65}
+function scoreTitle(title,a,mem){let nt=norm(title),kwTok=tok(a.keyword),terms=tok(title),cover=kwTok.length?kwTok.filter(k=>terms.some(t=>t.includes(k)||k.includes(t))).length/kwTok.length:.4,quality=titleQuality(title),langFit=languageFit(title,a.lang),intentFit=intentFitScore(title,a),nicheFit=nicheTitleFit(title,a),patternFit=patternFitScore(title,a),patternBorn=patternBornFit(title,a),ctr=ctrScore(title,a),hookScore=creatorHookScore(title,a),unique=clamp(95-Math.max(0,...(a.qualified||a.videos||[]).map(v=>sim(title,v.title)))*70),gapBoost=(function(){let g=gapWords(a);let n=nt;let hits=g.filter(w=>n.includes(w)).length;return clamp(hits*12);})(),memoryPenalty=mem.some(m=>norm(m.title)===nt)?14:0,languagePenalty=langFit<50?38:0,search=clamp(cover*36+nicheFit*.18+langFit*.08+intentFit*.18+patternBorn*.08+hookScore*.05+gapBoost*.07),browse=clamp(ctr*.28+hookScore*.20+unique*.18+patternFit*.10+patternBorn*.10+quality*.05+intentFit*.05+gapBoost*.04),algo=clamp(search*.22+browse*.32+a.metrics.demand*.15+a.metrics.low*.12+a.metrics.fresh*.07+patternBorn*.06+hookScore*.04+unique*.02),score=clamp(search*.14+browse*.18+algo*.16+quality*.08+unique*.12+a.metrics.demand*.07+langFit*.04+intentFit*.09+patternBorn*.10+hookScore*.08+gapBoost*.08-memoryPenalty-languagePenalty);let pack=makePack(title,a);return{title,score,search,browse,algo,quality,langFit,intentFit,patternBorn,hookScore,strategy:titleStrategy(search,browse,hookScore,a),unique,ctr,patternFit,memoryPenalty,desc:pack.desc,tags:pack.tags,hook:pack.hook,reasons:reasonTitle(title,a,score,search,browse,quality,memoryPenalty,langFit,intentFit,patternBorn,hookScore)}}function intentFitScore(title,a){let it=keywordIntent(a),n=norm(title);if(a.niche.id!=='family')return 65;if(it.deathBeforeBirth)return /sebelum aku lahir|lahir tanpa|tak pernah mengenal|tak pernah sempat|pergi sebelum|tug‘ilmasimdan|tanimasdan|قبل أن أولد|قبل ان اولد/.test(n)?100:25;if(it.bestMother)return /terbaik|terima kasih|doa|rumah|engkau yang terbaik|eng yaxsh|rahmat ona|أفضل|شكرا/.test(n)?100:30;if(it.apology)return /maaf|ampuni|menyesal|terlambat|sorry|forgive|سامح|uzr|kechiring/.test(n)?100:35;if(it.longing)return /rindu|kangen|miss|sog‘indim|اشتاق/.test(n)?100:40;return 65}
 function creatorHookScore(title,a){let n=norm(title),id=a.niche.id,it=keywordIntent(a),score=48;if(title.length>=32&&title.length<=82)score+=12;if(/[?؟]/.test(title))score+=6;if(id==='dj'){if(/full bass|bass/.test(n))score+=22;if(/viral|tiktok/.test(n))score+=18;if(/nonstop|jedag|jedug|remix/.test(n))score+=14}if(id==='horror'){if(/suara|sound|صوت|ovoz/.test(n))score+=22;if(/pintu|door|باب|eshik/.test(n))score+=18;if(/malam|midnight|منتصف|yarim tun|rumah|house|بيت|uy/.test(n))score+=18;if(/jangan|do not|لا تفتح|ochmang/.test(n))score+=14}if(id==='family'){if(it.deathBeforeBirth&&/lahir|born|أولد|tug|mengenal|tanimas/.test(n))score+=26;if(it.bestMother&&/terbaik|best|أفضل|eng yaxsh|terima kasih|rahmat|شكرا/.test(n))score+=24;if(it.apology&&/maaf|sorry|سامح|kechiring|uzr|menyesal/.test(n))score+=24;if(it.longing&&/rindu|miss|sog/.test(n))score+=20;if(/ibu|mother|mom|أمي|ona/.test(n))score+=12}if(/kisah|cerita|story|histoire|hikoya|قصة/.test(n))score+=7;if(/yang jarang|rahasia di balik|hidden side/.test(n))score-=8;return clamp(score)}
 function titleStrategy(search,browse,hook,a){let base=search>=browse+10?'Search-led':browse>=search+10?'Browse-led':'Search + Browse Hybrid';if(a.niche.id==='horror')base+=' / Curiosity Hook';if(a.niche.id==='family')base+=' / Emotional Storytelling';if(a.niche.id==='dj')base+=' / Trend Search Hook';return base}
 function titleQuality(t){let n=norm(t),w=n.split(' '),score=100,seen={};w.forEach(x=>{seen[x]=(seen[x]||0)+1;if(seen[x]>1&&x.length>3)score-=25});if(/hantu hantu|dj dj|story story|ini ini/.test(n))score-=70;if(t.length<18)score-=8;if(t.length>105)score-=20;return clamp(score)}function nicheTitleFit(t,a){let n=norm(t),id=a.niche.id;if(id==='dj')return /dj|remix|bass|tiktok|jedag|nonstop/.test(n)?95:25;if(id==='horror')return /hantu|horor|suara|pintu|rumah|sosok|malam|ghost|horror|door|sound|رعب|صوت|باب|منتصف|بيت|arvoh|uy|ovoz|eshik|tun/.test(n)?92:35;if(id==='family')return /pesan|doa|maaf|terakhir|ibu|ayah|family/.test(n)?88:40;if(id==='street')return /jalanan|street|perjuangan|suara/.test(n)?88:40;return 65}function patternFitScore(t,a){let n=norm(t),hit=0;a.patterns.signals.slice(0,18).forEach(x=>{if(n.includes(x))hit++});return clamp(hit*12+45)}function patternBornFit(t,a){let n=norm(t),best=35;(a.patterns.titlePatterns||[]).slice(0,5).forEach((p,i)=>{let b=45+(5-i)*7;if(p.id==='DJ_YEAR_FEATURE'&&/dj|remix/.test(n)&&/bass/.test(n))best=Math.max(best,b+20);if(p.id==='DJ_VIRAL_TIKTOK'&&/dj|remix/.test(n)&&/viral|tiktok/.test(n))best=Math.max(best,b+20);if(p.id==='DJ_NONSTOP'&&/nonstop|jedag|jedug/.test(n))best=Math.max(best,b+18);if(p.id==='WARNING_ACTION_TIME'&&/jangan|do not|لا تفتح|ochmang|pintu|door|باب|eshik/.test(n))best=Math.max(best,b+20);if(p.id==='SOUND_PLACE'&&/suara|sound|صوت|ovoz/.test(n))best=Math.max(best,b+20);if(p.id==='FIRST_PERSON_TWIST'&&/aku kira|i thought|ظننته|men buni/.test(n))best=Math.max(best,b+18);if(p.id==='PLACE_MYSTERY'&&/rumah|house|بيت|uy|misteri|secret|سر|sir/.test(n))best=Math.max(best,b+15);if(p.id==='LOSS_BEFORE_BIRTH'&&/lahir|born|أولد|tug/.test(n))best=Math.max(best,b+20);if(p.id==='THANKS_TARGET'&&/terima kasih|thank|شكرا|rahmat|terbaik|best/.test(n))best=Math.max(best,b+20);if(p.id==='APOLOGY_TARGET'&&/maaf|sorry|سامح|kechiring|uzr/.test(n))best=Math.max(best,b+20);if(p.id==='MESSAGE_TARGET'&&/pesan|message|رسالة|xabar/.test(n))best=Math.max(best,b+15)});return clamp(best)}function ctrScore(t,a){let n=norm(t),id=a.niche.id,s=45;if(/[?؟]/.test(t))s+=7;if(id==='dj'&&/full bass|viral|tiktok|nonstop|jedag|remix/.test(n))s+=35;if(id==='horror'&&/suara|pintu|malam|sendiri|sosok|rumah|door|midnight|sound|صوت|باب|منتصف|بيت|ovoz|eshik|yarim|tun|uy/.test(n))s+=35;if(id==='family'&&/terakhir|maaf|doa|rahasia/.test(n))s+=25;return clamp(s)}function sim(a,b){let A=new Set(tok(a)),B=new Set(tok(b));if(!A.size||!B.size)return 0;let i=0;A.forEach(x=>B.has(x)&&i++);return i/new Set([...A,...B]).size}function reasonTitle(t,a,score,search,browse,q,pen,langFit,intentFit,patternBorn,hookScore){let topPat=(a.patterns.titlePatterns&&a.patterns.titlePatterns[0])?a.patterns.titlePatterns[0].label:'pola kompetitor';let r=[{c:'good',t:`Judul lahir dari Pattern Mining. Pola terkuat yang dibaca: ${topPat}.`},{c:'info',t:`Score ${score}/100. Search ${search}, Browse ${browse}, Pattern-Born ${patternBorn}, Creator Hook ${hookScore}, Quality ${q}, Language ${langFit}, Intent ${intentFit}.`}];if(hookScore>=75)r.push({c:'good',t:'Hook judul kuat untuk kreator: jelas, emosional/penasaran, dan cocok dipasangkan dengan thumbnail.'});if(langFit<50)r.push({c:'bad',t:'Judul ini tidak sesuai bahasa target, jadi diberi penalti besar.'});if(intentFit<45)r.push({c:'yellow',t:'Judul kurang sesuai maksud emosional keyword, jadi skornya diturunkan.'});if(pen)r.push({c:'yellow',t:'Judul mirip rekomendasi sebelumnya, jadi diberi penalti memory.'});return r}
@@ -360,7 +423,7 @@ async function generateAIThumb(btn){
         ${result.warning?`<p class="muted" style="color:#ffe19a">${esc(result.warning)}</p>`:''}`;
     }
   }catch(e){
-    if(status) status.innerHTML = `<b style="color:#ff9eb2">Gagal:</b> ${esc(e.message||String(e))}<br><span class="muted">Kalau "Gagal load gambar AI": deploy api/ai-thumb.js terbaru (proxy base64). Env: IAMHC_IMAGE_MODEL=step-image-edit-2</span>`;
+    if(status){const msg=e.message||String(e); const conc=/concurrency|rate limit|limit:\s*\d+/i.test(msg); status.innerHTML = `<b style="color:#ff9eb2">Gagal:</b> ${esc(msg)}<br><span class="muted">${conc?'Batas concurrent image IAMHC penuh. Tunggu 15–30 detik, klik Generate 1x saja (jangan spam).':'Kalau load image gagal: pastikan api/ai-thumb.js v21.4 ter-deploy + IAMHC_IMAGE_MODEL=step-image-edit-2.'}</span>`;}
   }finally{
     if(btn){btn.disabled=false;btn.textContent=old||'🎨 Generate AI Thumbnail';}
   }
