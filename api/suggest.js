@@ -108,16 +108,19 @@ module.exports = async function handler(req, res) {
     }
     const language = String(q.language || q.lang || 'id');
     const region = String(q.region || 'ID').toUpperCase();
-    const limit = Math.max(1, Math.min(40, parseInt(q.limit || '25', 10) || 25));
+    const limit = Math.max(1, Math.min(50, parseInt(q.limit || '30', 10) || 30));
 
+    const year = new Date().getFullYear();
     const seeds = uniq([
       keyword,
       `${keyword} terbaru`,
-      `${keyword} ${new Date().getFullYear()}`,
+      `${keyword} ${year}`,
       `${keyword} viral`,
-      `${keyword} kisah nyata`,
+      `${keyword} lagu`,
+      `${keyword} sedih`,
       `${keyword} full`,
-    ]).slice(0, 6);
+      `lagu ${keyword}`,
+    ]).slice(0, 8);
 
     const sourceNotes = [];
     let all = [];
