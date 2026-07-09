@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>YouTube Intelligence Engine v21.11 — Thumb Prompt → Generate</title>
+<title>YouTube Intelligence Engine v21.12 — Copy Fix + 1-Shot Image</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Black+Ops+One&family=Bungee&family=Russo+One&family=Bangers&family=Rubik:wght@700;900&family=Montserrat:wght@700;900&family=Raleway:wght@700;900&family=Oswald:wght@700&family=Orbitron:wght@700;900&family=Cinzel:wght@700;900&family=Cinzel+Decorative:wght@700;900&family=Playfair+Display:wght@700;900&family=Great+Vibes&family=Italianno&family=Pacifico&family=Special+Elite&family=Abril+Fatface&family=Permanent+Marker&family=Creepster&family=Nosifer&family=Alfa+Slab+One&family=Teko:wght@600;700&display=swap" rel="stylesheet">
@@ -19,7 +19,7 @@
 <body>
 <div class="wrap">
   <section class="hero">
-    <span class="badge">🧠 v21.11 Thumb Prompt → Generate</span>
+    <span class="badge">🧠 v21.12 Copy Fix + 1-Shot Image</span>
     <h1>Mesin tetap data-based. AI Strategy membaca hasil engine, mengkritik strategi, lalu memberi verdict, alternatif judul, thumbnail strategy, dan rencana 24 jam.</h1>
     <p class="muted">Alur v21.3: 1) Keyword Lab (seperti penonton search YouTube) → 2) Pilih keyword → 3) Engine judul/kompetitor → 4) AI Strategy/Thumb. AI bukan otak utama.</p>
     <div class="warn"><b>Catatan kuota:</b> Mode ini meriset beberapa angle. Mulai dari 3-5 angle dulu agar kuota YouTube API aman.</div>
@@ -651,9 +651,64 @@ function normalizeAIStrategyResult(x){
 function renderAIStrategyResult(x,raw){let box=$('aiStrategyBox');if(!box)return;x=normalizeAIStrategyResult(x);let alts=x.title_alternatives||[],why=x.why_title||[],plan=x.first_24h_plan||[],outline=x.script_outline||[],gaps=x.data_gaps||[];let search=x.search_strategy||{},browse=x.browse_strategy||{},thumb=x.thumbnail_strategy||{},risk=x.risk_assessment||{};box.innerHTML=`<div class="finalBox" style="background:linear-gradient(135deg,rgba(24,211,155,.12),rgba(74,163,255,.08));border-color:#344665"><h3>🧠 AI Strategy Review</h3><div><span class="tag g">${esc(x.strategic_verdict||'Layak Test')}</span><span class="tag b">Confidence ${esc(x.confidence??'-')}/100</span><span class="tag ${x.agree_with_engine_title===false?'y':'p'}">${x.agree_with_engine_title===false?'AI menyarankan revisi':'AI setuju/bersyarat'}</span></div><h3 style="margin-top:12px">Strategic Title</h3><div class="winnerTitle">${esc(x.strategic_title||RECS[0].title||'-')}</div><button class="small" onclick="copyText(${JSON.stringify(x.strategic_title||RECS[0].title||'')},this)">Copy Strategic Title</button><ul class="reason">${why.map(w=>`<li class="good">${esc(w)}</li>`).join('')||'<li class="yellow">AI tidak memberi alasan judul.</li>'}</ul><div class="grid2"><div><h3>Search Strategy</h3><ul class="reason"><li class="${search.score_label==='kuat'?'good':'info'}"><b>${esc(search.score_label||'sedang')}</b> — ${esc(search.explanation||'')}</li><li class="info"><b>Keep:</b> ${(search.keywords_to_keep||[]).map(k=>`<span class="tag b">${esc(k)}</span>`).join('')||'-'}</li><li class="yellow"><b>Avoid:</b> ${(search.keywords_to_avoid||[]).map(k=>`<span class="tag r">${esc(k)}</span>`).join('')||'-'}</li></ul></div><div><h3>Browse/Rekomendasi</h3><ul class="reason"><li class="${browse.score_label==='kuat'?'good':'info'}"><b>${esc(browse.score_label||'sedang')}</b> — ${esc(browse.explanation||'')}</li><li class="info"><b>Hook direction:</b> ${esc(browse.hook_direction||'')}</li></ul></div></div><details open><summary>Alternatif Judul Strategis</summary>${alts.map((a,i)=>`<div class="battleItem"><span class="badge2 ${i===0?'vwin':'vtest'}">${esc(a.role||'ALT')}</span><div><b>${esc(a.title||'')}</b><br><small>${esc(a.reason||'')}</small></div><button class="small" onclick="copyText(${JSON.stringify(a.title||'')},this)">Copy</button></div>`).join('')||'<p class="muted">Tidak ada alternatif.</p>'}</details><details open><summary>Thumbnail Strategy</summary><ul class="reason"><li class="good"><b>Hook:</b> ${esc(thumb.hook_text||'')}</li><li class="info"><b>Visual:</b> ${esc(thumb.visual_prompt||'')}</li><li class="info"><b>Color:</b> ${esc(thumb.color_direction||'')}</li><li class="info"><b>Composition:</b> ${esc(thumb.composition||'')}</li><li class="yellow"><b>CTR reason:</b> ${esc(thumb.ctr_reason||'')}</li></ul><button class="small" onclick="copyText(${JSON.stringify(thumb.hook_text||'')},this)">Copy Hook</button><button class="small" onclick="copyText(${JSON.stringify(thumb.visual_prompt||'')},this)">Copy Prompt</button></details><details><summary>Script & Opening</summary><ul class="reason"><li class="good"><b>Opening:</b> ${esc(x.opening_hook||'')}</li>${outline.map(o=>`<li class="info">${esc(o)}</li>`).join('')}</ul><button class="small" onclick="copyText(${JSON.stringify(x.opening_hook||'')},this)">Copy Opening</button></details><details open><summary>Upload & 24 Jam Pertama</summary><ul class="reason"><li class="info"><b>Jam upload:</b> ${esc(x.upload_time_advice||'')}</li>${plan.map(p=>`<li class="good">${esc(p)}</li>`).join('')}<li class="${risk.risk_level==='tinggi'?'bad':risk.risk_level==='rendah'?'good':'yellow'}"><b>Risk ${esc(risk.risk_level||'sedang')}:</b> ${esc(risk.main_risk||'')} ${risk.mitigation?' — Mitigasi: '+esc(risk.mitigation):''}</li></ul></details>${gaps.length?`<details><summary>Data Gaps</summary><ul class="reason">${gaps.map(g=>`<li class="yellow">${esc(g)}</li>`).join('')}</ul></details>`:''}<button class="green" onclick="copyAIStrategyPack()">📋 Copy Strategy Pack</button></div>`;window.__AI_STRATEGY=x}
 function copyAIStrategyPack(){let x=window.__AI_STRATEGY||{},thumb=x.thumbnail_strategy||{},risk=x.risk_assessment||{};let txt=`STRATEGIC VERDICT:\n${x.strategic_verdict||''} (${x.confidence||''}/100)\n\nSTRATEGIC TITLE:\n${x.strategic_title||''}\n\nWHY:\n${(x.why_title||[]).join('\n')}\n\nTHUMBNAIL HOOK:\n${thumb.hook_text||''}\n\nTHUMBNAIL PROMPT:\n${thumb.visual_prompt||''}\n\nOPENING HOOK:\n${x.opening_hook||''}\n\nSCRIPT OUTLINE:\n${(x.script_outline||[]).join('\n')}\n\nUPLOAD TIME:\n${x.upload_time_advice||''}\n\n24H PLAN:\n${(x.first_24h_plan||[]).join('\n')}\n\nRISK:\n${risk.risk_level||''} - ${risk.main_risk||''} ${risk.mitigation||''}`;copyText(txt,{textContent:'Copy Strategy'})}
 async function aiPolishPack(btn){if(!A||!RECS[0])return alert('Jalankan riset dulu bro.');let old=btn?btn.textContent:'';if(btn){btn.textContent='⏳ AI memoles...';btn.disabled=true}let box=$('aiAssistBox');if(box)box.innerHTML='<div class="finalBox" style="background:rgba(16,24,39,.75);border-color:#344665"><b>AI Assist sedang memoles upload pack...</b><p class="muted">Keputusan tetap dari engine data. AI hanya memperhalus output kreatif.</p></div>';try{let best=RECS[0];let payload={title:best.title,description:best.desc,tags:best.tags,language:A.lang,niche:A.niche&&A.niche.label,angle:A.keyword,keyword:A.seed,evidence:{scores:{final:best.score,search:best.search,browse:best.browse,algorithm:best.algo,patternBorn:best.patternBorn,hook:best.hookScore,quality:best.quality,intent:best.intentFit,opportunity:scoreOpportunity(A)},metrics:A.metrics,qualifiedCompetitors:(A.qualified||[]).slice(0,5).map(v=>({title:v.title,channel:v.channelTitle,views:v.views,relevance:v.relevance,query:v._query})),patterns:(A.patterns&&A.patterns.titlePatterns||[]).slice(0,5).map(p=>({label:p.label,count:p.count,weight:Math.round(p.weight||0),example:(p.examples||[])[0]})),rules:'AI tidak boleh mengarang angka. AI tidak boleh mengganti niche/angle. AI hanya polish.'}};let r=await fetch('/api/ai-polish',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});let data=await r.json();if(!r.ok||!data.ok)throw Error((data&&data.error)||'AI polish gagal');renderAIResult(data.result||{},data.raw||'')}catch(e){if(box)box.innerHTML=`<div class="finalBox" style="background:rgba(53,16,27,.45);border-color:#733044"><b>AI Polish gagal</b><p class="muted">${esc(e.message||String(e))}</p></div>`}finally{if(btn){btn.textContent=old;btn.disabled=false}}}
-function renderAIResult(x,raw){let outline=Array.isArray(x.script_outline)?x.script_outline:[];let why=Array.isArray(x.why_this_will_work)?x.why_this_will_work:[];let box=$('aiAssistBox');if(!box)return;box.innerHTML=`<div class="finalBox" style="background:linear-gradient(135deg,rgba(24,211,155,.12),rgba(155,92,255,.10));border-color:#344665"><h3>✨ AI Assist Upload Pack</h3><div><span class="tag g">${esc(x.status_label||'Layak Test')}</span><span class="tag b">AI Polish</span><span class="tag p">Data-locked</span></div><div class="pack"><div class="copybox"><label>Judul hasil polish</label><textarea readonly>${esc(x.polished_title||RECS[0].title||'')}</textarea><button class="small" onclick="copyText(${JSON.stringify(x.polished_title||RECS[0].title||'')},this)">Copy Judul AI</button></div><div class="copybox"><label>Tags bersih</label><textarea readonly>${esc(x.clean_tags||RECS[0].tags||'')}</textarea><button class="small" onclick="copyText(${JSON.stringify(x.clean_tags||RECS[0].tags||'')},this)">Copy Tags AI</button></div></div><div class="copybox"><label>Deskripsi YouTube hasil polish</label><textarea readonly class="${A&&A.lang==='ar'?'rtl':''}">${esc(x.polished_description||RECS[0].desc||'')}</textarea><button class="small" onclick="copyText(${JSON.stringify(x.polished_description||RECS[0].desc||'')},this)">Copy Deskripsi AI</button></div><div class="pack"><div class="copybox"><label>Thumbnail Hook</label><textarea readonly>${esc(x.thumbnail_hook||RECS[0].hook||'')}</textarea><button class="small" onclick="copyText(${JSON.stringify(x.thumbnail_hook||RECS[0].hook||'')},this)">Copy Hook</button></div><div class="copybox"><label>Prompt Thumbnail AI</label><textarea readonly id="polishThumbPrompt">${esc(x.thumbnail_prompt||'')}</textarea>
-        <button class="small" onclick="copyText(${JSON.stringify(x.thumbnail_prompt||'')},this)">📋 Copy Prompt</button>
-        <button class="small green" onclick="usePolishPromptToThumb()">⬇️ Pakai Prompt ini di Thumbnail</button></div></div><div class="copybox"><label>Opening Hook</label><textarea readonly>${esc(x.opening_hook||'')}</textarea><button class="small" onclick="copyText(${JSON.stringify(x.opening_hook||'')},this)">Copy Opening</button></div><details open><summary>Script Outline</summary><ul class="reason">${outline.map(o=>`<li class="info">${esc(o)}</li>`).join('')||'<li class="yellow">AI tidak mengembalikan outline.</li>'}</ul></details><details><summary>Kenapa ini berpotensi bekerja</summary><ul class="reason">${why.map(o=>`<li class="good">${esc(o)}</li>`).join('')||'<li class="yellow">AI tidak mengembalikan alasan.</li>'}</ul></details><ul class="reason"><li class="info"><b>Upload Time:</b> ${esc(x.upload_time_advice||'Belum ada saran jam upload.')}</li><li class="yellow"><b>Risk:</b> ${esc(x.risk_note||'Tetap pantau CTR dan retention 24-48 jam pertama.')}</li></ul><button class="green" onclick="copyAIPack()">📋 Copy Semua AI Pack</button></div>`;window.__AI_PACK=x}
+function renderAIResult(x,raw){
+  x=x||{};
+  window.__AI_PACK=x;
+  let outline=Array.isArray(x.script_outline)?x.script_outline:[];
+  let why=Array.isArray(x.why_this_will_work)?x.why_this_will_work:[];
+  let box=$('aiAssistBox'); if(!box) return;
+  const title=x.polished_title||(RECS[0]&&RECS[0].title)||'';
+  const tags=x.clean_tags||(RECS[0]&&RECS[0].tags)||'';
+  const desc=x.polished_description||(RECS[0]&&RECS[0].desc)||'';
+  const hook=x.thumbnail_hook||(RECS[0]&&RECS[0].hook)||'';
+  const tprompt=x.thumbnail_prompt||'';
+  const opening=x.opening_hook||'';
+  box.innerHTML=`<div class="finalBox" style="background:linear-gradient(135deg,rgba(24,211,155,.12),rgba(155,92,255,.10));border-color:#344665">
+    <h3>✨ AI Assist Upload Pack</h3>
+    <div><span class="tag g">${esc(x.status_label||'Layak Test')}</span><span class="tag b">AI Polish</span><span class="tag p">Data-locked</span></div>
+    <div class="pack">
+      <div class="copybox"><label>Judul hasil polish</label>
+        <textarea readonly>${esc(title)}</textarea>
+        <button type="button" class="small" onclick="copyPackField('polished_title',this)">📋 Copy Judul AI</button>
+      </div>
+      <div class="copybox"><label>Tags bersih</label>
+        <textarea readonly>${esc(tags)}</textarea>
+        <button type="button" class="small" onclick="copyPackField('clean_tags',this)">📋 Copy Tags AI</button>
+      </div>
+    </div>
+    <div class="copybox"><label>Deskripsi YouTube hasil polish</label>
+      <textarea readonly class="${A&&A.lang==='ar'?'rtl':''}">${esc(desc)}</textarea>
+      <button type="button" class="small" onclick="copyPackField('polished_description',this)">📋 Copy Deskripsi AI</button>
+    </div>
+    <div class="pack">
+      <div class="copybox"><label>Thumbnail Hook</label>
+        <textarea readonly>${esc(hook)}</textarea>
+        <button type="button" class="small" onclick="copyPackField('thumbnail_hook',this)">📋 Copy Hook</button>
+      </div>
+      <div class="copybox"><label>Prompt Thumbnail AI</label>
+        <textarea readonly>${esc(tprompt)}</textarea>
+        <button type="button" class="small" onclick="copyPackField('thumbnail_prompt',this)">📋 Copy Prompt</button>
+        <button type="button" class="small green" onclick="usePolishPromptToThumb()">⬇️ Pakai Prompt ini di Thumbnail</button>
+      </div>
+    </div>
+    <div class="copybox"><label>Opening Hook</label>
+      <textarea readonly>${esc(opening)}</textarea>
+      <button type="button" class="small" onclick="copyPackField('opening_hook',this)">📋 Copy Opening</button>
+    </div>
+    <details open><summary>Script Outline</summary>
+      <ul class="reason">${outline.map(o=>`<li class="info">${esc(o)}</li>`).join('')||'<li class="yellow">AI tidak mengembalikan outline.</li>'}</ul>
+    </details>
+    <details><summary>Kenapa ini berpotensi bekerja</summary>
+      <ul class="reason">${why.map(o=>`<li class="good">${esc(o)}</li>`).join('')||'<li class="yellow">AI tidak mengembalikan alasan.</li>'}</ul>
+    </details>
+    <ul class="reason">
+      <li class="info"><b>Upload Time:</b> ${esc(x.upload_time_advice||'Belum ada saran jam upload.')}</li>
+      <li class="yellow"><b>Risk:</b> ${esc(x.risk_note||'Tetap pantau CTR dan retention 24-48 jam pertama.')}</li>
+    </ul>
+    <button type="button" class="green" onclick="copyAIPack(this)">📋 Copy Semua AI Pack</button>
+  </div>`;
+}
+
 function usePolishPromptToThumb(){
   const x=window.__AI_PACK||{};
   const prompt=x.thumbnail_prompt||'';
@@ -668,29 +723,64 @@ function usePolishPromptToThumb(){
     try{ document.getElementById('thumbBox').scrollIntoView({behavior:'smooth'}); }catch(e){}
   }, 50);
 }
-function copyAIPack(){let x=window.__AI_PACK||{},txt=`JUDUL:\n${x.polished_title||''}\n\nDESKRIPSI:\n${x.polished_description||''}\n\nTAGS:\n${x.clean_tags||''}\n\nTHUMBNAIL HOOK:\n${x.thumbnail_hook||''}\n\nTHUMBNAIL PROMPT:\n${x.thumbnail_prompt||''}\n\nOPENING:\n${x.opening_hook||''}\n\nSCRIPT OUTLINE:\n${(x.script_outline||[]).join('\n')}`;copyText(txt,{textContent:'Copy AI Pack'})}
+function copyAIPack(btn){
+  const x=window.__AI_PACK||{};
+  const txt=['JUDUL:',x.polished_title||'','','DESKRIPSI:',x.polished_description||'','','TAGS:',x.clean_tags||'','','THUMBNAIL HOOK:',x.thumbnail_hook||'','','THUMBNAIL PROMPT:',x.thumbnail_prompt||'','','OPENING:',x.opening_hook||'','','SCRIPT OUTLINE:',...(x.script_outline||[])].join('\n');
+  copyText(txt, btn);
+}
+
 function copyText(t,b){
-  t=String(t??'');
-  if(!t){ alert('Tidak ada teks untuk di-copy'); return; }
-  const done=()=>{
-    if(b&&b.textContent!=null){ let o=b.textContent; b.textContent='✅ Tersalin'; setTimeout(()=>{if(b)b.textContent=o},1000); }
-  };
-  if(navigator.clipboard&&navigator.clipboard.writeText){
-    navigator.clipboard.writeText(t).then(done).catch(()=>{
-      try{
-        let ta=document.createElement('textarea'); ta.value=t; ta.style.position='fixed'; ta.style.left='-9999px';
-        document.body.appendChild(ta); ta.focus(); ta.select();
-        document.execCommand('copy'); document.body.removeChild(ta); done();
-      }catch(e){ prompt('Copy manual:', t); }
-    });
-  } else {
+  t=String(t==null?'':t);
+  if(!t){ try{alert('Kosong — tidak ada teks');}catch(e){} return; }
+  const mark=()=>{
     try{
-      let ta=document.createElement('textarea'); ta.value=t; ta.style.position='fixed'; ta.style.left='-9999px';
-      document.body.appendChild(ta); ta.focus(); ta.select();
-      document.execCommand('copy'); document.body.removeChild(ta); done();
-    }catch(e){ prompt('Copy manual:', t); }
-  }
-}function copyBestPack(){if(!RECS[0])return;let r=RECS[0];copyText(`ANGLE:\n${A.keyword}\n\nJUDUL:\n${r.title}\n\nDESKRIPSI:\n${r.desc}\n\nTAGS:\n${r.tags}\n\nTHUMBNAIL HOOK:\n${r.hook}`,{textContent:'Copy'})}function scrollToId(id){document.getElementById(id).scrollIntoView({behavior:'smooth',block:'start'})}function resetAll(){$('results').style.display='none';$('sticky').style.display='none'}
+      if(b && b.nodeType===1){
+        if(!b.dataset.oldLabel) b.dataset.oldLabel=b.textContent||'Copy';
+        b.textContent='✅ Tersalin';
+        setTimeout(()=>{ if(b) b.textContent=b.dataset.oldLabel||'Copy'; }, 1200);
+      }
+    }catch(e){}
+  };
+  const fallback=()=>{
+    try{
+      const ta=document.createElement('textarea');
+      ta.value=t;
+      ta.setAttribute('readonly','');
+      ta.style.cssText='position:fixed;top:10px;left:10px;width:90%;height:40px;opacity:0.01;z-index:99999';
+      document.body.appendChild(ta);
+      ta.focus(); ta.select(); ta.setSelectionRange(0, ta.value.length);
+      const ok=document.execCommand('copy');
+      document.body.removeChild(ta);
+      if(ok){ mark(); return true; }
+    }catch(e){}
+    try{ prompt('Copy manual:', t); mark(); }catch(e){}
+    return false;
+  };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(t).then(mark).catch(fallback);
+  } else fallback();
+}
+function copyPackField(field, btn){
+  const pack=window.__AI_PACK||{};
+  const strat=window.__AI_STRATEGY||{};
+  let val='';
+  if(field==='polished_title') val=pack.polished_title||(RECS[0]&&RECS[0].title)||'';
+  else if(field==='clean_tags') val=pack.clean_tags||(RECS[0]&&RECS[0].tags)||'';
+  else if(field==='polished_description') val=pack.polished_description||(RECS[0]&&RECS[0].desc)||'';
+  else if(field==='thumbnail_hook') val=pack.thumbnail_hook||(RECS[0]&&RECS[0].hook)||'';
+  else if(field==='thumbnail_prompt') val=pack.thumbnail_prompt||'';
+  else if(field==='opening_hook') val=pack.opening_hook||strat.opening_hook||'';
+  else if(field==='thumb_prompt_box') val=($('thumbPrompt')&&$('thumbPrompt').value)|| (typeof LAST_THUMB_PROMPT!=='undefined'?LAST_THUMB_PROMPT:'') ||'';
+  else val=pack[field]||'';
+  copyText(val, btn);
+}
+function copyBestPack(btn){
+  if(!RECS[0]||!A) return;
+  const r=RECS[0];
+  const txt=['ANGLE:',A.keyword,'','JUDUL:',r.title,'','DESKRIPSI:',r.desc,'','TAGS:',r.tags,'','THUMBNAIL HOOK:',r.hook].join('\n');
+  copyText(txt, btn);
+}
+function scrollToId(id){document.getElementById(id).scrollIntoView({behavior:'smooth',block:'start'})}function resetAll(){$('results').style.display='none';$('sticky').style.display='none'}
 
 
 function buildLocalThumbPrompt(){
@@ -733,10 +823,11 @@ function syncThumbPromptFromEngine(){
   return p;
 }
 function copyThumbPrompt(btn){
-  const el=getThumbPromptBox();
-  const t=(el&&el.value)||LAST_THUMB_PROMPT||buildLocalThumbPrompt();
-  copyText(t, btn||{textContent:'Copy'});
+  const el=$('thumbPrompt');
+  const t=(el&&el.value)|| (typeof LAST_THUMB_PROMPT!=='undefined'?LAST_THUMB_PROMPT:'') || (typeof buildLocalThumbPrompt==='function'?buildLocalThumbPrompt():'');
+  copyText(t, btn);
 }
+
 async function polishThumbPrompt(btn){
   if(!A||!RECS[0]) return alert('Jalankan engine judul dulu.');
   const old=btn?btn.textContent:'';
