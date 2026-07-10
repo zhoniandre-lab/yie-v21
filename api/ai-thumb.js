@@ -5,13 +5,7 @@
  * Client may retry quickly when concurrency is full.
  */
 
-const {
-  callWithFallback,
-  envConfig,
-  setCors,
-  readJson,
-  extractJsonObject,
-} = require('./_lib/iamhc');
+const { envConfig, setCors, readJson } = require('./_lib/iamhc');
 
 function asArray(v) {
   return Array.isArray(v) ? v : [];
