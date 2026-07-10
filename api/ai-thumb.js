@@ -110,6 +110,7 @@ function buildHighCtrPrompt({
   const comps = (competitorTitles || []).slice(0, 6);
   return [
     `YouTube thumbnail BACKGROUND image, 16:9, ultra sharp, high contrast, click-worthy.`,
+    `STRICT: NO text, NO letters, NO numbers, NO words, NO logos, NO watermarks, NO UI elements, NO typography in the image. The hook text will be added separately by the engine.`,
     `IMPORTANT: Stay on-intent. This is NOT a random pretty image.`,
     `Searcher intent: ${intent.searcher_goal}`,
     `Intent label: ${intent.label}`,
@@ -119,7 +120,7 @@ function buildHighCtrPrompt({
     `Niche: ${niche || ''}`,
     `Main visual direction: ${intent.visual}`,
     comps.length
-      ? `Competitor title patterns to respect:\n${comps.map((t) => `- ${t}`).join('\n')}`
+      ? `Competitor title patterns to respect (visual mood only, never copy text):\n${comps.map((t) => `- ${t}`).join('\n')}`
       : 'Competitor list thin: stay strictly on keyword intent.',
     patterns && patterns.length
       ? `Title patterns mined: ${patterns
@@ -132,8 +133,8 @@ function buildHighCtrPrompt({
     `Composition for high CTR:`,
     `- large subject LEFT/CENTER, clean RIGHT space for big text overlay`,
     `- exaggerated readable emotion if person appears`,
-    `- strong contrast, no clutter, no watermark, no YouTube UI`,
-    `- DO NOT write long text in image; hook will be overlaid later: "${hookText || 'HOOK'}"`,
+    `- strong contrast, no clutter, no watermark, no UI, no text, no letters, no numbers`,
+    `- DO NOT write any text/letters/numbers in the image; hook will be overlaid later: "${hookText || 'HOOK'}"`,
     `Photoreal or premium cinematic illustration, 4k detail, 16:9.`,
     language === 'ar' ? 'Use culturally fitting visuals if relevant.' : '',
   ]
