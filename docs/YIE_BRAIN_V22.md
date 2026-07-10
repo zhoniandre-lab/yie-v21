@@ -213,7 +213,7 @@ Zero breaking change untuk v21 yang live.
 
 1. [x] Audit v21, tulis spec
 2. [x] Buat `js/yie-brain-v22.js`
-3. [ ] Patch `index.html` — load yie-brain-v22.js, toggle USE_V22
+3. [x] Patch `index.html` — load yie-brain-v22.js, toggle USE_V22
 4. [ ] Uji dengan keyword: "maafkan aku ibu", "cerita hantu", "dj terbaru"
 5. [ ] Bandingkan skor v21 vs v22, pastikan judul generik turun, judul spesifik+beda naik
 6. [ ] Commit ke branch `brain-v22`, merge ke main kalau stabil
