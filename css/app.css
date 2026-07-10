@@ -81,6 +81,7 @@ input,select,textarea{
   border-radius:12px;padding:11px 12px;font:inherit;outline:none;
 }
 input:focus,select:focus,textarea:focus{border-color:#7c5cff;box-shadow:0 0 0 3px rgba(124,92,255,.15)}
+textarea.rtl,input.rtl{direction:rtl;text-align:right;font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Geneva,Verdana,"Arial",sans-serif}
 textarea{min-height:96px;resize:vertical}
 .grid,.grid3{display:grid;gap:10px}
 .grid{grid-template-columns:1.4fr 1fr 1fr}
