@@ -3,12 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>YouTube Intelligence Engine v21.23 — Pro UI + Clean Keyword Lab</title>
+<title>YouTube Intelligence Engine v22 — Self-Learning Brain</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Black+Ops+One&family=Bungee&family=Russo+One&family=Bangers&family=Rubik:wght@700;900&family=Montserrat:wght@700;900&family=Raleway:wght@700;900&family=Oswald:wght@700&family=Orbitron:wght@700;900&family=Cinzel:wght@700;900&family=Cinzel+Decorative:wght@700;900&family=Playfair+Display:wght@700;900&family=Great+Vibes&family=Italianno&family=Pacifico&family=Special+Elite&family=Abril+Fatface&family=Permanent+Marker&family=Creepster&family=Nosifer&family=Alfa+Slab+One&family=Teko:wght@600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/app.css">
 <link rel="stylesheet" href="css/app.css">
+<script src="/js/yie-brain-v22.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -17,14 +18,14 @@
       <div class="brand-mark">▶</div>
       <div>YIE Engine<small>Data brain · bukan chatbot</small></div>
     </div>
-    <div class="pill">v21.23 · Live</div>
+    <div class="pill">v22.0-brain · Live</div>
   </div>
 
 
   <section class="hero">
-    <span class="pill">🧠 Otak data + memori + AI worker</span>
+    <span class="pill">🧠 YIE Brain v22 — Self-Learning</span>
     <h1>Mesin tetap data-based. AI Strategy membaca hasil engine, mengkritik strategi, lalu memberi verdict, alternatif judul, thumbnail strategy, dan rencana 24 jam.</h1>
-    <p class="muted">Alur v21.3: 1) Keyword Lab (seperti penonton search YouTube) → 2) Pilih keyword → 3) Engine judul/kompetitor → 4) AI Strategy/Thumb. AI bukan otak utama.</p>
+    <p class="muted">Alur v22: 1) Keyword Lab → 2) Pilih keyword → 3) Engine judul/kompetitor + <b>Bayesian CTR Memory</b> → 4) AI Strategy/Thumb. AI bukan otak utama. Scoring sekarang pakai Channel DNA + learning boost v22.</p>
     <div class="warn"><b>Catatan kuota:</b> Suggest/long-tail ≈ gratis. Yang boros kuota = riset kompetitor (Data API). Default angle 3. Kalau “Kompetitor dipakai” kosong, biasanya kuota search harian habis.</div>
   </section>
 
@@ -577,7 +578,10 @@ function titleBankFamilyIntent(a){let lang=a.lang,it=keywordIntent(a);if(lang===
 if(it.deathBeforeBirth)return[`Ibu, Engkau Pergi Sebelum Aku Lahir`,`Aku Lahir Tanpa Sempat Mengenal Ibu`,`Lagu untuk Ibu yang Tak Pernah Sempat Kupeluk`,`Sebelum Aku Lahir, Ibu Sudah Pergi`,`Doa Anak untuk Ibu yang Tak Pernah Ia Kenal`,`Cerita Jadi Lagu: Ibu yang Pergi Sebelum Aku Lahir`];if(it.bestMother)return[`Ibu, Engkau yang Terbaik`,`Terima Kasih Ibu, Engkau yang Terbaik`,`Lagu untuk Ibu Terbaik dalam Hidupku`,`Ibu Terbaik, Doamu Selalu Menjagaku`,`Cerita Jadi Lagu: Ibu, Engkau yang Terbaik`,`Untuk Ibu yang Selalu Menjadi Rumah`];if(it.apology)return[`Maaf Ibu, Aku Terlambat Mengerti`,`Ibu, Maafkan Aku yang Pernah Menyakitimu`,`Aku Menyesal Setelah Mengerti Cinta Ibu`,`Maaf Ibu, Doamu Baru Aku Sadari`];if(it.longing)return[`Ibu, Aku Rindu Suaramu`,`Rindu Ibu yang Tak Pernah Hilang`,`Lagu Rindu untuk Ibu`,`Aku Ingin Sekali Bertemu Ibu`];return[`Pesan Terakhir yang Tak Pernah Terbaca`,`Aku Baru Mengerti Setelah Terlambat`,`Rahasia di Balik Senyum yang Selalu Kuat`,`Sebelum Terlambat, Pesan Ini Ditinggalkan`]}
 function keywordBasedVariants(kw,id,lang,y,a){let it=a?keywordIntent(a):{};if(id==='family'&&it.deathBeforeBirth)return lang==='id'?[`Ibu Pergi Sebelum Aku Lahir`,`Aku Tak Pernah Sempat Memanggilmu Ibu`,`Lagu Anak yang Tak Pernah Mengenal Ibunya`]:[];if(id==='family'&&it.bestMother)return lang==='id'?[`Ibu Engkau yang Terbaik`,`Terima Kasih Untuk Ibu Terbaik`,`Lagu Untuk Ibu Terbaik`]:[];if(id==='dj')return lang==='ar'?[`دي جي ${y} فل باس`,`ريمكس ${y} ترند`,`دي جي تيك توك ${y}`]:lang==='uz'?[`DJ ${y} Full Bass`,`DJ Remix ${y} Viral`,`DJ TikTok ${y}`]:lang==='en'?[`DJ ${y} Full Bass`,`DJ Remix ${y} Viral`,`TikTok DJ ${y}`]:[`DJ ${y} Full Bass`,`DJ ${y} Nonstop`,`DJ ${y} Viral TikTok`];if(id==='horror')return lang==='ar'?[`قصة رعب في بيت مهجور`,`صوت غريب بعد منتصف الليل`,`لا تفتح الباب ليلا`]:lang==='uz'?[`Tashlandiq uy voqeasi`,`Yarim tundan keyingi ovoz`,`Kechasi eshikni ochmang`]:lang==='en'?[`Haunted House Story`,`The Sound After Midnight`,`Do Not Open The Door At Night`]:[`Cerita Hantu Rumah Kosong`,`Suara Misterius Tengah Malam`,`Jangan Buka Pintu Malam Hari`];return[]}
 function languageFit(title,lang){let t=String(title||''),n=norm(t);let arab=/[\u0600-\u06FF]/.test(t);let indo=/\b(cerita|kisah|hantu|suara|pintu|rumah|malam|aku|itu|yang|dari|jangan|terbaru|paling|enak|buat|diputar|ibu|engkau|terima kasih|lahir)\b/.test(n);if(lang==='ar')return arab?100:15;if(lang==='uz'){if(arab)return 5;if(indo)return 18;if(/\b(uy|ovoz|eshik|yarim|tun|hikoya|qorq|arvoh|remix|full bass|viral|yolg|chiroq|xona|ona|tug|ketgan|qoshiq|qo‘shiq)\b/.test(n))return 100;return 65}if(lang==='en'){if(arab)return 5;if(indo)return 20;if(/\b(the|sound|door|house|story|wind|midnight|latest|viral|remix|bass|mother|mom|born)\b/.test(n))return 100;return 70}if(lang==='id'){if(arab)return 8;return indo||/[a-z]/.test(n)?100:65}return 80}
+const USE_V22 = true;
 function scoreTitle(title,a,mem){
+  // YIE Brain v22 - Self-Learning Scoring
+  try{ if(USE_V22 && typeof YIE22 !== 'undefined' && YIE22.scoreTitleV2) { return YIE22.scoreTitleV2(title,a,mem); } }catch(e){}
   let nt=norm(title), kwTok=tok(a.keyword), terms=tok(title);
   let cover=kwTok.length? kwTok.filter(k=>terms.some(t=>t.includes(k)||k.includes(t))).length/kwTok.length : .4;
   let quality=titleQuality(title);
