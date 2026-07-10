@@ -1558,7 +1558,8 @@ function buildLocalThumbPrompt(){
     ? 'extreme fear or empty hallway silhouette, eyes wide or hidden threat'
     : 'ONE clear face with exaggerated emotion (crying, regret, shock) — face occupies 35-50% of frame, tear visible, brows tight';
   const lines=[
-    'YouTube thumbnail BACKGROUND only, 16:9, ultra sharp, mobile-first high CTR.',
+    'YouTube thumbnail BACKGROUND image, 16:9, ultra sharp, mobile-first high CTR.',
+    'STRICT: NO TEXT, NO LETTERS, NO NUMBERS, NO WORDS, NO LOGOS, NO WATERMARKS, NO UI ELEMENTS in the image. The hook text will be added separately by the engine.',
     'PSYCHOLOGY OF CLICK: capture attention in <0.5s in a crowded feed. Strong face emotion + contrast + curiosity.',
     `Hook text will be overlaid later as: "${hook}" — leave clean dark/negative space on the RIGHT third for big yellow/white text.`,
     `Title/context: ${r.title}`,
@@ -1568,8 +1569,8 @@ function buildLocalThumbPrompt(){
     comps.length? `Competitor title emotions to beat (do not copy faces/logos): ${comps.join(' || ')}` : 'Few competitors loaded — stay strict on keyword intent.',
     `FACE/SUBJECT: ${faceGuide}`,
     `COLOR PSYCHOLOGY: ${colorGuide}`,
-    'COMPOSITION RULES: subject LEFT or LEFT-CENTER large; RIGHT third cleaner/darker for text; no clutter; no tiny objects; no watermark; no UI; no long paragraphs of text in image; optional single small tear highlight.',
-    'AVOID: flat lighting, smiling stock-photo vibe, centered poster look, weak emotion, pastel low-contrast, random objects, emoji baked into image.',
+    'COMPOSITION RULES: subject LEFT or LEFT-CENTER large; RIGHT third cleaner/darker for text; no clutter; no tiny objects; no watermark; no UI; no text/letters/numbers at all; optional single small tear highlight.',
+    'AVOID: flat lighting, smiling stock-photo vibe, centered poster look, weak emotion, pastel low-contrast, random objects, emoji baked into image, any text or typography.',
     dir? `Extra direction: ${dir}` : '',
     'Photoreal cinematic, 4k detail, punchy contrast, looks expensive not cheap AI plastic.'
   ].filter(Boolean);
@@ -1940,6 +1941,9 @@ function drawMultiThumbText(c, pal){
   let t1=(thumbCtrl('hook','')||'HOOK').trim();
   let t2=(thumbCtrl('hook2','')||'').trim();
   let t3=(thumbCtrl('hook3','')||'').trim();
+  // clamp secondary text so it doesn't pile up / overlap
+  if(t2.length>42) t2=t2.slice(0,40)+'…';
+  if(t3.length>28) t3=t3.slice(0,26)+'…';
   let pos=getTextPos();
   let styleId=getTextStyleId();
   let st=textStylePack(styleId, pal);
@@ -1960,7 +1964,6 @@ function drawMultiThumbText(c, pal){
     c.font=`${weight} ${Math.round(size)}px ${fontFamily}`;
     let txt=text;
     if(st.uppercase && !isScript) txt=String(text).toUpperCase();
-    // shadow
     if(st.shadowBlur && st.shadow){
       c.save();
       c.shadowColor=st.shadow; c.shadowBlur=st.shadowBlur; c.shadowOffsetY=2;
@@ -1975,26 +1978,50 @@ function drawMultiThumbText(c, pal){
     c.fillStyle=fill; c.fillText(txt,x,y);
   }
 
-  // layout stack on right/center/left
-  let base = Math.round((t1.length>20?64:t1.length>14?76:90) * scale);
-  let lines1=[];
-  // wrap main into up to 3 visual lines using canvas wrap helper
-  try{ lines1=wrap(c, (st.uppercase&&!isScript)?t1.toUpperCase():t1, pos==='center'?W*0.78:W*0.52, base).slice(0,3); }
-  catch(e){ lines1=[t1]; }
-  let blockH = lines1.length*(base+8) + (t2? base*0.55+10:0) + (t3? base*0.4+8:0);
-  let y0 = H*0.42 - blockH/2 + base/2;
-  if(y0<70) y0=70;
-  if(y0+blockH>H-90) y0=H-90-blockH+base/2;
+  function wrapAndPaint(text, size, maxW, maxLines, y, fillOverride){
+    if(!text) return y;
+    c.font=`${isScript?'700':(st.weight||'900')} ${Math.round(size)}px ${fontFamily}`;
+    let txt=(st.uppercase && !isScript) ? String(text).toUpperCase() : text;
+    let lines=[];
+    try{ lines=wrap(c, txt, maxW, size).slice(0, maxLines); }catch(e){ lines=[txt]; }
+    let lh=size+8;
+    lines.forEach((ln,i)=> paintLine(ln, size, y+i*lh, fillOverride));
+    return y+lines.length*lh;
+  }
 
-  lines1.forEach((ln,i)=> paintLine(ln, base*(i===0?1:0.92), y0+i*(base+8)));
-  let y=y0+lines1.length*(base+8);
+  // main hook sizing
+  let base = Math.round((t1.length>20?64:t1.length>14?76:90) * scale);
+  if(styleId==='minimal_outline') base += 8;
+  if(styleId==='clean_box') base -= 6;
+  if(isScript) base = Math.round(base * 1.18);
+  if(hookFont.id==='creepster'||hookFont.id==='nosifer') base = Math.round(base * 0.92);
+  if(hookFont.id==='bebas'||hookFont.id==='anton'||hookFont.id==='teko') base = Math.round(base * 1.06);
+
+  let maxMainW = pos==='center' ? W*0.78 : W*0.52;
+  let mainLines=[];
+  try{ mainLines=wrap(c, (st.uppercase&&!isScript)?t1.toUpperCase():t1, maxMainW, base).slice(0,3); }catch(e){ mainLines=[t1]; }
+  let mainH = mainLines.length*(base+8);
+  let sec2H = t2 ? Math.round(base*0.52)+8 : 0;
+  let sec3H = t3 ? Math.round(base*0.40)+8 : 0;
+  let totalH = mainH + sec2H + sec3H;
+  let y0 = H*0.42 - totalH/2 + base/2;
+  if(y0<70) y0=70;
+  if(y0+totalH>H-90) y0=H-90-totalH+base/2;
+
+  let y=y0;
+  mainLines.forEach((ln,i)=> paintLine(ln, base*(i===0?1:0.92), y+i*(base+8)));
+  y += mainH;
+
   if(t2){
-    // secondary often white for hierarchy
-    paintLine(t2, Math.round(base*0.52), y+6, styleId==='attention_yellow'?'#FFFFFF':st.fill);
-    y+=Math.round(base*0.52)+12;
+    let secBase = Math.round(base*0.52);
+    let maxSecW = pos==='center' ? W*0.70 : W*0.48;
+    let fill = styleId==='attention_yellow'?'#FFFFFF':st.fill;
+    y = wrapAndPaint(t2, secBase, maxSecW, 2, y+4, fill);
   }
   if(t3){
-    paintLine(t3, Math.round(base*0.40), y+2, '#FFD24A');
+    let microBase = Math.round(base*0.40);
+    let maxMicroW = pos==='center' ? W*0.62 : W*0.42;
+    wrapAndPaint(t3, microBase, maxMicroW, 1, y+4, '#FFD24A');
   }
 }
 function drawCover(c,img,x,y,w,h){let r=Math.max(w/img.width,h/img.height),nw=img.width*r,nh=img.height*r;c.drawImage(img,x+(w-nw)/2,y+(h-nh)/2,nw,nh)}function drawDJ(c,p){let rg=c.createRadialGradient(260,350,20,260,350,280);rg.addColorStop(0,p[2]+'cc');rg.addColorStop(1,'rgba(0,0,0,0)');c.fillStyle=rg;c.fillRect(0,0,540,720);c.strokeStyle=p[2];c.lineWidth=10;for(let i=0;i<4;i++){c.beginPath();c.arc(260,355,80+i*35,0,Math.PI*2);c.stroke()}c.fillStyle='#090d16';c.beginPath();c.arc(260,355,105,0,Math.PI*2);c.fill();c.fillStyle=p[3];c.beginPath();c.arc(260,355,24,0,Math.PI*2);c.fill();c.fillStyle='rgba(255,255,255,.9)';c.font='900 42px Arial';c.fillText('DJ MIX',125,620)}function drawHorror(c,p){let moon=c.createRadialGradient(135,115,10,135,115,115);moon.addColorStop(0,'rgba(255,255,255,.95)');moon.addColorStop(1,'rgba(180,210,255,0)');c.fillStyle=moon;c.beginPath();c.arc(135,115,115,0,Math.PI*2);c.fill();c.fillStyle='#070b13';c.fillRect(125,345,280,220);c.beginPath();c.moveTo(90,345);c.lineTo(265,210);c.lineTo(440,345);c.closePath();c.fill();c.fillStyle=p[2];c.fillRect(230,425,70,140);c.fillStyle='#010205';c.beginPath();c.arc(425,455,38,0,Math.PI*2);c.fill();c.fillRect(405,492,42,130);c.fillStyle='rgba(255,255,255,.9)';c.font='900 34px Arial';c.fillText('HORROR',70,625)}function drawGeneric(c,p){c.fillStyle='#111827';round(c,115,210,285,250,24);c.fill();c.fillStyle=p[2];c.fillRect(150,260,210,22);c.fillRect(150,315,160,22);c.fillRect(150,370,190,22);c.fillStyle='rgba(255,255,255,.9)';c.font='900 34px Arial';c.fillText('STORY',160,625)}
