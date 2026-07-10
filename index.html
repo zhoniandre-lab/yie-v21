@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>YouTube Intelligence Engine v21.21 — Clear KPI Compass</title>
+<title>YouTube Intelligence Engine v21.22 — Machine Memory M1+M2</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Black+Ops+One&family=Bungee&family=Russo+One&family=Bangers&family=Rubik:wght@700;900&family=Montserrat:wght@700;900&family=Raleway:wght@700;900&family=Oswald:wght@700&family=Orbitron:wght@700;900&family=Cinzel:wght@700;900&family=Cinzel+Decorative:wght@700;900&family=Playfair+Display:wght@700;900&family=Great+Vibes&family=Italianno&family=Pacifico&family=Special+Elite&family=Abril+Fatface&family=Permanent+Marker&family=Creepster&family=Nosifer&family=Alfa+Slab+One&family=Teko:wght@600;700&display=swap" rel="stylesheet">
@@ -13,13 +13,18 @@
 .fontChip{background:#090d16;border:1px solid #26324d;border-radius:10px;padding:10px 8px;color:#fff;font-size:13px;font-weight:800;cursor:pointer;text-align:center;line-height:1.15;min-height:44px}
 .fontChip.on{border-color:#18d39b;box-shadow:0 0 0 1px #18d39b66;background:#0b1a16}
 .fontChip small{display:block;font-size:10px;font-weight:600;color:#8d99b0;margin-top:3px;font-family:Arial,sans-serif}
+.memItem{background:#090d16;border:1px solid #26324d;border-radius:12px;padding:10px;margin:8px 0}
+.memItem b{display:block;margin-bottom:4px}
+.memGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:900px){.memGrid{grid-template-columns:1fr}}
+
 @media(max-width:900px){.grid,.grid2,.grid3,.scoreHero,.pack,.thumbgrid,.angleGrid{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}.bar{grid-template-columns:1fr}.btns{grid-template-columns:1fr}.circle{width:142px;height:142px}.sticky{justify-content:space-around}.hero h1{letter-spacing:-.5px}}
 </style>
 </head>
 <body>
 <div class="wrap">
   <section class="hero">
-    <span class="badge">🧠 v21.21 Clear KPI Compass</span>
+    <span class="badge">🧠 v21.22 Machine Memory</span>
     <h1>Mesin tetap data-based. AI Strategy membaca hasil engine, mengkritik strategi, lalu memberi verdict, alternatif judul, thumbnail strategy, dan rencana 24 jam.</h1>
     <p class="muted">Alur v21.3: 1) Keyword Lab (seperti penonton search YouTube) → 2) Pilih keyword → 3) Engine judul/kompetitor → 4) AI Strategy/Thumb. AI bukan otak utama.</p>
     <div class="warn"><b>Catatan kuota:</b> Suggest/long-tail ≈ gratis. Yang boros kuota = riset kompetitor (Data API). Default angle 3. Kalau “Kompetitor dipakai” kosong, biasanya kuota search harian habis.</div>
@@ -55,12 +60,13 @@ Ku Titip Anakku Pada-Mu... Jika Esok Aku Tiada"></textarea>
     <div class="card"><h2>03. Upload Pack</h2><div id="packBox"></div></div>
     <div class="card"><h2>04. Thumbnail Brain</h2><div id="thumbBox"></div></div>
     <div class="card"><h2>05. Detail Perhitungan</h2><div id="detailBox"></div></div>
+    <div id="memoryBox"></div>
   </section>
 </div>
-<div class="sticky" id="sticky"><button onclick="copyBestPack()">📋 Copy Pack</button><button onclick="scrollToId('packBox')">Upload Pack</button><button onclick="scrollToId('thumbBox')">Thumbnail</button><button onclick="scrollToId('detailBox')">Detail</button></div>
+<div class="sticky" id="sticky"><button onclick="copyBestPack()">📋 Copy Pack</button><button onclick="scrollToId('packBox')">Upload Pack</button><button onclick="scrollToId('thumbBox')">Thumbnail</button><button onclick="scrollToId('memoryBox')">Memori</button></div>
 
 <script>
-const $=id=>document.getElementById(id);let ANGLES=[],A=null,RECS=[],THUMB_IMG=null,KW_LAB=[],KW_PICK=null,THUMB_MODE='auto',THUMB_BUSY=false,THUMB_COOLDOWN_UNTIL=0,CONTENT_FORMAT=null,LAST_THUMB_PROMPT='',LAST_THUMB_SCORE=null;
+const $=id=>document.getElementById(id);let ANGLES=[],A=null,RECS=[],THUMB_IMG=null,KW_LAB=[],KW_PICK=null,THUMB_MODE='auto',THUMB_BUSY=false,THUMB_COOLDOWN_UNTIL=0,CONTENT_FORMAT=null,LAST_THUMB_PROMPT='',LAST_THUMB_SCORE=null,YIE_MEM=null,LAST_RESEARCH_ID=null;
 const STOP=new Set('yang dan di ke dari ini itu untuk dengan pada ada akan jadi bisa tidak tak nya se ber me ter per kan lah pun atau karena agar sebagai dalam saat ketika the of and in to a is are was were be for on by an it this that you your our new full video official lyrics lirik part episode shorts short و في من على إلى الى عن هذا هذه ذلك تلك مع أن ان كان كانت هو هي لا ما كل uchun bilan va yoki ham bu shu bir edi bor yoq juda'.split(' '));
 const PROFILES={
   dj:{label:'DJ / Remix Music',keys:['dj','remix','full bass','jedag','jedug','tiktok','tik tok','nonstop','dugem','party mix','club mix','bass'],baseTags:{id:['dj terbaru','dj remix','dj viral','dj tiktok','full bass','dj jedag jedug','remix terbaru','dj nonstop'],en:['dj remix','latest dj remix','full bass','viral dj','tiktok remix','party mix','nonstop dj']}},
@@ -596,8 +602,12 @@ function scoreTitle(title,a,mem){
     hookScore*.07 + gapBoost*.10 + formatBoost
     - memoryPenalty - languagePenalty - serpPenalty*.35
   );
+  let learn=learningBoostForTitle(title);
+  if(learn && learn.delta){ score=clamp(score + learn.delta); }
   let pack=makePack(title,a);
   let reasons=reasonTitle(title,a,score,search,browse,quality,memoryPenalty,langFit,intentFit,patternBorn,hookScore);
+  if(learn && learn.why){ reasons.unshift({c: learn.delta>=0?'good':'bad', t:`Memori belajar: ${learn.why} (Δ ${learn.delta>=0?'+':''}${learn.delta}).`}); }
+
   // inject data reasons
   reasons = [
     {c: unique>=65?'good':unique>=50?'yellow':'bad', t:`Uniqueness vs kompetitor ${unique}/100 (max sim ${Math.round(maxSim*100)}%).`},
@@ -633,7 +643,339 @@ function titleQuality(t){let n=norm(t),w=n.split(' '),score=100,seen={};w.forEac
 }
 
 function makePack(title,a){let tags=buildTags(a),hash=tags.slice(0,5).map(t=>'#'+t.replace(/\s+/g,'')).join(' '),desc=descriptionFor(title,a,hash),hook=pickBestHook(a,title)||hookFor(title,a);return{desc,tags:tags.join(', '),hook}}function buildTags(a){let base=(a.profile.baseTags&& (a.profile.baseTags[a.lang]||a.profile.baseTags.id||a.profile.baseTags.en))||[],tags=[...base,...tok(a.keyword),...a.patterns.signals.slice(0,8)].map(norm).filter(validTag),out=[];tags.forEach(t=>{if(out.indexOf(t)<0&&out.length<22)out.push(t)});return out}function validTag(t){return t&&t.length>=2&&t.length<=36&&t.split(' ').length<=4&&!/official|download|mp3|mp4/.test(t)}function descriptionFor(title,a,hash){let id=a.niche.id,lang=a.lang;if(id==='dj'){if(lang==='en')return`${title}\n\nTurn up the volume and enjoy this DJ remix with full bass energy. This mix is made for party vibes, night drive, workout, and anyone who loves viral remix sounds.\n\nUse headphones or a good speaker for the best bass experience. If you enjoy this remix, leave a like, comment your favorite part, and subscribe for more DJ remixes.\n\n${hash}`;return`${title}\n\nNikmati DJ remix terbaru dengan beat full bass yang cocok buat santai, party, perjalanan malam, atau nemenin aktivitas kamu. Dengarkan pakai headset atau speaker biar bass-nya lebih terasa.\n\nKalau kamu suka vibe DJ seperti ini, jangan lupa like, komentar bagian favorit kamu, dan subscribe untuk update DJ remix terbaru berikutnya.\n\n${hash}`}if(id==='horror'){if(lang==='en')return`${title}\n\nSome stories do not need a loud beginning. Sometimes it starts with a small sound, a shadow in the corner, or a door that should have stayed closed.\n\nWatch until the end, because the first clue may feel different after you know what really happened. Subscribe for more ghost stories and late-night horror.\n\n${hash}`;if(lang==='ar')return`${title}\n\nليست كل القصص المرعبة تبدأ بصراخ. أحيانا يبدأ الأمر بصوت صغير أو ظل عابر أو باب لم يكن يجب أن يفتح.\n\nشاهد حتى النهاية، لأن التفاصيل الصغيرة في البداية قد تصبح أهم مما تتوقع بعد معرفة الحقيقة.\n\n${hash}`;if(lang==='uz')return`${title}\n\nBa’zi qo‘rqinchli voqealar baland tovush bilan boshlanmaydi. Ba’zan hammasi kichik bir ovoz yoki yopiq turishi kerak bo‘lgan eshikdan boshlanadi.\n\nOxirigacha tomosha qiling, chunki boshidagi kichik detal yakunda boshqa ma’no beradi.\n\n${hash}`;return`${title}\n\nTidak semua cerita horor dimulai dengan teriakan. Kadang semuanya bermula dari suara kecil, bayangan yang lewat sebentar, atau pintu yang seharusnya tetap tertutup.\n\nTonton sampai akhir, karena detail kecil di awal bisa berubah makna setelah kamu tahu apa yang sebenarnya terjadi. Kalau kamu suka cerita hantu dan kisah mistis, jangan lupa subscribe.\n\n${hash}`}if(id==='family'){let it=keywordIntent(a);if(it.deathBeforeBirth)return`${title}\n\nCerita ini tentang seorang anak yang tidak pernah mendapat kesempatan mengenal ibunya sejak lahir. Ada rindu yang tidak pernah sempat diucapkan, ada doa yang hanya bisa disampaikan lewat cerita dan lagu.\n\nDengarkan sampai akhir, karena pesan terdalamnya ada pada rasa kehilangan yang tidak pernah bisa diganti. Jika cerita ini menyentuh hatimu, tulis doa terbaik untuk ibu di komentar.\n\n${hash}`;if(it.bestMother)return`${title}\n\nVideo ini adalah ungkapan terima kasih untuk ibu: sosok yang selalu memberi, mendoakan, dan menjadi tempat pulang terbaik dalam hidup. Kadang kata sederhana seperti "terima kasih" terasa tidak cukup untuk semua pengorbanannya.\n\nTonton sampai akhir dan kirimkan video ini untuk seseorang yang ingin kamu ingatkan tentang hebatnya seorang ibu.\n\n${hash}`;if(it.apology)return`${title}\n\nAda penyesalan yang datang terlambat, terutama saat kita baru sadar betapa besar cinta seorang ibu. Video ini mengangkat rasa maaf, rindu, dan harapan agar kita tidak terlambat menghargai orang yang paling tulus mencintai kita.\n\nTonton sampai akhir, lalu tulis satu kalimat yang ingin kamu sampaikan untuk ibu.\n\n${hash}`;}return`${title}\n\nVideo ini dibuat untuk membahas ${a.keyword} dengan gaya yang mudah dipahami dan tetap menarik untuk ditonton sampai akhir.\n\nKalau video ini bermanfaat atau menghibur, tinggalkan komentar dan subscribe untuk update berikutnya.\n\n${hash}`}function hookFor(title,a){let n=norm(title),id=a.niche.id,lang=a.lang;if(id==='dj'){let y=yearOf(title)||yearOf(a.keyword);if(lang==='ar')return y?`دي جي ${y}`:'دي جي ريمكس';if(lang==='uz')return y?`DJ ${y}`:'DJ REMIX';if(/full bass|bass/.test(n))return y?`FULL BASS ${y}`:'FULL BASS';if(/tiktok|viral/.test(n))return'DJ VIRAL';if(/jedag|jedug/.test(n))return'JEDAG JEDUG';return y?`DJ ${y}`:'DJ REMIX'}if(id==='horror'){if(lang==='ar'){if(/صوت/.test(n))return'ذلك الصوت';if(/باب/.test(n))return'الباب انفتح';return'قصة رعب'}if(lang==='uz'){if(/ovoz/.test(n))return'O‘SHA OVOZ';if(/eshik/.test(n))return'ESHIK OCHILDI';return'ARVOH HIKOYASI'}if(lang==='en'){if(/sound/.test(n))return'THAT SOUND';if(/door/.test(n))return'THE DOOR OPENED';return'GHOST STORY'}if(/suara/.test(n))return'SUARA ITU';if(/pintu/.test(n))return'PINTU TERBUKA';return'KISAH HANTU'}if(id==='family'){let it=keywordIntent(a);if(it.deathBeforeBirth)return lang==='id'?'SEBELUM AKU LAHIR':lang==='uz'?'ONAMNI TANIMADIM':lang==='ar'?'قبل أن أولد':'BEFORE I WAS BORN';if(it.bestMother)return lang==='id'?'IBU TERBAIK':lang==='uz'?'ENG YAXSHI ONA':lang==='ar'?'أمي الأفضل':'BEST MOM';if(it.apology)return lang==='id'?'MAAF IBU':lang==='uz'?'KECHIRING ONA':lang==='ar'?'سامحيني أمي':'SORRY MOM'}return tok(title).slice(0,3).map(x=>x.toUpperCase()).join(' ')}
-function getMemory(kw){try{return JSON.parse(localStorage.getItem('yie14_'+norm(kw))||'[]')}catch(e){return[]}}function saveMemory(){if(!A||!RECS[0])return;let key='yie14_'+norm(A.seed),arr=getMemory(A.seed);arr.unshift({title:RECS[0].title,angle:A.keyword,time:Date.now(),niche:A.niche.id});localStorage.setItem(key,JSON.stringify(arr.slice(0,12)))}
+
+// ===================== MACHINE MEMORY M1+M2 =====================
+const YIE_MEM_KEY='yie_brain_v1';
+const YIE_MEM_MAX=80;
+function memNow(){return Date.now()}
+function memId(){return 'r_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,7)}
+function loadBrain(){
+  try{
+    let raw=localStorage.getItem(YIE_MEM_KEY);
+    if(!raw){
+      // migrate mini memory yie14_* if any later
+      return {version:1, researches:[], results:[]};
+    }
+    let o=JSON.parse(raw);
+    if(!o || typeof o!=='object') return {version:1, researches:[], results:[]};
+    o.researches=Array.isArray(o.researches)?o.researches:[];
+    o.results=Array.isArray(o.results)?o.results:[];
+    return o;
+  }catch(e){ return {version:1, researches:[], results:[]}; }
+}
+function saveBrain(brain){
+  try{
+    brain=brain||loadBrain();
+    brain.researches=(brain.researches||[]).slice(0,YIE_MEM_MAX);
+    brain.results=(brain.results||[]).slice(0,YIE_MEM_MAX*2);
+    localStorage.setItem(YIE_MEM_KEY, JSON.stringify(brain));
+    YIE_MEM=brain;
+  }catch(e){ console.warn('saveBrain', e); }
+}
+function getBrain(){ if(!YIE_MEM) YIE_MEM=loadBrain(); return YIE_MEM; }
+
+// backward compatible mini API used by scoreTitle memoryPenalty
+function getMemory(kw){
+  try{
+    // old key
+    let old=JSON.parse(localStorage.getItem('yie14_'+norm(kw))||'[]');
+    // also from brain researches
+    let b=getBrain();
+    let fromBrain=[];
+    (b.researches||[]).forEach(r=>{
+      if(norm(r.seed)===norm(kw) || norm(r.angle)===norm(kw)){
+        (r.titles||[]).forEach(t=>fromBrain.push({title:t.title||t, time:r.time, angle:r.angle}));
+      }
+    });
+    return [...fromBrain, ...old].slice(0,30);
+  }catch(e){return[]}
+}
+function saveMemory(){
+  // legacy + full brain snapshot
+  if(!A||!RECS[0]) return;
+  try{
+    let key='yie14_'+norm(A.seed||A.keyword);
+    let arr=JSON.parse(localStorage.getItem(key)||'[]');
+    arr.unshift({title:RECS[0].title,angle:A.keyword,time:Date.now(),niche:A.niche&&A.niche.id});
+    localStorage.setItem(key, JSON.stringify(arr.slice(0,12)));
+  }catch(e){}
+  try{ saveResearchMemory(); }catch(e){ console.warn(e); }
+}
+
+function saveResearchMemory(){
+  if(!A||!RECS[0]) return null;
+  let brain=getBrain();
+  let id=memId();
+  LAST_RESEARCH_ID=id;
+  let titles=RECS.slice(0,5).map(r=>({
+    title:r.title,
+    score:r.score,
+    search:r.search,
+    browse:r.browse,
+    unique:r.unique,
+    gapBoost:r.gapBoost,
+    maxCompSim:r.maxCompSim,
+    strategyTag:r.strategyTag||r.strategy||'',
+    hook:r.hook
+  }));
+  let comps=(A.qualified||[]).slice(0,8).map(v=>({
+    title:v.title, views:v.views, relevance:v.relevance, channel:v.channelTitle, query:v._query
+  }));
+  let rec={
+    id,
+    time:memNow(),
+    seed:A.seed||A.keyword,
+    angle:A.keyword,
+    niche:A.niche&&A.niche.label,
+    nicheId:A.niche&&A.niche.id,
+    format:(A.format&&A.format.id)|| (CONTENT_FORMAT&&CONTENT_FORMAT.id)||'auto',
+    formatLabel:(A.format&&A.format.label)||'',
+    nicheNote:A.nicheInput||'',
+    lang:A.lang, region:A.region,
+    metrics:{
+      demand:A.metrics&&A.metrics.demand,
+      low:A.metrics&&A.metrics.low,
+      gap:A.metrics&&A.metrics.gap,
+      fresh:A.metrics&&A.metrics.fresh,
+      reality:A.metrics&&A.metrics.reality,
+      competition:A.metrics&&A.metrics.competition
+    },
+    titles,
+    winner:titles[0]||null,
+    competitors:comps,
+    competitorCount:(A.qualified||[]).length,
+    thumbScore:LAST_THUMB_SCORE?LAST_THUMB_SCORE.score:null,
+    thumbHook:($('hook')&&$('hook').value)||(RECS[0]&&RECS[0].hook)||'',
+    quotaHit:!!(window.__YIE_QUOTA&&window.__YIE_QUOTA.hit)
+  };
+  brain.researches.unshift(rec);
+  saveBrain(brain);
+  return rec;
+}
+
+function findSimilarResearches(seed, angle, limit=5){
+  let b=getBrain();
+  let s=norm(seed||''), ang=norm(angle||seed||'');
+  let scored=(b.researches||[]).map(r=>{
+    let simS=Math.max(sim(s, r.seed||''), sim(s, r.angle||''), sim(ang, r.angle||''), sim(ang, r.seed||''));
+    return {...r, _sim:simS};
+  }).filter(r=>r._sim>=0.45).sort((a,b)=>b._sim-a._sim || b.time-a.time);
+  return scored.slice(0,limit);
+}
+
+function daysAgo(ts){
+  return Math.max(0, Math.round((Date.now()-(+ts||0))/864e5));
+}
+
+function getTitlePerformanceStats(title){
+  // Learn from logged Studio results linked to similar titles
+  let b=getBrain();
+  let nt=norm(title||'');
+  if(!nt) return null;
+  let rows=[];
+  (b.results||[]).forEach(res=>{
+    let tnorm=norm(res.title||'');
+    if(!tnorm) return;
+    let s=sim(nt,tnorm);
+    if(s>=0.55){
+      rows.push({...res, _sim:s});
+    }
+  });
+  if(!rows.length) return null;
+  // weight by similarity
+  let wSum=0, ctr=0, imp=0, avd=0, n=0;
+  rows.forEach(r=>{
+    let w=r._sim;
+    if(r.ctr!=null && r.ctr!==''){ ctr+=(+r.ctr)*w; }
+    if(r.impressions!=null && r.impressions!==''){ imp+=(+r.impressions)*w; }
+    if(r.avdSec!=null && r.avdSec!==''){ avd+=(+r.avdSec)*w; }
+    wSum+=w; n++;
+  });
+  if(wSum<=0) return {n:rows.length};
+  return {
+    n:rows.length,
+    avgCtr: ctr/wSum,
+    avgImp: imp/wSum,
+    avgAvd: avd/wSum,
+    samples:rows.slice(0,5)
+  };
+}
+
+function learningBoostForTitle(title){
+  // Returns score delta from memory of real results (-20..+16)
+  let st=getTitlePerformanceStats(title);
+  if(!st || !st.n) return {delta:0, why:null, stats:null};
+  let delta=0; let why=[];
+  if(st.avgCtr!=null){
+    // CTR% typical search 2-10; browse lower/higher varies — use simple bands
+    if(st.avgCtr>=8){ delta+=14; why.push(`Pernah CTR tinggi (~${st.avgCtr.toFixed(1)}%)`); }
+    else if(st.avgCtr>=5){ delta+=8; why.push(`Pernah CTR oke (~${st.avgCtr.toFixed(1)}%)`); }
+    else if(st.avgCtr>=3){ delta+=2; why.push(`CTR sedang historis (~${st.avgCtr.toFixed(1)}%)`); }
+    else if(st.avgCtr>0){ delta-=12; why.push(`CTR lemah historis (~${st.avgCtr.toFixed(1)}%)`); }
+  }
+  if(st.avgImp!=null && st.avgImp>0 && st.avgImp<200 && (st.avgCtr||0)<4){
+    delta-=4; why.push('Impressions rendah + CTR lemah di masa lalu');
+  }
+  if(st.avgAvd!=null && st.avgAvd>0 && st.avgAvd<25){
+    delta-=6; why.push('AVD historis pendek — risiko retensi');
+  }
+  // repeat title exact used recently
+  let b=getBrain();
+  let recent=(b.researches||[]).slice(0,15).some(r=>(r.titles||[]).some(t=>norm(t.title||t)===norm(title)));
+  if(recent){ delta-=5; why.push('Baru saja disarankan di riset sebelumnya'); }
+  return {delta:clamp(delta+20)-20, why:why.join(' · '), stats:st};
+}
+
+function savePerformanceResult(form){
+  // M2: log real YouTube Studio outcomes
+  let brain=getBrain();
+  let row={
+    id:'p_'+Date.now().toString(36),
+    time:memNow(),
+    researchId: form.researchId||LAST_RESEARCH_ID||null,
+    title:form.title||'',
+    hook:form.hook||'',
+    seed:form.seed|| (A&&A.seed)||'',
+    angle:form.angle|| (A&&A.keyword)||'',
+    impressions: form.impressions===''||form.impressions==null? null : +form.impressions,
+    ctr: form.ctr===''||form.ctr==null? null : +form.ctr,
+    avdSec: form.avdSec===''||form.avdSec==null? null : +form.avdSec,
+    views: form.views===''||form.views==null? null : +form.views,
+    notes:form.notes||'',
+    thumbScore: form.thumbScore!=null? +form.thumbScore : (LAST_THUMB_SCORE&&LAST_THUMB_SCORE.score),
+    engineScore: form.engineScore!=null? +form.engineScore : (RECS[0]&&RECS[0].score)
+  };
+  if(!row.title) throw Error('Judul wajib diisi');
+  brain.results.unshift(row);
+  saveBrain(brain);
+  return row;
+}
+
+function exportBrainJSON(){
+  let b=getBrain();
+  return JSON.stringify(b, null, 2);
+}
+function clearBrainHard(){
+  if(!confirm('Hapus SEMUA memori mesin di browser ini? Tidak bisa undo.')) return;
+  localStorage.removeItem(YIE_MEM_KEY);
+  // also wipe legacy mini keys? keep them unless user wants — wipe common
+  YIE_MEM={version:1, researches:[], results:[]};
+  try{ renderMemoryPanel(); }catch(e){}
+  alert('Memori mesin dihapus di browser ini.');
+}
+function renderMemoryPanel(){
+  let box=$('memoryBox'); if(!box) return;
+  let b=getBrain();
+  let res=(b.researches||[]).slice(0,12);
+  let perf=(b.results||[]).slice(0,12);
+  let similar=A? findSimilarResearches(A.seed||A.keyword, A.keyword, 4):[];
+  box.innerHTML=`
+  <div class="card" style="margin-top:16px">
+    <h2>06. Memori Mesin (M1+M2)</h2>
+    <p class="muted" style="font-size:12px">Otak ingat riset & hasil upload di <b>browser ini</b> (localStorage). Bukan cloud. Ini yang bikin dia tidak amnesia.</p>
+    <div class="memGrid">
+      <div class="finalBox" style="margin:0">
+        <b>📦 History riset: ${(b.researches||[]).length}</b><br>
+        <span class="muted">Hasil Studio tersimpan: ${(b.results||[]).length}</span>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
+          <button type="button" class="secondary" onclick="copyText(exportBrainJSON(),this)">📋 Export JSON</button>
+          <button type="button" class="secondary" onclick="clearBrainHard()">🗑️ Hapus memori</button>
+        </div>
+      </div>
+      <div class="finalBox" style="margin:0">
+        <b>🧠 Status belajar</b>
+        <p class="muted" style="font-size:12px;margin:6px 0 0">${(b.results||[]).length? 'Mesin bisa naik/turunkan skor judul mirip yang pernah menang/kalah CTR.':'Belum ada hasil Studio. Isi form di bawah setelah upload biar mulai belajar.'}</p>
+      </div>
+    </div>
+
+    ${A? `
+    <div class="finalBox" style="margin-top:12px">
+      <h3 style="margin:0 0 8px">Apakah ini pernah dianalisis?</h3>
+      ${similar.length? similar.map(s=>`
+        <div class="memItem">
+          <b>${esc(s.angle||s.seed||'-')} <span class="tag y">mirip ${Math.round(s._sim*100)}%</span></b>
+          <small class="muted">${daysAgo(s.time)} hari lalu · format ${esc(s.format||'-')} · kompetitor ${s.competitorCount||0}</small>
+          <div style="margin-top:4px"><b>Winner dulu:</b> ${esc((s.winner&&s.winner.title)||'-')} <span class="tag b">${(s.winner&&s.winner.score)||'-'}</span></div>
+        </div>`).join('') : `<p class="muted">Belum ada riset mirip di memori browser ini. Ini run “segar”.</p>`}
+    </div>`:''}
+
+    <div class="finalBox" style="margin-top:12px">
+      <h3 style="margin:0 0 8px">📝 Input hasil YouTube Studio (belajar M2)</h3>
+      <p class="muted" style="font-size:12px">Isi setelah video live 24–48 jam. Data ini milik channelmu — legal & bikin otak makin tajam.</p>
+      <label>Judul yang diupload</label>
+      <input id="perfTitle" placeholder="Paste judul final" value="${esc((RECS[0]&&RECS[0].title)||'')}">
+      <label>Hook thumb (opsional)</label>
+      <input id="perfHook" placeholder="Hook di thumbnail" value="${esc(($('hook')&&$('hook').value)||(RECS[0]&&RECS[0].hook)||'')}">
+      <div class="memGrid">
+        <div>
+          <label>Impressions</label>
+          <input id="perfImp" type="number" min="0" placeholder="contoh 1200">
+        </div>
+        <div>
+          <label>CTR (%)</label>
+          <input id="perfCtr" type="number" min="0" max="100" step="0.1" placeholder="contoh 4.5">
+        </div>
+        <div>
+          <label>Views (opsional)</label>
+          <input id="perfViews" type="number" min="0" placeholder="contoh 341">
+        </div>
+        <div>
+          <label>AVD detik (opsional)</label>
+          <input id="perfAvd" type="number" min="0" placeholder="contoh 45">
+        </div>
+      </div>
+      <label>Catatan</label>
+      <input id="perfNotes" placeholder="mis. thumb A, judul dari rekomendasi #2">
+      <button type="button" class="green" style="margin-top:10px;width:100%" onclick="submitPerfForm(this)">💾 Simpan ke Memori Mesin</button>
+      <div id="perfMsg" class="muted" style="margin-top:8px"></div>
+    </div>
+
+    <details style="margin-top:12px" open>
+      <summary>History riset terbaru</summary>
+      ${res.length? res.map(r=>`
+        <div class="memItem">
+          <b>${esc(r.angle||r.seed||'-')}</b>
+          <small class="muted">${daysAgo(r.time)}h lalu · ${esc(r.format||r.niche||'')} · ${r.competitorCount||0} kompetitor</small>
+          <div><span class="tag g">Winner</span> ${esc((r.winner&&r.winner.title)||'-')} <span class="tag b">${(r.winner&&r.winner.score)||'-'}</span></div>
+          <button type="button" class="small" onclick="copyText(${JSON.stringify(r.winner&&r.winner.title||'')},this)">Copy winner</button>
+        </div>`).join('') : '<p class="muted">Belum ada history. Jalankan Engine Judul sekali.</p>'}
+    </details>
+
+    <details style="margin-top:12px">
+      <summary>History hasil Studio</summary>
+      ${perf.length? perf.map(r=>`
+        <div class="memItem">
+          <b>${esc(r.title||'-')}</b>
+          <small class="muted">${daysAgo(r.time)}h lalu · Imp ${r.impressions??'-'} · CTR ${r.ctr??'-'}% · Views ${r.views??'-'} · AVD ${r.avdSec??'-'}s</small>
+          <div class="muted">${esc(r.notes||'')}</div>
+        </div>`).join('') : '<p class="muted">Belum ada hasil Studio tersimpan.</p>'}
+    </details>
+  </div>`;
+}
+function submitPerfForm(btn){
+  try{
+    let row=savePerformanceResult({
+      researchId: LAST_RESEARCH_ID,
+      title: ($('perfTitle')&&$('perfTitle').value)||'',
+      hook: ($('perfHook')&&$('perfHook').value)||'',
+      seed: A&&A.seed,
+      angle: A&&A.keyword,
+      impressions: $('perfImp')&&$('perfImp').value,
+      ctr: $('perfCtr')&&$('perfCtr').value,
+      views: $('perfViews')&&$('perfViews').value,
+      avdSec: $('perfAvd')&&$('perfAvd').value,
+      notes: $('perfNotes')&&$('perfNotes').value,
+      thumbScore: LAST_THUMB_SCORE&&LAST_THUMB_SCORE.score,
+      engineScore: RECS[0]&&RECS[0].score
+    });
+    if($('perfMsg')) $('perfMsg').innerHTML=`<span class="tag g">Tersimpan</span> Mesin akan menyesuaikan skor judul mirip ke depan.`;
+    renderMemoryPanel();
+  }catch(e){
+    if($('perfMsg')) $('perfMsg').innerHTML=`<span class="tag r">Gagal:</span> ${esc(e.message||e)}`;
+  }
+}
+// ===================== END MEMORY =====================
+
 
 function marketSaturation(a){
   let m=a.metrics||{};
@@ -730,6 +1072,17 @@ function kpiRealityLabel(v){
   if(v>=45) return {tag:'CUKUP', tip:'Sebagian data relevan.'};
   return {tag:'LEMAH', tip:'Banyak noise / data tipis — skor kurang bisa dipercaya.'};
 }
+function buildSeenBeforeBanner(a){
+  try{
+    let simR=findSimilarResearches(a.seed||a.keyword, a.keyword, 3);
+    if(!simR.length) return '';
+    let top=simR[0];
+    return `<div class="warn" style="margin-top:12px"><b>🧠 Memori mesin:</b> Angle/keyword mirip pernah dianalisis <b>${daysAgo(top.time)} hari lalu</b> (kemiripan ${Math.round(top._sim*100)}%).
+    Winner dulu: <b>${esc((top.winner&&top.winner.title)||'-')}</b>.
+    ${top.competitorCount?`Kompetitor dulu: ${top.competitorCount}.`:''}
+    Mesin akan menyesuaikan skor agar tidak mengulang buta.</div>`;
+  }catch(e){ return ''; }
+}
 function buildMarketCompass(a,best){
   let m=a.metrics||{};
   let d=kpiDemandLabel(m.demand), lc=kpiLowCompLabel(m.low), g=kpiGapLabel(m.gap), f=kpiFreshLabel(m.fresh), r=kpiRealityLabel(m.reality||0);
@@ -776,7 +1129,7 @@ ${RECS.slice(0,3).map((r,i)=>`<div class="battleItem" style="margin-top:6px"><sp
 <div class="kpi"><div class="num">${fmt(m.attentionLow)}-${fmt(m.attentionHigh)}</div><div class="lab">Proxy Perhatian<br><small style="opacity:.85">bukan janji view</small></div></div>
 <div class="kpi"><div class="num">${m.reality||0}</div><div class="lab">Filter Nyata<br><small style="opacity:.85">${kpiRealityLabel(m.reality||0).tag}</small></div></div>
 </div>
-${buildMarketCompass(A,best)}
+${buildMarketCompass(A,best)}${buildSeenBeforeBanner(A)}
 `;renderPack();renderThumb();renderDetail()}function scoreOpportunity(a){let m=a.metrics;return clamp(m.demand*.28+m.low*.20+m.smallProof*.14+m.gap*.14+m.fresh*.10+m.confidence*.09+m.specificity*.05)}function renderPack(){let best=RECS[0]||{};$('packBox').innerHTML=`<div><h3>${esc(best.title||'-')}</h3><button class="small" onclick="copyText(RECS[0].title,this)">Copy Judul</button><button class="small" onclick="copyText(RECS[0].desc,this)">Copy Deskripsi</button><button class="small" onclick="copyText(RECS[0].tags,this)">Copy Tags</button><button class="small secondary" onclick="copyBestPack()">Copy Semua</button><button class="small green" onclick="aiPolishPack(this)">✨ AI Polish Pack</button></div><div class="pack"><div class="copybox"><label>Deskripsi YouTube</label><textarea readonly class="${A.lang==='ar'?'rtl':''}">${esc(best.desc||'')}</textarea></div><div class="copybox"><label>Tags</label><textarea readonly>${esc(best.tags||'')}</textarea></div></div><div id="aiAssistBox"></div>`}function renderThumb(){
   if(!RECS[0]){ $('thumbBox').innerHTML='<p class="muted">Jalankan engine judul dulu.</p>'; return; }
   let defaultHook=(RECS[0]&&RECS[0].hook)|| (typeof pickBestHook==='function'?pickBestHook(A,RECS[0].title):'HOOK') ||'HOOK';
@@ -2109,6 +2462,7 @@ function drawLabel(c,p){
 }
 function drawVignette(c,W,H){let g=c.createRadialGradient(W/2,H/2,120,W/2,H/2,780);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,.62)');c.fillStyle=g;c.fillRect(0,0,W,H)}function grain(c,W,H,a){c.save();c.globalAlpha=a;for(let i=0;i<1200;i++){c.fillStyle=Math.random()>.5?'#fff':'#000';c.fillRect(Math.random()*W,Math.random()*H,1,1)}c.restore()}function round(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath()}function wrap(c,t,max,size){let w=String(t).split(' '),out=[],cur='';c.font=`1000 ${size}px Impact,Arial Black,Arial`;w.forEach(x=>{let z=cur?cur+' '+x:x;if(c.measureText(z).width>max&&cur){out.push(cur);cur=x}else cur=z});if(cur)out.push(cur);return out.slice(0,3)}function downloadThumb(){drawThumb();let a=document.createElement('a');a.download='thumbnail-keyword-first.png';a.href=$('cv').toDataURL('image/png');a.click()}
 function demoData(kw){let list=norm(kw).includes('dj')?['DJ Terbaru 2026 Full Bass Viral','DJ Remix Viral TikTok Full Bass','DJ Jedag Jedug Nonstop Terbaru','DJ Full Bass Paling Enak','DJ Remix Terbaru Bass Mantap','DJ TikTok Viral Remix 2026','DJ Nonstop Party Mix Full Bass','Remix Terbaru 2026 Viral']:['Cerita Hantu Rumah Kosong','Suara Tengah Malam dari Rumah Tua','Jangan Buka Pintu Setelah Jam 12','Kisah Hantu yang Bikin Merinding','Sosok di Ujung Lorong','Rumah Angker yang Tak Berpenghuni','Aku Tidak Sendiri di Kamar Itu','Lampu Padam Lalu Ada Suara'];let now=Date.now();return{videos:list.map((t,i)=>{let age=[12,25,42,70,15,90,34,55][i]||30,subs=[12000,85000,45000,220000,18000,9500,60000,15000][i]||10000,views=Math.round((50000+Math.random()*800000)/(age/45));return{id:'d'+i,url:'#',title:t,publishedAt:new Date(now-age*864e5).toISOString(),channelTitle:'Demo Channel '+(i+1),channel:{subscriberCount:subs},viewCount:views,likeCount:Math.round(views*.03),commentCount:Math.round(views*.004)}})}};
+try{getBrain();renderMemoryPanel()}catch(e){}
 </script>
 </body>
 </html>
