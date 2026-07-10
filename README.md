@@ -1,4 +1,4 @@
-# YouTube Intelligence Engine v21.0
+# YouTube Intelligence Engine v22.0
 
 **Data-based YouTube strategy software** — bukan chatbot.
 
@@ -25,26 +25,33 @@ Upload Pack siap eksekusi
 - Final Decision + Upload Pack + Thumbnail Brain
 - AI Strategy Review (Qwen / fallback)
 - AI Polish Pack (step-flash / fallback)
+- AI Thumbnail Generator (image generations)
+- YIE Brain v22 — self-learning scoring + memory (M1 + M2)
 
 ## Struktur file (copy-paste ke GitHub)
 
 ```
 youtube-intelligence-engine/
 ├── index.html                 # UI + engine (frontend)
+├── js/
+│   └── yie-brain-v22.js       # v22 self-learning scoring engine
 ├── package.json
 ├── vercel.json
 ├── .env.example
 ├── README.md
-├── COPY_PASTE_GUIDE.md        # panduan deploy step-by-step
 ├── docs/
-│   └── ROADMAP.md
+│   ├── AI_ROUTER.md           # routing model AI
+│   ├── MACHINE_MEMORY.md      # memori M1 + M2
+│   ├── MARKET_COMPASS.md      # cara baca kompas pasar
+│   └── YIE_BRAIN_V22.md       # spesifikasi v22
 └── api/
     ├── _lib/iamhc.js          # shared AI client
     ├── youtube.js
     ├── suggest.js
     ├── ai-test.js
     ├── ai-strategy.js
-    └── ai-polish.js
+    ├── ai-polish.js
+    └── ai-thumb.js            # generate thumbnail image
 ```
 
 ## Environment Variables (Vercel)
