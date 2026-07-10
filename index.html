@@ -3,28 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>YouTube Intelligence Engine v21.22 — Machine Memory M1+M2</title>
+<title>YouTube Intelligence Engine v21.23 — Pro UI + Clean Keyword Lab</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Black+Ops+One&family=Bungee&family=Russo+One&family=Bangers&family=Rubik:wght@700;900&family=Montserrat:wght@700;900&family=Raleway:wght@700;900&family=Oswald:wght@700&family=Orbitron:wght@700;900&family=Cinzel:wght@700;900&family=Cinzel+Decorative:wght@700;900&family=Playfair+Display:wght@700;900&family=Great+Vibes&family=Italianno&family=Pacifico&family=Special+Elite&family=Abril+Fatface&family=Permanent+Marker&family=Creepster&family=Nosifer&family=Alfa+Slab+One&family=Teko:wght@600;700&display=swap" rel="stylesheet">
-<style>
-*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}body{font-family:Arial,Segoe UI,sans-serif;background:#050714;color:#f6f8ff;min-height:100vh;padding-bottom:72px}.wrap{max-width:1120px;margin:auto;padding:16px 14px}.hero{padding:24px 0 16px;border-bottom:1px solid #1d2740}.badge{display:inline-flex;gap:7px;align-items:center;background:#13213a;color:#9ed0ff;border:1px solid #284b7a;border-radius:999px;padding:7px 12px;font-size:12px;font-weight:900}.hero h1{font-size:clamp(28px,6vw,52px);line-height:1.04;margin:12px 0;background:linear-gradient(90deg,#fff,#ff4f72,#4aa3ff,#18d39b);-webkit-background-clip:text;-webkit-text-fill-color:transparent}.muted{color:#a4afc5;font-size:13px;line-height:1.58}.warn{background:#2a220f;border:1px solid #70581a;color:#ffe29a;border-radius:14px;padding:12px;margin-top:12px;font-size:13px;line-height:1.5}.card{background:linear-gradient(180deg,#101522,#0b101c);border:1px solid #26324d;border-radius:18px;padding:16px;box-shadow:0 14px 40px #0007;margin-top:16px}h2,h3{margin-bottom:10px}.grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}label{display:block;margin:10px 0 6px;font-size:12px;font-weight:900;color:#cbd6eb}input,select,textarea{width:100%;padding:12px;border:1px solid #2d3b5c;border-radius:12px;background:#090d16;color:#fff;outline:0}textarea{min-height:110px;resize:vertical;line-height:1.45}button{border:0;border-radius:12px;padding:12px 13px;font-weight:900;color:#fff;background:linear-gradient(135deg,#ff365f,#9b4dff);cursor:pointer}button.secondary{background:#172033;border:1px solid #344665;color:#d8e8ff}button.green{background:linear-gradient(135deg,#0aae79,#18d39b)}button.ghost{background:#0b1020;border:1px solid #26324d;color:#cfe2ff}button.small{padding:8px 10px;font-size:12px;margin:4px 4px 0 0}.btns{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px;margin-top:12px}.loading{display:none;text-align:center;padding:18px;border-radius:16px;border:1px solid #26324d;background:#101522;margin-top:16px}.spin{width:38px;height:38px;border-radius:50%;border:3px solid #26324d;border-top-color:#ff365f;animation:spin 1s linear infinite;margin:0 auto 10px}@keyframes spin{to{transform:rotate(360deg)}}.progress{height:12px;background:#070a11;border:1px solid #1e2a44;border-radius:999px;overflow:hidden;margin:12px 0}.progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,#ff365f,#18d39b)}#results{display:none}.scoreHero{display:grid;grid-template-columns:175px 1fr;gap:16px;align-items:center}.circle{width:158px;height:158px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(#18d39b calc(var(--p)*1%),#1b2540 0);position:relative;margin:auto}.circle:before{content:"";position:absolute;inset:13px;background:#090d16;border-radius:50%;border:1px solid #26324d}.circle span{position:relative;font-size:37px;font-weight:1000}.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-top:13px}.kpi{background:#090d16;border:1px solid #222d46;border-radius:14px;text-align:center;padding:13px}.num{font-size:22px;font-weight:1000}.lab{font-size:11px;color:#8d99b0;margin-top:4px;line-height:1.25}.tag{display:inline-block;margin:4px;padding:6px 10px;border-radius:999px;font-size:12px}.tag.g{background:#0d3529;color:#82f4d1;border:1px solid #216b55}.tag.b{background:#10263f;color:#b8ddff;border:1px solid #28547e}.tag.r{background:#35101b;color:#ff9eb2;border:1px solid #733044}.tag.y{background:#32280f;color:#ffe19a;border:1px solid #6b571f}.tag.p{background:#26173f;color:#d5beff;border:1px solid #5d3b91}.reason{list-style:none;margin-top:10px}.reason li{margin:7px 0;padding:9px 10px;border-radius:10px;font-size:13px;line-height:1.45}.good{background:#0b2a22;border-left:3px solid #18d39b;color:#b7ffe8}.bad{background:#32111b;border-left:3px solid #ff365f;color:#ffb0c0}.info{background:#10243a;border-left:3px solid #4aa3ff;color:#cfe6ff}.yellow{background:#2c260e;border-left:3px solid #ffd166;color:#ffe7a6}.finalBox{background:linear-gradient(135deg,rgba(24,211,155,.15),rgba(74,163,255,.08));border:1px solid rgba(24,211,155,.35);border-radius:16px;padding:15px;margin-top:13px}.winnerTitle{font-size:21px;line-height:1.35;font-weight:1000;color:#fff;margin:8px 0}.bar{display:grid;grid-template-columns:140px 1fr 45px;gap:8px;align-items:center;margin:8px 0}.track{height:11px;background:#070a11;border-radius:999px;overflow:hidden;border:1px solid #1e2a44}.fill{height:100%;background:linear-gradient(90deg,#4aa3ff,#18d39b)}.battleItem{display:grid;grid-template-columns:auto 1fr auto;gap:9px;align-items:start;background:#070b14;border:1px solid #1d2944;border-radius:12px;padding:10px;margin:8px 0}.battleItem small{color:#9aa6bd;line-height:1.45}.badge2{font-weight:1000;border-radius:999px;padding:5px 9px;font-size:11px}.vwin{background:#0d3529;color:#82f4d1;border:1px solid #216b55}.vtest{background:#32280f;color:#ffe19a;border:1px solid #6b571f}.vlose{background:#35101b;color:#ff9eb2;border:1px solid #733044}.pack{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}.copybox textarea{font-size:12px;background:#060911}.thumbgrid{display:grid;grid-template-columns:360px 1fr;gap:15px}.canvasbox{background:#05070d;border:1px solid #26324d;border-radius:15px;padding:10px}canvas{width:100%;border-radius:12px;background:#111}.tablebox{overflow:auto;border:1px solid #26324d;border-radius:14px;margin-top:10px}.table{width:100%;border-collapse:collapse;min-width:850px}.table th,.table td{border-bottom:1px solid #24304a;padding:9px;text-align:left;font-size:12px;vertical-align:top}.table th{background:#121a2b;color:#d6e5ff}.table a{color:#93c9ff;text-decoration:none}details{margin-top:12px;background:#090d16;border:1px solid #26324d;border-radius:14px;padding:12px}summary{cursor:pointer;font-weight:900;color:#d8e8ff}.sticky{position:fixed;left:0;right:0;bottom:0;background:rgba(5,7,20,.96);border-top:1px solid #26324d;padding:9px;display:none;justify-content:center;gap:8px;z-index:99}.sticky button{font-size:12px;padding:9px 10px}.rtl{direction:rtl;text-align:right}.angleGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.kwLab{margin-top:10px}.kwChips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;max-height:320px;overflow:auto;padding-right:2px}.kwChip{display:inline-flex;align-items:center;gap:6px;background:#090d16;border:1px solid #26324d;border-radius:999px;padding:7px 10px;cursor:pointer;color:#eef3ff;font-size:12px;line-height:1.2;max-width:100%}.kwChip b{font-size:12px;font-weight:800}.kwChip .sc{background:#13213a;color:#9ed0ff;border-radius:999px;padding:2px 6px;font-size:10px;font-weight:900}.kwChip.on{border-color:#18d39b;background:#0b1a16;box-shadow:0 0 0 1px #18d39b55}.kwPick{margin-top:8px;padding:10px;border-radius:12px;background:#0b1a16;border:1px solid #216b55}.flowSteps{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}.flowSteps span{background:#121a2b;border:1px solid #2a3654;border-radius:999px;padding:5px 9px;font-size:10px;font-weight:800;color:#9ed0ff}.flowSteps span.on{border-color:#18d39b;color:#82f4d1;background:#0d3529}
-.fontGrid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px;max-height:220px;overflow:auto}
-.fontChip{background:#090d16;border:1px solid #26324d;border-radius:10px;padding:10px 8px;color:#fff;font-size:13px;font-weight:800;cursor:pointer;text-align:center;line-height:1.15;min-height:44px}
-.fontChip.on{border-color:#18d39b;box-shadow:0 0 0 1px #18d39b66;background:#0b1a16}
-.fontChip small{display:block;font-size:10px;font-weight:600;color:#8d99b0;margin-top:3px;font-family:Arial,sans-serif}
-.memItem{background:#090d16;border:1px solid #26324d;border-radius:12px;padding:10px;margin:8px 0}
-.memItem b{display:block;margin-bottom:4px}
-.memGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-@media(max-width:900px){.memGrid{grid-template-columns:1fr}}
-
-@media(max-width:900px){.grid,.grid2,.grid3,.scoreHero,.pack,.thumbgrid,.angleGrid{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}.bar{grid-template-columns:1fr}.btns{grid-template-columns:1fr}.circle{width:142px;height:142px}.sticky{justify-content:space-around}.hero h1{letter-spacing:-.5px}}
-</style>
+<link rel="stylesheet" href="/css/app.css">
+<link rel="stylesheet" href="css/app.css">
 </head>
 <body>
 <div class="wrap">
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-mark">▶</div>
+      <div>YIE Engine<small>Data brain · bukan chatbot</small></div>
+    </div>
+    <div class="pill">v21.23 · Live</div>
+  </div>
+
+
   <section class="hero">
-    <span class="badge">🧠 v21.22 Machine Memory</span>
+    <span class="pill">🧠 Otak data + memori + AI worker</span>
     <h1>Mesin tetap data-based. AI Strategy membaca hasil engine, mengkritik strategi, lalu memberi verdict, alternatif judul, thumbnail strategy, dan rencana 24 jam.</h1>
     <p class="muted">Alur v21.3: 1) Keyword Lab (seperti penonton search YouTube) → 2) Pilih keyword → 3) Engine judul/kompetitor → 4) AI Strategy/Thumb. AI bukan otak utama.</p>
     <div class="warn"><b>Catatan kuota:</b> Suggest/long-tail ≈ gratis. Yang boros kuota = riset kompetitor (Data API). Default angle 3. Kalau “Kompetitor dipakai” kosong, biasanya kuota search harian habis.</div>
@@ -81,34 +79,56 @@ function norm(s){return String(s||'').toLowerCase().normalize('NFD').replace(/[\
 
 
 function scoreSuggestKeyword(s, seed){
-  let n=norm(s), sd=norm(seed), sc=38;
+  let n=norm(s), sd=norm(seed), sc=40;
   let seedParts=sd.split(' ').filter(w=>w.length>2);
   let hit=seedParts.filter(w=>n.includes(w)).length;
-  sc += Math.min(28, hit*10);
-  if(n===sd) sc+=8;
+  if(!seedParts.length) return 0;
+  // must keep intent overlap
+  let cover=hit/seedParts.length;
+  if(cover<0.34) sc-=25;
+  sc += Math.min(32, hit*11);
+  if(n===sd) sc+=4;
+
   let w=n.split(' ').filter(Boolean);
-  if(w.length>=3 && w.length<=8) sc+=8;
-  if(/20\d{2}/.test(n)) sc+=5;
-  // intent boosts only if seed also emotional/family
-  if(/ibu|ayah|maaf|rindu|sedih|doa|pesan|lahir|meninggal/.test(sd)){
-    if(/maaf|rindu|ibu|ayah|sedih|lagu|doa|pesan|terakhir|meninggal|lahir/.test(n)) sc+=14;
+  // prefer true long-tail (3-7 words), not spammy long album titles
+  if(w.length>=3 && w.length<=7) sc+=12;
+  else if(w.length===2) sc+=4;
+  else if(w.length>9) sc-=12;
+
+  // year can be ok, but not always quality
+  if(/20\d{2}/.test(n)) sc+=2;
+
+  // intent family/music boosts
+  if(/ibu|ayah|maaf|rindu|sedih|doa|pesan|lahir|meninggal|lagu|lirik/.test(sd)){
+    if(/maaf|rindu|ibu|ayah|sedih|lagu|lirik|doa|pesan|terakhir|meninggal|lahir|anak/.test(n)) sc+=12;
   }
-  if(/viral|terbaru|full|official/.test(n)) sc+=3;
-  // off-track penalty
-  if(/dj|remix|bass|jedag/.test(n) && !/dj|remix|bass/.test(sd)) sc-=30;
-  if(/hantu|horor|horror/.test(n) && !/hantu|horor|horror/.test(sd)) sc-=24;
-  sc += Math.max(0, 8 - Math.abs(n.length - Math.min(48, sd.length))/5);
+
+  // HARD noise penalties (YouTube suggest junk)
+  if(/full album|fullalbum|full movie|fullmovie|bioskop|film|drama china|drama korea|karaoke|ost\b|live\b|reaction|podcast spoiler/.test(n)) sc-=45;
+  if(/viral tiktok|tik tok|jedag|dj remix|bass/.test(n) && !/dj|remix|bass|tiktok/.test(sd)) sc-=35;
+  if(/full\b/.test(n) && /album|movie|film/.test(n)) sc-=20;
+  if(/official video|lyrics video|audio only/.test(n)) sc-=8;
+
+  // prefer lirik/lagu when seed is apology-mom style
+  if(/ibu|maaf/.test(sd) && /lirik|lagu|sedih|anakmu/.test(n)) sc+=10;
+  if(/ibu|maaf/.test(sd) && /film|drama|karaoke|album/.test(n)) sc-=18;
+
+  // length soft
+  sc += Math.max(-6, 8 - Math.abs(n.length - Math.min(42, sd.length+18))/6);
   return clamp(sc);
 }
+
 function intentLabelForKeyword(s){
   let n=norm(s);
-  if(/sebelum.*lahir|lahir tanpa/.test(n)) return 'Loss';
-  if(/maaf|ampuni|menyesal/.test(n)) return 'Maaf';
-  if(/rindu|kangen/.test(n)) return 'Rindu';
+  if(/full album|full movie|film|drama china|karaoke/.test(n)) return 'Noise';
+  if(/lirik/.test(n)) return 'Lirik';
   if(/lagu|song/.test(n)) return 'Lagu';
+  if(/sebelum.*lahir|lahir tanpa/.test(n)) return 'Loss';
+  if(/maaf|ampuni|menyesal|anakmu/.test(n)) return 'Maaf';
+  if(/rindu|kangen/.test(n)) return 'Rindu';
   if(/dj|remix|bass/.test(n)) return 'DJ';
   if(/hantu|horor|horror/.test(n)) return 'Horor';
-  return 'Intent';
+  return 'Long-tail';
 }
 async function runKeywordLab(){
   let seed=$('kw').value.trim();
@@ -126,8 +146,16 @@ async function runKeywordLab(){
       intent:intentLabelForKeyword(s),
       source:'youtube_suggest',
       words:String(s).split(/\s+/).filter(Boolean).length
-    })).sort((a,b)=>b.score-a.score || b.words-a.words);
-    KW_LAB=KW_LAB.slice(0,24);
+    }));
+    // buang noise suggest (album/movie/karaoke/drama) kecuali skor masih sangat tinggi & on-intent
+    KW_LAB=KW_LAB.filter(k=>{
+      let n=norm(k.keyword);
+      let noise=/full album|full movie|film|drama china|drama korea|karaoke|bioskop|reaction/.test(n);
+      if(noise && k.score<90) return false;
+      if(k.score<35) return false;
+      return true;
+    }).sort((a,b)=>b.score-a.score || b.words-a.words);
+    KW_LAB=KW_LAB.slice(0,20);
     if(!KW_PICK) KW_PICK=KW_LAB[0]&&KW_LAB[0].keyword;
     renderKeywordLab(seed,{
       note:`Sumber: YouTube autocomplete (mirip saat mengetik di app YouTube). ${list.length} long-tail ditangkap. Bukan search volume resmi Ads. Data kompetitor/views butuh kuota YouTube Data API terpisah.`,
@@ -143,14 +171,14 @@ async function runKeywordLab(){
 function renderKeywordLab(seed, raw){
   let box=$('kwLabBox'); if(!box) return;
   let top=KW_LAB.slice(0,24);
-  let chips=top.map((k,i)=>`<button type="button" class="kwChip ${KW_PICK===k.keyword?'on':''}" onclick="pickKeywordLab(${i})"><span class="sc">${k.score}</span><b>${esc(k.keyword)}</b></button>`).join('');
+  let chips=top.map((k,i)=>`<button type="button" class="kwChip ${KW_PICK===k.keyword?'on':''}" onclick="pickKeywordLab(${i})"><span class="sc">${k.score}</span><span><b>${esc(k.keyword)}</b><span class="meta">${esc(k.intent||'Long-tail')} · YouTube Suggest · ${k.words||'-'} kata</span></span></button>`).join('');
   let picked=KW_PICK|| (top[0]&&top[0].keyword)||seed;
   box.innerHTML=`<div class="finalBox" style="padding:12px">
     <div style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap">
       <h3 style="margin:0">🔎 Keyword Lab</h3>
       <span class="tag b">${top.length} saran</span>
     </div>
-    <p class="muted" style="margin:8px 0 0;font-size:12px">Long-tail dari kotak search YouTube. Skor = proxy minat+intent (bukan volume Ads). Ketuk chip → Engine Judul. Kompetitor kosong = biasanya kuota Data API habis.</p>
+    <p class="muted" style="margin:8px 0 0;font-size:12px">Data dari <b>YouTube Autocomplete</b> (sama seperti mengetik di app YouTube), lalu difilter dari noise (full album/movie/karaoke/drama). Skor = proxy minat+intent, <b>bukan</b> volume Google Ads. Ketuk chip → Engine Judul untuk data kompetitor (butuh kuota Data API).</p>
     <div class="kwChips">${chips||'<span class="muted">Kosong</span>'}</div>
     <div class="kwPick"><b>Dipilih:</b> ${esc(picked)}
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
