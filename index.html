@@ -64,7 +64,7 @@ Ku Titip Anakku Pada-Mu... Jika Esok Aku Tiada"></textarea>
 <div class="sticky" id="sticky"><button onclick="copyBestPack()">📋 Copy Pack</button><button onclick="scrollToId('packBox')">Upload Pack</button><button onclick="scrollToId('thumbBox')">Thumbnail</button><button onclick="scrollToId('memoryBox')">Memori</button></div>
 
 <script>
-const $=id=>document.getElementById(id);let ANGLES=[],A=null,RECS=[],THUMB_IMG=null,KW_LAB=[],KW_PICK=null,THUMB_MODE='auto',THUMB_BUSY=false,THUMB_COOLDOWN_UNTIL=0,CONTENT_FORMAT=null,LAST_THUMB_PROMPT='',LAST_THUMB_SCORE=null,YIE_MEM=null,LAST_RESEARCH_ID=null;
+const $=id=>document.getElementById(id);let ANGLES=[],A=null,RECS=[],THUMB_IMG=null,KW_LAB=[],KW_PICK=null,THUMB_MODE='auto',THUMB_BUSY=false,THUMB_COOLDOWN_UNTIL=0,CONTENT_FORMAT=null,LAST_THUMB_PROMPT='',LAST_THUMB_SCORE=null,YIE_MEM=null,LAST_RESEARCH_ID=null,AUDIENCE_BRAIN=null;
 // Registry untuk copy teks dinamis — hindari JSON.stringify di atribut onclick yang merusak HTML
 window.__COPY_VALUES=[];
 function registerCopyText(str){ window.__COPY_VALUES.push(String(str==null?'':str)); return window.__COPY_VALUES.length-1; }
@@ -1155,7 +1155,7 @@ function renderAll(){let best=RECS[0]||{},m=A.metrics,decision=scoreOpportunity(
 <div style="margin-top:10px">
 <b style="font-size:12px">3 rekomendasi terhitung (data kompetitor + gap, bukan chatbot):</b>
 ${RECS.slice(0,3).map((r,i)=>`<div class="battleItem" style="margin-top:6px"><span class="badge2 ${i===0?'vwin':'vtest'}">#${i+1}</span><div><b>${esc(r.title)}</b><br><small><span class="tag b">${esc((r.strategyTag||r.strategy||'hybrid')+'')}</span> Score ${r.score} · Search ${r.search} · Browse ${r.browse} · Unique ${r.unique||0} · Gap ${r.gapBoost||0} · SimComp ${Math.round((r.maxCompSim||0)*100)}%</small></div><button type="button" class="small" onclick="copyText(RECS[${i}].title,this)">Copy</button></div>`).join('')}
-</div><ul class="reason">${(best.reasons||[]).map(x=>`<li class="${x.c}">${esc(x.t)}</li>`).join('')}</ul>${buildFinalExplanation(best,A)}<button class="small" onclick="copyText(RECS[0].title,this)">Copy Judul</button><button class="small" onclick="copyBestPack()">Copy Paket</button><button class="small green" onclick="aiStrategyReview(this)">🧠 AI Strategy Review</button></div><div id="aiStrategyBox"></div><div class="kpis">
+</div><ul class="reason">${(best.reasons||[]).map(x=>`<li class="${x.c}">${esc(x.t)}</li>`).join('')}</ul>${buildFinalExplanation(best,A)}<button class="small" onclick="copyText(RECS[0].title,this)">Copy Judul</button><button class="small" onclick="copyBestPack()">Copy Paket</button><button class="small green" onclick="aiStrategyReview(this)">🧠 AI Strategy Review</button><button class="small green" onclick="audienceBrainReview(this)">🎯 Audience Brain</button></div><div id="audienceBrainBox"></div><div id="aiStrategyBox"></div><div class="kpis">
 <div class="kpi"><div class="num">${m.demand}</div><div class="lab">Demand<br><small style="opacity:.85">${kpiDemandLabel(m.demand).tag}</small></div></div>
 <div class="kpi"><div class="num">${m.low}</div><div class="lab">Ruang Lawan<br><small style="opacity:.85">${kpiLowCompLabel(m.low).tag}</small></div></div>
 <div class="kpi"><div class="num">${m.gap}</div><div class="lab">Celah Pola<br><small style="opacity:.85">${kpiGapLabel(m.gap).tag}</small></div></div>
@@ -1323,7 +1323,166 @@ ${(a.qualified||[]).slice(0,5).map((v,i)=>`<li class="${i===0?'yellow':'info'}">
 <li class="yellow">Software ini optimasi <b>peluang CTR/search fit berbasis data kompetitor</b>, bukan tombol “wajib meledak”.</li>
 </ul></div>`}
 function finalRisk(best,a){if((a.qualified||[]).length<3)return{c:'yellow',t:'Data kompetitor relevan masih sedikit. Layak test kecil, jangan dianggap pasti menang.'};if(best.search<55&&best.browse<65)return{c:'bad',t:'Search dan Browse belum kuat. Perlu angle atau thumbnail lebih tajam.'};if(best.search>=70&&best.browse>=70)return{c:'good',t:'Risiko relatif rendah untuk diuji karena Search dan Browse sama-sama kuat.'};if(best.search>=70&&best.browse<65)return{c:'yellow',t:'Bagus untuk Search, tapi thumbnail/hook harus diperkuat agar Browse tidak lemah.'};if(best.browse>=70&&best.search<60)return{c:'yellow',t:'Bagus untuk rekomendasi/Browse, tapi keyword di deskripsi dan tags harus rapat agar Search terbantu.'};return{c:'info',t:'Risiko sedang. Cocok untuk test dengan eksekusi thumbnail yang kuat.'}}
-async function aiStrategyReview(btn){if(!A||!RECS[0])return alert('Jalankan riset dulu bro.');let old=btn?btn.textContent:'';if(btn){btn.textContent='⏳ AI Strategy...';btn.disabled=true}let box=$('aiStrategyBox');if(box)box.innerHTML='<div class="finalBox" style="background:rgba(16,24,39,.75);border-color:#344665"><b>AI Strategy sedang membaca hasil engine...</b><p class="muted">AI tidak mengganti data. AI hanya mereview strategi berdasarkan evidence yang sudah dikumpulkan engine.</p></div>';try{let best=RECS[0];let payload={keyword:A.seed,seed:A.seed,angle:A.keyword,niche:A.niche&&A.niche.label,language:A.lang,region:A.region,finalTitle:best.title,title:best.title,description:best.desc,tags:best.tags,thumbnailHook:best.hook,finalDecision:{title:best.title,score:best.score,search:best.search,browse:best.browse,algo:best.algo,strategy:best.strategy,hook:best.hook,angle:A.keyword,opportunity:scoreOpportunity(A),patternBorn:best.patternBorn,creatorHook:best.hookScore,quality:best.quality,languageFit:best.langFit,intentFit:best.intentFit},scores:{final:best.score,search:best.search,browse:best.browse,algorithm:best.algo,patternBorn:best.patternBorn,creatorHook:best.hookScore,quality:best.quality,languageFit:best.langFit,intentFit:best.intentFit,opportunity:scoreOpportunity(A)},metrics:A.metrics,qualifiedCompetitors:(A.qualified||[]).slice(0,10).map(v=>({title:v.title,channel:v.channelTitle,views:v.views,vpm:Math.round(v.vpm||0),relevance:v.relevance,query:v._query})),rejectedCompetitors:(A.rejected||[]).slice(0,8).map(v=>({title:v.title,channel:v.channelTitle,views:v.views,relevance:v.relevance,query:v._query})),patterns:(A.patterns&&A.patterns.titlePatterns||[]).slice(0,8).map(p=>({label:p.label,count:p.count,weight:Math.round(p.weight||0),example:(p.examples||[])[0]})),candidateTitles:RECS.slice(0,8).map(r=>({title:r.title,score:r.score,search:r.search,browse:r.browse,patternBorn:r.patternBorn,hook:r.hookScore,quality:r.quality,intent:r.intentFit})),manualCalibration:(A.manualTitles||[]),engineFacts:engineDataFacts(A,best), notes:'Review taat data engineFacts. Jika pasar JENUH, sarankan angle long-tail & diferensiasi, jangan mengulang judul generik. Jangan klaim pasti viral. Data gaps hanya yang benar-benar tidak tersedia (AVD/demografi/CTR kompetitor), jangan bilang kosong jika top_competitors/gap_words sudah ada.'};let r=await fetch('/api/ai-strategy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});let data=await r.json();if(!r.ok||!data.ok)throw Error((data&&data.error)||'AI strategy gagal');renderAIStrategyResult(data.result||{},data.raw||'')}catch(e){if(box)box.innerHTML=`<div class="finalBox" style="background:rgba(53,16,27,.45);border-color:#733044"><b>AI Strategy gagal</b><p class="muted">${esc(e.message||String(e))}</p></div>`}finally{if(btn){btn.textContent=old;btn.disabled=false}}}
+
+function audienceBrainPayload(){
+  if(!A) return null;
+  let best=RECS[0]||{};
+  return {
+    seed:A.seed||A.keyword||'',
+    keyword:A.seed||A.keyword||'',
+    angle:A.keyword||'',
+    finalTitle:best.title||'',
+    title:best.title||'',
+    language:A.lang||($('lang')&&$('lang').value)||'id',
+    region:A.region||($('region')&&$('region').value)||'ID',
+    niche:(A.niche&&A.niche.label)||'',
+    nicheId:(A.niche&&A.niche.id)||'',
+    nicheNote:A.nicheInput||(typeof nicheNoteRaw==='function'?nicheNoteRaw():''),
+    format:(A.format&&A.format.id)||(CONTENT_FORMAT&&CONTENT_FORMAT.id)||'auto',
+    device:'HP',
+    expectedAction:'comment',
+    metrics:A.metrics||{},
+    qualifiedCompetitors:(A.qualified||[]).slice(0,8).map(v=>({title:v.title,channel:v.channelTitle,views:v.views,relevance:v.relevance,query:v._query})),
+    candidateTitles:(RECS||[]).slice(0,5).map(r=>({title:r.title,score:r.score,search:r.search,browse:r.browse,hook:r.hook}))
+  };
+}
+function audienceBrainFacts(){
+  let d=AUDIENCE_BRAIN;
+  if(!d||!d.ok) return null;
+  return {
+    version:d.version,
+    score:d.scores&&d.scores.total,
+    intent:d.profile&&d.profile.intent_label,
+    target:d.profile&&d.profile.one_sentence,
+    problem:d.strategy_flow&&d.strategy_flow.masalah,
+    desire:d.strategy_flow&&d.strategy_flow.keinginan,
+    cta:d.strategy_flow&&d.strategy_flow.cta,
+    thumbnail:d.strategy_flow&&d.strategy_flow.thumbnail,
+    upload:d.strategy_flow&&d.strategy_flow.upload,
+    risks:d.risks||[],
+    checklist:d.checklist||[]
+  };
+}
+async function audienceBrainReview(btn){
+  if(!A||!RECS[0]) return alert('Jalankan riset dulu bro.');
+  let old=btn?btn.textContent:'';
+  if(btn){btn.textContent='⏳ Audience...';btn.disabled=true;}
+  let box=$('audienceBrainBox');
+  if(box) box.innerHTML='<div class="finalBox" style="background:rgba(16,24,39,.75);border-color:#344665"><b>Audience Brain sedang membaca siapa penonton terbaik...</b><p class="muted">Modul ini membaca audiens → masalah → keinginan → CTA. Tidak mengubah scoring engine.</p></div>';
+  try{
+    let payload=audienceBrainPayload();
+    let r=await fetch('/api/audience-brain',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    let data=await r.json().catch(()=>({}));
+    if(!r.ok||!data.ok) throw Error(data.error||'Audience Brain gagal');
+    AUDIENCE_BRAIN=data;
+    renderAudienceBrainResult(data);
+  }catch(e){
+    if(box) box.innerHTML=`<div class="finalBox" style="background:rgba(53,16,27,.45);border-color:#733044"><b>Audience Brain gagal</b><p class="muted">${esc(e.message||String(e))}</p><p class="muted">Core engine tetap aman. Cek file <b>api/audience-brain.js</b> sudah ikut deploy.</p></div>`;
+  }finally{
+    if(btn){btn.textContent=old||'🎯 Audience Brain';btn.disabled=false;}
+  }
+}
+function renderAudienceBrainResult(d){
+  let box=$('audienceBrainBox'); if(!box||!d) return;
+  AUDIENCE_BRAIN=d;
+  let sc=d.scores||{}, p=d.profile||{}, cards=p.cards||{}, flow=d.strategy_flow||{}, ideas=d.content_ideas||[], risks=d.risks||[], checklist=d.checklist||[];
+  let geo=cards.geografi||{}, demo=cards.demografi||{}, psik=cards.psikologi||{}, dev=cards.perangkat||{}, action=cards.action_yang_diharapkan||{};
+  let scoreClass=(sc.total||0)>=80?'g':(sc.total||0)>=65?'y':'r';
+  box.innerHTML=`<div class="finalBox" style="background:linear-gradient(135deg,rgba(24,211,155,.12),rgba(255,210,74,.08));border-color:#344665">
+    <h3>🎯 Audience Brain v23</h3>
+    <div><span class="tag ${scoreClass}">Audience Score ${sc.total??'-'}/100</span><span class="tag b">${esc(p.intent_label||'-')}</span><span class="tag p">Bukan chatbot</span></div>
+    <p class="muted" style="margin-top:8px">${esc(p.one_sentence||'')}</p>
+    <div class="grid2" style="margin-top:10px">
+      <div class="finalBox" style="margin:0;padding:12px;background:rgba(7,11,20,.45)">
+        <b>Siapa penontonnya?</b>
+        <ul class="reason">
+          <li class="info"><b>Negara/Bahasa:</b> ${esc(geo.negara||'-')} · ${esc(geo.bahasa||'-')}</li>
+          <li class="info"><b>Usia:</b> ${esc(demo.usia||'-')} · <b>Device:</b> ${esc(dev.utama||'-')}</li>
+          <li class="yellow"><b>Emosi dominan:</b> ${esc(psik.emosi_dominan||'-')}</li>
+        </ul>
+      </div>
+      <div class="finalBox" style="margin:0;padding:12px;background:rgba(7,11,20,.45)">
+        <b>Masalah → CTA</b>
+        <ul class="reason">
+          <li class="yellow"><b>Masalah:</b> ${esc(flow.masalah||'-')}</li>
+          <li class="good"><b>Keinginan:</b> ${esc(flow.keinginan||'-')}</li>
+          <li class="good"><b>CTA:</b> ${esc(flow.cta||action.cta||'-')}</li>
+        </ul>
+      </div>
+    </div>
+    <h3 style="margin-top:12px">Strategi dari audiens</h3>
+    <ul class="reason">
+      <li class="info"><b>Solusi:</b> ${esc(flow.solusi||'-')}</li>
+      <li class="good"><b>Konten:</b> ${esc(flow.konten||'-')}</li>
+      <li class="info"><b>Judul seed:</b> ${esc(flow.judul||'-')}</li>
+      <li class="yellow"><b>Thumbnail:</b> ${esc(flow.thumbnail||'-')}</li>
+      <li class="info"><b>Upload awal:</b> ${esc(flow.upload||'-')}</li>
+      <li class="good"><b>Analisa ulang:</b> ${(flow.analisa_ulang||[]).map(x=>`<span class="tag b">${esc(x)}</span>`).join(' ')||'-'}</li>
+    </ul>
+    <div class="btns" style="margin-top:10px">
+      <button type="button" class="small" onclick="copyAudienceField('cta',this)">📋 Copy CTA</button>
+      <button type="button" class="small" onclick="copyAudienceField('thumb',this)">📋 Copy Arahan Thumbnail</button>
+      <button type="button" class="small" onclick="copyAudienceField('profile',this)">📋 Copy Profil</button>
+      <button type="button" class="small green" onclick="copyAudienceBrainPack(this)">📋 Copy Semua Audience Pack</button>
+    </div>
+    <details open style="margin-top:12px"><summary>Ide konten dari masalah audiens</summary>
+      ${ideas.length?ideas.slice(0,5).map((it,i)=>`<div class="battleItem"><span class="badge2 ${i===0?'vwin':'vtest'}">${it.audience_score||'-'}</span><div><b>${esc(it.title_seed||'-')}</b><br><small><b>Masalah:</b> ${esc(it.problem||'-')} · <b>Solusi:</b> ${esc(it.solution||'-')}<br><b>Konten:</b> ${esc(it.content||'-')}<br><b>CTA:</b> ${esc(it.cta||'-')}</small></div><button type="button" class="small" onclick="copyText(window.__COPY_VALUES[${registerCopyText((it.title_seed||'')+'\n'+(it.content||'')+'\nCTA: '+(it.cta||''))}],this)">Copy</button></div>`).join(''):'<p class="muted">Belum ada ide.</p>'}
+    </details>
+    <details style="margin-top:12px"><summary>Checklist kesiapan audiens</summary>
+      <ul class="reason">${checklist.map(x=>`<li class="${x.ok?'good':'yellow'}">${x.ok?'✅':'⚠️'} ${esc(x.item||'')}</li>`).join('')}</ul>
+    </details>
+    ${risks.length?`<details style="margin-top:12px"><summary>Risk Notes</summary><ul class="reason">${risks.map(r=>`<li class="${r.level==='tinggi'?'bad':r.level==='sedang'?'yellow':'info'}"><b>${esc(r.level||'risk')}:</b> ${esc(r.issue||'')} ${r.mitigation?' — '+esc(r.mitigation):''}</li>`).join('')}</ul></details>`:''}
+    <p class="muted" style="font-size:11px;margin-top:10px">Audience Brain menambah arah audiens. Final scoring tetap dari engine data YIE.</p>
+  </div>`;
+}
+function copyAudienceField(field,btn){
+  let d=AUDIENCE_BRAIN||{}, flow=d.strategy_flow||{}, p=d.profile||{};
+  let txt='';
+  if(field==='cta') txt=flow.cta||'';
+  else if(field==='thumb') txt=flow.thumbnail||'';
+  else if(field==='profile') txt=(p.one_sentence||'')+'\nIntent: '+(p.intent_label||'')+'\nAudience Score: '+((d.scores&&d.scores.total)||'-')+'/100';
+  copyText(txt,btn);
+}
+function copyAudienceBrainPack(btn){
+  let d=AUDIENCE_BRAIN;
+  if(!d||!d.ok) return alert('Jalankan Audience Brain dulu bro.');
+  let p=d.profile||{}, c=(p.cards||{}), flow=d.strategy_flow||{}, sc=d.scores||{};
+  let ideas=(d.content_ideas||[]).slice(0,5).map((it,i)=>`${i+1}. ${it.title_seed}\n   Masalah: ${it.problem}\n   Konten: ${it.content}\n   CTA: ${it.cta}`).join('\n');
+  let txt=[
+    'AUDIENCE BRAIN v23',
+    `Audience Score: ${sc.total||'-'}/100`,
+    `Intent: ${p.intent_label||'-'}`,
+    '',
+    'TARGET:',
+    p.one_sentence||'',
+    '',
+    '8 KARTU AUDIENS:',
+    `Geografi: ${JSON.stringify(c.geografi||{})}`,
+    `Demografi: ${JSON.stringify(c.demografi||{})}`,
+    `Status Sosial: ${JSON.stringify(c.status_sosial||{})}`,
+    `Perangkat: ${JSON.stringify(c.perangkat||{})}`,
+    `Psikologi: ${JSON.stringify(c.psikologi||{})}`,
+    `Kebiasaan: ${JSON.stringify(c.kebiasaan_menonton||{})}`,
+    `Tujuan: ${JSON.stringify(c.tujuan_menonton||[])}`,
+    `Action: ${JSON.stringify(c.action_yang_diharapkan||{})}`,
+    '',
+    'STRATEGY FLOW:',
+    `Masalah: ${flow.masalah||''}`,
+    `Keinginan: ${flow.keinginan||''}`,
+    `Solusi: ${flow.solusi||''}`,
+    `Konten: ${flow.konten||''}`,
+    `Judul: ${flow.judul||''}`,
+    `Thumbnail: ${flow.thumbnail||''}`,
+    `Upload: ${flow.upload||''}`,
+    `CTA: ${flow.cta||''}`,
+    '',
+    'IDE KONTEN:',
+    ideas||'-'
+  ].join('\n');
+  copyText(txt,btn);
+}
+
+async function aiStrategyReview(btn){if(!A||!RECS[0])return alert('Jalankan riset dulu bro.');let old=btn?btn.textContent:'';if(btn){btn.textContent='⏳ AI Strategy...';btn.disabled=true}let box=$('aiStrategyBox');if(box)box.innerHTML='<div class="finalBox" style="background:rgba(16,24,39,.75);border-color:#344665"><b>AI Strategy sedang membaca hasil engine...</b><p class="muted">AI tidak mengganti data. AI hanya mereview strategi berdasarkan evidence yang sudah dikumpulkan engine.</p></div>';try{let best=RECS[0];let payload={keyword:A.seed,seed:A.seed,angle:A.keyword,niche:A.niche&&A.niche.label,language:A.lang,region:A.region,finalTitle:best.title,title:best.title,description:best.desc,tags:best.tags,thumbnailHook:best.hook,finalDecision:{title:best.title,score:best.score,search:best.search,browse:best.browse,algo:best.algo,strategy:best.strategy,hook:best.hook,angle:A.keyword,opportunity:scoreOpportunity(A),patternBorn:best.patternBorn,creatorHook:best.hookScore,quality:best.quality,languageFit:best.langFit,intentFit:best.intentFit},scores:{final:best.score,search:best.search,browse:best.browse,algorithm:best.algo,patternBorn:best.patternBorn,creatorHook:best.hookScore,quality:best.quality,languageFit:best.langFit,intentFit:best.intentFit,opportunity:scoreOpportunity(A)},metrics:A.metrics,qualifiedCompetitors:(A.qualified||[]).slice(0,10).map(v=>({title:v.title,channel:v.channelTitle,views:v.views,vpm:Math.round(v.vpm||0),relevance:v.relevance,query:v._query})),rejectedCompetitors:(A.rejected||[]).slice(0,8).map(v=>({title:v.title,channel:v.channelTitle,views:v.views,relevance:v.relevance,query:v._query})),patterns:(A.patterns&&A.patterns.titlePatterns||[]).slice(0,8).map(p=>({label:p.label,count:p.count,weight:Math.round(p.weight||0),example:(p.examples||[])[0]})),candidateTitles:RECS.slice(0,8).map(r=>({title:r.title,score:r.score,search:r.search,browse:r.browse,patternBorn:r.patternBorn,hook:r.hookScore,quality:r.quality,intent:r.intentFit})),manualCalibration:(A.manualTitles||[]),audienceBrain:AUDIENCE_BRAIN,audienceFacts:audienceBrainFacts(),engineFacts:engineDataFacts(A,best), notes:'Review taat data engineFacts. Jika pasar JENUH, sarankan angle long-tail & diferensiasi, jangan mengulang judul generik. Jangan klaim pasti viral. Data gaps hanya yang benar-benar tidak tersedia (AVD/demografi/CTR kompetitor), jangan bilang kosong jika top_competitors/gap_words sudah ada.'};let r=await fetch('/api/ai-strategy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});let data=await r.json();if(!r.ok||!data.ok)throw Error((data&&data.error)||'AI strategy gagal');renderAIStrategyResult(data.result||{},data.raw||'')}catch(e){if(box)box.innerHTML=`<div class="finalBox" style="background:rgba(53,16,27,.45);border-color:#733044"><b>AI Strategy gagal</b><p class="muted">${esc(e.message||String(e))}</p></div>`}finally{if(btn){btn.textContent=old;btn.disabled=false}}}
 function normalizeAIStrategyResult(x){
   x=x||{};
   // Accept both nested schema (UI ideal) and flat schema currently returned by /api/ai-strategy
